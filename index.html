@@ -96,7 +96,7 @@ tabs.forEach(t => {
 });
 
 // ==== البيانات ====
-// ===== الشخصيات (الـ 50 كاملة) =====
+// ===== الشخصيات (60 شخصية) =====
 const characters = [
   {w:"Skyrim", en:{n:"Dragonborn",p:"Words shape reality.",m:"Hero on a frozen peak."},ar:{n:"دراجونبورن",p:"الكلمات تشكّل الواقع.",m:"بطل فوق قمة جليدية."}},
   {w:"Skyrim", en:{n:"Alduin",p:"Destruction is destiny.",m:"World-eating dragon."},ar:{n:"ألدوين",p:"الدمار هو القدر.",m:"تنين يلتهم العالم."}},
@@ -147,10 +147,23 @@ const characters = [
   {w:"Control", en:{n:"Jesse Faden",p:"Director.",m:"Paranormal investigator."},ar:{n:"جيسي فادن",p:"مديرة.",m:"محققة خارقة."}},
   {w:"Hades", en:{n:"Zagreus",p:"Escape hell.",m:"Son of Hades."},ar:{n:"زاغريوس",p:"هرب من الجحيم.",m:"ابن هاديس."}},
   {w:"Animal Crossing", en:{n:"Tom Nook",p:"Yes, yes.",m:"Raccoon businessman."},ar:{n:"توم نوك",p:"نعم، نعم.",m:"رجل أعمال راكون."}},
-  {w:"Genshin Impact", en:{n:"Traveler",p:"Find sibling.",m:"Elemental adventurer."},ar:{n:"المسافر",p:"ابحث عن الأخ.",m:"مغامر عنصري."}}
+  {w:"Genshin Impact", en:{n:"Traveler",p:"Find sibling.",m:"Elemental adventurer."},ar:{n:"المسافر",p:"ابحث عن الأخ.",m:"مغامر عنصري."}},
+  {w:"Final Fantasy X", en:{n:"Tidus",p:"This is my story.",m:"Blitzball star."},ar:{n:"تيدوس",p:"هذه قصتي.",m:"نجم بلتزبول."}},
+  {w:"Dark Souls", en:{n:"Solaire of Astora",p:"Praise the sun!",m:"Joyful knight."},ar:{n:"سولير أوف أستورا",p:"احمدوا الشمس!",m:"فارس مبتهج."}},
+  {w:"Metal Gear Solid", en:{n:"Revolver Ocelot",p:"You're pretty good.",m:"Gunslinger spy."},ar:{n:"ريفولفر أوسيليت",p:"أنت جيد جدًا.",m:"جاسوس مبارز."}},
+  {w:"The Last of Us Part II", en:{n:"Abby",p:"Strength for survival.",m:"Muscular warrior."},ar:{n:"آبي",p:"القوة من أجل البقاء.",m:"محاربة عضلية."}},
+  {w:"Persona 5", en:{n:"Joker",p:"Take your heart.",m:"Phantom thief."},ar:{n:"جوكر",p:"خذ قلبك.",m:"لص شبح."}},
+  {w:"Kingdom Hearts", en:{n:"Sora",p:"My friends are my power.",m:"Keyblade wielder."},ar:{n:"سورا",p:"أصدقائي هم قوتي.",m:"حامل مفتاح النصل."}},
+  {w:"Street Fighter II", en:{n:"Chun-Li",p:"Justice must prevail.",m:"Interpol agent."},ar:{n:"تشون لي",p:"يجب أن يسود العدل.",m:"عميلة إنتربول."}},
+  {w:"Minecraft", en:{n:"Alex",p:"Creative builder.",m:"Survival expert."},ar:{n:"أليكس",p:"بانية مبدعة.",m:"خبيرة بقاء."}},
+  {w:"Batman: Arkham City", en:{n:"Batman",p:"I am vengeance.",m:"Dark knight."},ar:{n:"باتمان",p:"أنا الانتقام.",m:"الفارس المظلم."}},
+  {w:"Overwatch 2", en:{n:"Reaper",p:"Death walks among you.",m:"Shotgun wraith."},ar:{n:"ريبر",p:"الموت يسير بينكم.",m:"شبح البندقية."}},
+  {w:"Ghost of Tsushima", en:{n:"Jin Sakai",p:"Honor vs survival.",m:"Ghost samurai."},ar:{n:"جين ساكاي",p:"الشرف مقابل البقاء.",m:"ساموراي شبح."}},
+  {w:"Ghost of Tsushima", en:{n:"Lord Shimura",p:"Honor above all.",m:"Stoic uncle."},ar:{n:"لورد شيمورا",p:"الشرف فوق كل شيء.",m:"عم متقشف."}},
+  {w:"Ghost of Tsushima", en:{n:"Khotun Khan",p:"Brutal conqueror.",m:"Mongol invader."},ar:{n:"خوتون خان",p:"فاتح وحشي.",m:"غازي مغولي."}}
 ];
 
-// ===== الألعاب (20 لعبة مع seriesParts) =====
+// ===== الألعاب (25 لعبة) =====
 const games = [
   {en:{n:"The Witcher 3",d:"Dark fantasy RPG.",y:2015,g:"RPG"},ar:{n:"ذا ويتشر 3",d:"تقمص أدوار فانتازي مظلم.",y:2015,g:"تقمص أدوار"},
    seriesParts:3, parts:[{en:{n:"Hearts of Stone",y:2015},ar:{n:"هارتس أوف ستون",y:2015}},{en:{n:"Blood and Wine",y:2016},ar:{n:"دم وعنب",y:2016}}]},
@@ -191,7 +204,15 @@ const games = [
   {en:{n:"Dragon Age: Origins",d:"Epic fantasy RPG.",y:2009,g:"RPG"},ar:{n:"دراغون إيج: أوريجينز",d:"تقمص أدوار فانتازي ملحمي.",y:2009,g:"تقمص أدوار"},
    seriesParts:3, parts:[{en:{n:"Awakening",y:2010},ar:{n:"أواكينينغ",y:2010}}]},
   {en:{n:"Resident Evil 4",d:"Survival horror.",y:2005,g:"Action"},ar:{n:"ريزيدنت إيفل 4",d:"رعب بقاء.",y:2005,g:"أكشن"},
-   seriesParts:15, parts:[{en:{n:"Separate Ways",y:2023},ar:{n:"سيباريت وايز",y:2023}}]}
+   seriesParts:15, parts:[{en:{n:"Separate Ways",y:2023},ar:{n:"سيباريت وايز",y:2023}}]},
+  {en:{n:"Final Fantasy X",d:"Epic journey to save Spira.",y:2001,g:"RPG"},ar:{n:"فاينل فانتازي X",d:"رحلة ملحمية لإنقاذ سبايرا.",y:2001,g:"تقمص أدوار"},
+   seriesParts:2, parts:[{en:{n:"Final Fantasy X-2",y:2003},ar:{n:"فاينل فانتازي X-2",y:2003}}]},
+  {en:{n:"Dark Souls",d:"Hardcore fantasy action.",y:2011,g:"RPG"},ar:{n:"دارك سولز",d:"أكشن فانتازي صعب.",y:2011,g:"تقمص أدوار"},
+   seriesParts:3, parts:[{en:{n:"Artorias of the Abyss",y:2012},ar:{n:"أرتورياس أوف ذي أبيس",y:2012}}]},
+  {en:{n:"Kingdom Hearts III",d:"Disney meets Final Fantasy.",y:2019,g:"Action/RPG"},ar:{n:"كينغدوم هارتس 3",d:"ديزني تلتقي فاينل فانتازي.",y:2019,g:"أكشن/تقمص أدوار"},
+   seriesParts:3, parts:[{en:{n:"Re Mind",y:2020},ar:{n:"ري مايند",y:2020}}]},
+  {en:{n:"Ghost of Tsushima",d:"Samurai open-world adventure.",y:2020,g:"Action/Adventure"},ar:{n:"غوست أوف تسوشيما",d:"مغامرة ساموراي في عالم مفتوح.",y:2020,g:"أكشن/مغامرة"},
+   seriesParts:1, parts:[{en:{n:"Iki Island",y:2021},ar:{n:"جزيرة إيكي",y:2021}},{en:{n:"Legends Mode",y:2020},ar:{n:"وضع الأساطير",y:2020}}]}
 ];
 
 // ==== باقي السكريبت (نفس السابق) ====
@@ -296,4 +317,9 @@ setupFilter();
 render();
 </script>
 </body>
+</html>
+render();
+</script>
+</body>
+
 </html>
