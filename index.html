@@ -96,7 +96,7 @@ tabs.forEach(t => {
 });
 
 // ==== البيانات ====
-// ===== الشخصيات (60 شخصية) =====
+// ===== الشخصيات (100 شخصية) =====
 const characters = [
   {w:"Skyrim", en:{n:"Dragonborn",p:"Words shape reality.",m:"Hero on a frozen peak."},ar:{n:"دراجونبورن",p:"الكلمات تشكّل الواقع.",m:"بطل فوق قمة جليدية."}},
   {w:"Skyrim", en:{n:"Alduin",p:"Destruction is destiny.",m:"World-eating dragon."},ar:{n:"ألدوين",p:"الدمار هو القدر.",m:"تنين يلتهم العالم."}},
@@ -160,10 +160,53 @@ const characters = [
   {w:"Overwatch 2", en:{n:"Reaper",p:"Death walks among you.",m:"Shotgun wraith."},ar:{n:"ريبر",p:"الموت يسير بينكم.",m:"شبح البندقية."}},
   {w:"Ghost of Tsushima", en:{n:"Jin Sakai",p:"Honor vs survival.",m:"Ghost samurai."},ar:{n:"جين ساكاي",p:"الشرف مقابل البقاء.",m:"ساموراي شبح."}},
   {w:"Ghost of Tsushima", en:{n:"Lord Shimura",p:"Honor above all.",m:"Stoic uncle."},ar:{n:"لورد شيمورا",p:"الشرف فوق كل شيء.",m:"عم متقشف."}},
-  {w:"Ghost of Tsushima", en:{n:"Khotun Khan",p:"Brutal conqueror.",m:"Mongol invader."},ar:{n:"خوتون خان",p:"فاتح وحشي.",m:"غازي مغولي."}}
+  {w:"Ghost of Tsushima", en:{n:"Khotun Khan",p:"Brutal conqueror.",m:"Mongol invader."},ar:{n:"خوتون خان",p:"فاتح وحشي.",m:"غازي مغولي."}},
+  
+  // === الشخصيات المضافة (40 شخصية) ===
+  {w:"Hitman", en:{n:"Agent 47",p:"Names are for friends.",m:"Bald assassin with a barcode."},ar:{n:"العميل 47",p:"الأسماء للأصدقاء فقط.",m:"قاتل أصلع بوشم باركود."}},
+  {w:"Metal Gear Solid", en:{n:"Big Boss",p:"Loyalty to the end.",m:"Legendary soldier with an eyepatch."},ar:{n:"بيج بوس",p:"الولاء حتى النهاية.",m:"جندي أسطوري برقعة عين."}},
+  {w:"Final Fantasy VII", en:{n:"Aerith Gainsborough",p:"The future isn't fixed.",m:"Flower girl with a staff."},ar:{n:"إيريث جينزبورو",p:"المستقبل ليس ثابتاً.",m:"بائعة زهور بعصا سحرية."}},
+  {w:"Resident Evil", en:{n:"Jill Valentine",p:"Master of unlocking.",m:"Special forces survivor."},ar:{n:"جيل فالنتاين",p:"براعة في فتح الأقفال.",m:"ناجية من القوات الخاصة."}},
+  {w:"Resident Evil", en:{n:"Chris Redfield",p:"Finish the mission.",m:"Strong boulder-puncher."},ar:{n:"كريس ريدفيلد",p:"أنهِ المهمة.",m:"مقاتل قوي البنية."}},
+  {w:"Silent Hill 2", en:{n:"Pyramid Head",p:"Judgment is coming.",m:"Executioner with a metal head."},ar:{n:"بيراميد هيد",p:"الدينونة قادمة.",m:"سياف برأس معدني هرمي."}},
+  {w:"The Walking Dead", en:{n:"Clementine",p:"Keep moving.",m:"Young survivor in a cap."},ar:{n:"كليمنتاين",p:"استمر في التحرك.",m:"ناجية صغيرة بقبعة."}},
+  {w:"Mass Effect", en:{n:"Garrus Vakarian",p:"Justice is a choice.",m:"Turian sniper."},ar:{n:"جاروس فاكاريان",p:"العدالة هي خيار.",m:"قناص من عرق التوريان."}},
+  {w:"Baldur's Gate 3", en:{n:"Shadowheart",p:"Darkness protects.",m:"Cleric of Shar."},ar:{n:"شادوهارت",p:"الظلام يحمي.",m:"كاهنة الظلام."}},
+  {w:"Baldur's Gate 3", en:{n:"Astarion",p:"Blood is life.",m:"Pale elf rogue."},ar:{n:"أستاريون",p:"الدم هو الحياة.",m:"لص قزم شاحب."}},
+  {w:"Yakuza", en:{n:"Kazuma Kiryu",p:"Dragon's honor.",m:"The Dragon of Dojima."},ar:{n:"كازوما كيريو",p:"شرف التنين.",m:"تنين دوجيما."}},
+  {w:"Tekken", en:{n:"Kazuya Mishima",p:"Power is everything.",m:"Devil gene fighter."},ar:{n:"كازويا ميشيما",p:"القوة هي كل شيء.",m:"مقاتل بجين الشيطان."}},
+  {w:"Metroid", en:{n:"Samus Aran",p:"The last Metroid is in captivity.",m:"Armored bounty hunter."},ar:{n:"ساموس أران",p:"آخر مترويد في الأسر.",m:"صائدة جوائز مدرعة."}},
+  {w:"Detroit: Become Human", en:{n:"Connor",p:"I am a machine.",m:"Android investigator."},ar:{n:"كونور",p:"أنا آلة.",m:"محقق آلي."}},
+  {w:"Borderlands", en:{n:"Handsome Jack",p:"Everyone is the hero of their story.",m:"Sarcastic dictator."},ar:{n:"هاندسوم جاك",p:"الكل بطل في قصته الخاصة.",m:"ديكتاتور ساخر."}},
+  {w:"Portal 2", en:{n:"Wheatley",p:"I'm not a moron!",m:"Chatty robotic eye."},ar:{n:"ويتلي",p:"لست أحمقاً!",m:"عين روبوتية ثرثارة."}},
+  {w:"Overwatch", en:{n:"Genji",p:"I am whole.",m:"Cyborg ninja."},ar:{n:"جينجي",p:"أنا مكتمل الآن.",m:"نينجا آلي."}},
+  {w:"Splinter Cell", en:{n:"Sam Fisher",p:"Believe in the dark.",m:"Stealth spy with goggles."},ar:{n:"سام فيشر",p:"آمن بالظلام.",m:"جاسوس تخفي بنظارات خضراء."}},
+  {w:"Assassin's Creed", en:{n:"Altaïr Ibn-La'Ahad",p:"Nothing is true.",m:"Legendary Syrian assassin."},ar:{n:"الطائر ابن لا أحد",p:"لا شيء واقعي.",m:"أساسن سوري أسطوري."}},
+  {w:"Street Fighter", en:{n:"Akuma",p:"Master of the fist.",m:"Red-haired demon fighter."},ar:{n:"أكوما",p:"سيد القبضة.",m:"مقاتل شيطاني بشعر أحمر."}},
+  {w:"Castlevania", en:{n:"Alucard",p:"The son of Dracula.",m:"Long-haired vampire hero."},ar:{n:"ألوكارد",p:"ابن دراكولا.",m:"مصاص دماء بشعر طويل."}},
+  {w:"Hades", en:{n:"Melinoë",p:"Death to Chronos.",m:"Princess of the Underworld."},ar:{n:"ميلينوي",p:"الموت لكرونوس.",m:"أميرة العالم السفلي."}},
+  {w:"League of Legends", en:{n:"Jinx",p:"Rules are made to be broken.",m:"Blue-haired maniac."},ar:{n:"جينكس",p:"القواعد وُجدت لتُكسر.",m:"مجنونة بشعر أزرق."}},
+  {w:"God of War", en:{n:"Baldur",p:"I feel nothing.",m:"Immortal Norse god."},ar:{n:"بالدر",p:"لا أشعر بشيء.",m:"إله نورسي خالد."}},
+  {w:"Horizon", en:{n:"Aloy",p:"Find the truth.",m:"Machine hunter with a bow."},ar:{n:"آلوي",p:"ابحث عن الحقيقة.",m:"صائدة آلات بقوس."}},
+  {w:"Team Fortress 2", en:{n:"The Heavy",p:"I am bulletproof.",m:"Giant with a minigun."},ar:{n:"ذا هيفي",p:"أنا مضاد للرصاص.",m:"عملاق بمدفع رشاش."}},
+  {w:"Devil May Cry", en:{n:"Vergil",p:"I need more power.",m:"Blue-clad swordsman."},ar:{n:"فيرجل",p:"أحتاج لمزيد من القوة.",m:"سياف يرتدي الأزرق."}},
+  {w:"Bloodborne", en:{n:"Lady Maria",p:"A corpse should be left well alone.",m:"Clocktower hunter."},ar:{n:"ليدي ماريا",p:"الجثث يجب أن تُترك وشأنها.",m:"صائدة برج الساعة."}},
+  {w:"Elder Scrolls", en:{n:"Sheogorath",p:"Cheese for everyone!",m:"God of Madness."},ar:{n:"شيوجوراث",p:"جبن للجميع!",m:"إله الجنون."}},
+  {w:"Mortal Kombat", en:{n:"Scorpion",p:"Get over here!",m:"Undead fire ninja."},ar:{n:"سكوربيون",p:"تعال إلى هنا!",m:"نينجا ناري ميت حي."}},
+  {w:"Deltarune", en:{n:"Kris",p:"Silent leader.",m:"Human in the dark world."},ar:{n:"كريس",p:"قائد صامت.",m:"بشر في عالم الظلام."}},
+  {w:"Genshin Impact", en:{n:"Raiden Shogun",p:"Eternity.",m:"Electro Archon."},ar:{n:"رايدن شوغون",p:"الأبدية.",m:"حاكمة البرق."}},
+  {w:"Undertale", en:{n:"Sans",p:"Do you want to have a bad time?",m:"Pun-loving skeleton."},ar:{n:"سانز",p:"هل تريد وقتاً سيئاً؟",m:"هيكل عظمي محب للنكات."}},
+  {w:"Ratchet & Clank", en:{n:"Ratchet",p:"Saving the galaxy.",m:"Furry Lombax mechanic."},ar:{n:"راتشيت",p:"إنقاذ المجرة.",m:"ميكانيكي من عرق اللومباكس."}},
+  {w:"Dead Space", en:{n:"Isaac Clarke",p:"Make us whole again.",m:"Engineer in space suit."},ar:{n:"آيزاك كلارك",p:"اجعلنا مكتملين مرة أخرى.",m:"مهندس ببدلة فضاء."}},
+  {w:"Uncharted", en:{n:"Victor Sullivan",p:"Goddamn it, Nate.",m:"Cigar-smoking mentor."},ar:{n:"فيكتور سوليفان",p:"تباً يا نيت.",m:"المعلم المدخن للسيجار."}},
+  {w:"Dragon Age", en:{n:"Morrigan",p:"Change is coming.",m:"Witch of the Wilds."},ar:{n:"موريغان",p:"التغيير قادم.",m:"ساحرة البراري."}},
+  {w:"Bayonetta", en:{n:"Bayonetta",p:"Time to play.",m:"Umbra Witch with stylish moves."},ar:{n:"بايونيتا",p:"حان وقت اللعب.",m:"ساحرة الظل بحركات أنيقة."}},
+  {w:"EarthBound", en:{n:"Ness",p:"PSI powers.",m:"Kid with a baseball bat."},ar:{n:"نيس",p:"قوى PSI.",m:"طفل بعصا بيسبول."}},
+  {w:"Monster Hunter", en:{n:"The Hunter",p:"For the thrill of the hunt.",m:"Armored monster slayer."},ar:{n:"الصياد",p:"من أجل متعة الصيد.",m:"صائد وحوش مدرع."}},
+  {w:"Persona 5", en:{n:"Makoto Niijima",p:"Student council justice.",m:"Smart fighter with brass knuckles."},ar:{n:"ماكوتو نيجيما",p:"عدالة مجلس الطلاب.",m:"مقاتلة ذكية بقفازات حديدية."}}
 ];
 
-// ===== الألعاب (25 لعبة) =====
+// ===== الألعاب (40 لعبة) =====
 const games = [
   {en:{n:"The Witcher 3",d:"Dark fantasy RPG.",y:2015,g:"RPG"},ar:{n:"ذا ويتشر 3",d:"تقمص أدوار فانتازي مظلم.",y:2015,g:"تقمص أدوار"},
    seriesParts:3, parts:[{en:{n:"Hearts of Stone",y:2015},ar:{n:"هارتس أوف ستون",y:2015}},{en:{n:"Blood and Wine",y:2016},ar:{n:"دم وعنب",y:2016}}]},
@@ -212,10 +255,32 @@ const games = [
   {en:{n:"Kingdom Hearts III",d:"Disney meets Final Fantasy.",y:2019,g:"Action/RPG"},ar:{n:"كينغدوم هارتس 3",d:"ديزني تلتقي فاينل فانتازي.",y:2019,g:"أكشن/تقمص أدوار"},
    seriesParts:3, parts:[{en:{n:"Re Mind",y:2020},ar:{n:"ري مايند",y:2020}}]},
   {en:{n:"Ghost of Tsushima",d:"Samurai open-world adventure.",y:2020,g:"Action/Adventure"},ar:{n:"غوست أوف تسوشيما",d:"مغامرة ساموراي في عالم مفتوح.",y:2020,g:"أكشن/مغامرة"},
-   seriesParts:1, parts:[{en:{n:"Iki Island",y:2021},ar:{n:"جزيرة إيكي",y:2021}},{en:{n:"Legends Mode",y:2020},ar:{n:"وضع الأساطير",y:2020}}]}
+   seriesParts:1, parts:[{en:{n:"Iki Island",y:2021},ar:{n:"جزيرة إيكي",y:2021}},{en:{n:"Legends Mode",y:2020},ar:{n:"وضع الأساطير",y:2020}}]},
+  
+  // === الألعاب المضافة (15 لعبة) ===
+  {en:{n:"Hitman",d:"Professional assassination simulator.",y:2016,g:"Stealth"},ar:{n:"هيتمان",d:"محاكي اغتيال احترافي.",y:2016,g:"تخفي"},seriesParts:8, parts:[{en:{n:"World of Assassination",y:2021},ar:{n:"عالم الاغتيال",y:2021}}]},
+  {en:{n:"Metal Gear Solid V",d:"Tactical espionage operations.",y:2015,g:"Stealth"},ar:{n:"ميتال جير سوليد 5",d:"عمليات تجسس تكتيكية.",y:2015,g:"تخفي"},seriesParts:5, parts:[{en:{n:"The Phantom Pain",y:2015},ar:{n:"ألم الشبح",y:2015}}]},
+  {en:{n:"Splinter Cell: Blacklist",d:"Ultimate stealth experience.",y:2013,g:"Stealth"},ar:{n:"سبلينتر سيل: بلاك ليست",d:"تجربة التخفي النهائية.",y:2013,g:"تخفي"},seriesParts:6, parts:[]},
+  {en:{n:"Silent Hill 2",d:"Psychological survival horror.",y:2001,g:"Horror"},ar:{n:"سايلنت هيل 2",d:"رعب بقاء نفسي.",y:2001,g:"رعب"},seriesParts:4, parts:[{en:{n:"Remake",y:2024},ar:{n:"النسخة المحسنة",y:2024}}]},
+  {en:{n:"Dead Space",d:"Sci-fi survival horror.",y:2008,g:"Horror"},ar:{n:"ديد سبيس",d:"رعب بقاء خيال علمي.",y:2008,g:"رعب"},seriesParts:3, parts:[{en:{n:"Severed",y:2011},ar:{n:"سيفريد",y:2011}}]},
+  {en:{n:"Baldur's Gate 3",d:"Epic D&D based RPG.",y:2023,g:"RPG"},ar:{n:"بالدورز جيت 3",d:"لعبة تقمص أدوار ملحمية.",y:2023,g:"تقمص أدوار"},seriesParts:3, parts:[]},
+  {en:{n:"Final Fantasy VII Rebirth",d:"Massive world RPG remake.",y:2024,g:"RPG"},ar:{n:"فاينل فانتازي 7 ريبرث",d:"إعادة بناء لعالم RPG ضخم.",y:2024,g:"تقمص أدوار"},seriesParts:3, parts:[]},
+  {en:{n:"Yakuza: Like a Dragon",d:"Crime drama with RPG combat.",y:2020,g:"RPG"},ar:{n:"ياكوزا: مثل التنين",d:"دراما جريمة مع قتال RPG.",y:2020,g:"تقمص أدوار"},seriesParts:8, parts:[]},
+  {en:{n:"Undertale",d:"The RPG where no one has to die.",y:2015,g:"RPG"},ar:{n:"أندرتيل",d:"لعبة RPG حيث لا يجب أن يموت أحد.",y:2015,g:"تقمص أدوار"},seriesParts:1, parts:[]},
+  {en:{n:"Persona 5 Royal",d:"Social sim and dungeon crawler.",y:2019,g:"RPG"},ar:{n:"بيرسونا 5 رويال",d:"محاكاة اجتماعية وقتال زنزانات.",y:2019,g:"تقمص أدوار"},seriesParts:6, parts:[]},
+  {en:{n:"EarthBound",d:"Quirky modern-day RPG.",y:1994,g:"RPG"},ar:{n:"إيرث باوند",d:"لعبة RPG عصرية وغريبة الأطوار.",y:1994,g:"تقمص أدوار"},seriesParts:3, parts:[]},
+  {en:{n:"Tekken 8",d:"The ultimate fighting game.",y:2024,g:"Fighting"},ar:{n:"تيكن 8",d:"لعبة القتال النهائية.",y:2024,g:"قتال"},seriesParts:8, parts:[]},
+  {en:{n:"Mortal Kombat 1",d:"Brutal fighting with magic.",y:2023,g:"Fighting"},ar:{n:"مورتال كومبات 1",d:"قتال وحشي مع سحر.",y:2023,g:"قتال"},seriesParts:12, parts:[{en:{n:"Khaos Reigns",y:2024},ar:{n:"فوضى عارمة",y:2024}}]},
+  {en:{n:"Devil May Cry 5",d:"High-octane stylish action.",y:2019,g:"Action"},ar:{n:"ديفل ماي كراي 5",d:"أكشن سريع وأنيق.",y:2019,g:"أكشن"},seriesParts:5, parts:[{en:{n:"Vergil DLC",y:2020},ar:{n:"إضافة فيرجل",y:2020}}]},
+  {en:{n:"Bayonetta 3",d:"Stylish witch action.",y:2022,g:"Action"},ar:{n:"بايونيتا 3",d:"أكشن الساحرة الأنيق.",y:2022,g:"أكشن"},seriesParts:3, parts:[]},
+  {en:{n:"Metroid Dread",d:"Classic 2D exploration action.",y:2021,g:"Action"},ar:{n:"مترويد دريد",d:"أكشن واستكشاف كلاسيكي ثنائي الأبعاد.",y:2021,g:"أكشن"},seriesParts:5, parts:[]},
+  {en:{n:"Monster Hunter: World",d:"Epic beast hunting.",y:2018,g:"Action/Adventure"},ar:{n:"مونستر هانتر: وورلد",d:"صيد وحوش ملحمي.",y:2018,g:"أكشن/مغامرة"},seriesParts:5, parts:[{en:{n:"Iceborne",y:2019},ar:{n:"آيسبورن",y:2019}}]},
+  {en:{n:"Detroit: Become Human",d:"Choice-driven android story.",y:2018,g:"Adventure"},ar:{n:"ديترويت: نحو الإنسانية",d:"قصة آليين مبنية على الاختيارات.",y:2018,g:"مغامرة"},seriesParts:1, parts:[]},
+  {en:{n:"Ratchet & Clank: Rift Apart",d:"Dimension-hopping adventure.",y:2021,g:"Adventure"},ar:{n:"راتشيت أند كلانك",d:"مغامرة التنقل بين الأبعاد.",y:2021,g:"مغامرة"},seriesParts:10, parts:[]},
+  {en:{n:"Portal 2",d:"Physics-based puzzle platformer.",y:2011,g:"Puzzle"},ar:{n:"بورتال 2",d:"منصات ألغاز تعتمد على الفيزياء.",y:2011,g:"ألغاز"},seriesParts:2, parts:[{en:{n:"Peer Review",y:2011},ar:{n:"بير ريفيو",y:2011}}]}
 ];
 
-// ==== باقي السكريبت (نفس السابق) ====
+// ==== باقي السكريبت ====
 const archive = document.getElementById("archive");
 const search = document.getElementById("search");
 const filter = document.getElementById("filter");
@@ -317,9 +382,4 @@ setupFilter();
 render();
 </script>
 </body>
-</html>
-render();
-</script>
-</body>
-
 </html>
