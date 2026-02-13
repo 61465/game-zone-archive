@@ -161,8 +161,6 @@ const characters = [
   {w:"Ghost of Tsushima", en:{n:"Jin Sakai",p:"Honor vs survival.",m:"Ghost samurai."},ar:{n:"جين ساكاي",p:"الشرف مقابل البقاء.",m:"ساموراي شبح."}},
   {w:"Ghost of Tsushima", en:{n:"Lord Shimura",p:"Honor above all.",m:"Stoic uncle."},ar:{n:"لورد شيمورا",p:"الشرف فوق كل شيء.",m:"عم متقشف."}},
   {w:"Ghost of Tsushima", en:{n:"Khotun Khan",p:"Brutal conqueror.",m:"Mongol invader."},ar:{n:"خوتون خان",p:"فاتح وحشي.",m:"غازي مغولي."}},
-  
-  // === الشخصيات المضافة (40 شخصية) ===
   {w:"Hitman", en:{n:"Agent 47",p:"Names are for friends.",m:"Bald assassin with a barcode."},ar:{n:"العميل 47",p:"الأسماء للأصدقاء فقط.",m:"قاتل أصلع بوشم باركود."}},
   {w:"Metal Gear Solid", en:{n:"Big Boss",p:"Loyalty to the end.",m:"Legendary soldier with an eyepatch."},ar:{n:"بيج بوس",p:"الولاء حتى النهاية.",m:"جندي أسطوري برقعة عين."}},
   {w:"Final Fantasy VII", en:{n:"Aerith Gainsborough",p:"The future isn't fixed.",m:"Flower girl with a staff."},ar:{n:"إيريث جينزبورو",p:"المستقبل ليس ثابتاً.",m:"بائعة زهور بعصا سحرية."}},
@@ -202,12 +200,12 @@ const characters = [
   {w:"Dragon Age", en:{n:"Morrigan",p:"Change is coming.",m:"Witch of the Wilds."},ar:{n:"موريغان",p:"التغيير قادم.",m:"ساحرة البراري."}},
   {w:"Bayonetta", en:{n:"Bayonetta",p:"Time to play.",m:"Umbra Witch with stylish moves."},ar:{n:"بايونيتا",p:"حان وقت اللعب.",m:"ساحرة الظل بحركات أنيقة."}},
   {w:"EarthBound", en:{n:"Ness",p:"PSI powers.",m:"Kid with a baseball bat."},ar:{n:"نيس",p:"قوى PSI.",m:"طفل بعصا بيسبول."}},
-  {w:"Monster Hunter", en:{n:"The Hunter",p:"For the thrill of the hunt.",m:"Armored monster slayer."},ar:{n:"الصياد",p:"من أجل متعة الصيد.",m:"صائد وحوش مدرع."}},
-  {w:"Persona 5", en:{n:"Makoto Niijima",p:"Student council justice.",m:"Smart fighter with brass knuckles."},ar:{n:"ماكوتو نيجيما",p:"عدالة مجلس الطلاب.",m:"مقاتلة ذكية بقفازات حديدية."}}
+  {w:"Monster Hunter", en:{n:"The Hunter",p:"For the thrill of the hunt.",m:"Armored monster slayer."},ar:{n:"الصياد",p:"من أجل متعة الصيد.",m:"صائد وحوش مدرع."}}
 ];
 
-// ===== الألعاب (40 لعبة) =====
+// ===== الألعاب (100 لعبة) =====
 const games = [
+  // الألعاب الأصلية (40)
   {en:{n:"The Witcher 3",d:"Dark fantasy RPG.",y:2015,g:"RPG"},ar:{n:"ذا ويتشر 3",d:"تقمص أدوار فانتازي مظلم.",y:2015,g:"تقمص أدوار"},
    seriesParts:3, parts:[{en:{n:"Hearts of Stone",y:2015},ar:{n:"هارتس أوف ستون",y:2015}},{en:{n:"Blood and Wine",y:2016},ar:{n:"دم وعنب",y:2016}}]},
   {en:{n:"God of War",d:"Mythic action adventure.",y:2018,g:"Action/Adventure"},ar:{n:"جود أوف وور",d:"مغامرة أكشن أسطورية.",y:2018,g:"أكشن/مغامرة"},
@@ -256,8 +254,6 @@ const games = [
    seriesParts:3, parts:[{en:{n:"Re Mind",y:2020},ar:{n:"ري مايند",y:2020}}]},
   {en:{n:"Ghost of Tsushima",d:"Samurai open-world adventure.",y:2020,g:"Action/Adventure"},ar:{n:"غوست أوف تسوشيما",d:"مغامرة ساموراي في عالم مفتوح.",y:2020,g:"أكشن/مغامرة"},
    seriesParts:1, parts:[{en:{n:"Iki Island",y:2021},ar:{n:"جزيرة إيكي",y:2021}},{en:{n:"Legends Mode",y:2020},ar:{n:"وضع الأساطير",y:2020}}]},
-  
-  // === الألعاب المضافة (15 لعبة) ===
   {en:{n:"Hitman",d:"Professional assassination simulator.",y:2016,g:"Stealth"},ar:{n:"هيتمان",d:"محاكي اغتيال احترافي.",y:2016,g:"تخفي"},seriesParts:8, parts:[{en:{n:"World of Assassination",y:2021},ar:{n:"عالم الاغتيال",y:2021}}]},
   {en:{n:"Metal Gear Solid V",d:"Tactical espionage operations.",y:2015,g:"Stealth"},ar:{n:"ميتال جير سوليد 5",d:"عمليات تجسس تكتيكية.",y:2015,g:"تخفي"},seriesParts:5, parts:[{en:{n:"The Phantom Pain",y:2015},ar:{n:"ألم الشبح",y:2015}}]},
   {en:{n:"Splinter Cell: Blacklist",d:"Ultimate stealth experience.",y:2013,g:"Stealth"},ar:{n:"سبلينتر سيل: بلاك ليست",d:"تجربة التخفي النهائية.",y:2013,g:"تخفي"},seriesParts:6, parts:[]},
@@ -277,7 +273,68 @@ const games = [
   {en:{n:"Monster Hunter: World",d:"Epic beast hunting.",y:2018,g:"Action/Adventure"},ar:{n:"مونستر هانتر: وورلد",d:"صيد وحوش ملحمي.",y:2018,g:"أكشن/مغامرة"},seriesParts:5, parts:[{en:{n:"Iceborne",y:2019},ar:{n:"آيسبورن",y:2019}}]},
   {en:{n:"Detroit: Become Human",d:"Choice-driven android story.",y:2018,g:"Adventure"},ar:{n:"ديترويت: نحو الإنسانية",d:"قصة آليين مبنية على الاختيارات.",y:2018,g:"مغامرة"},seriesParts:1, parts:[]},
   {en:{n:"Ratchet & Clank: Rift Apart",d:"Dimension-hopping adventure.",y:2021,g:"Adventure"},ar:{n:"راتشيت أند كلانك",d:"مغامرة التنقل بين الأبعاد.",y:2021,g:"مغامرة"},seriesParts:10, parts:[]},
-  {en:{n:"Portal 2",d:"Physics-based puzzle platformer.",y:2011,g:"Puzzle"},ar:{n:"بورتال 2",d:"منصات ألغاز تعتمد على الفيزياء.",y:2011,g:"ألغاز"},seriesParts:2, parts:[{en:{n:"Peer Review",y:2011},ar:{n:"بير ريفيو",y:2011}}]}
+  {en:{n:"Portal 2",d:"Physics-based puzzle platformer.",y:2011,g:"Puzzle"},ar:{n:"بورتال 2",d:"منصات ألغاز تعتمد على الفيزياء.",y:2011,g:"ألغاز"},seriesParts:2, parts:[{en:{n:"Peer Review",y:2011},ar:{n:"بير ريفيو",y:2011}}]},
+  
+  // ألعاب إضافية (60 لعبة) ليصبح المجموع 100
+  {en:{n:"The Legend of Zelda: Breath of the Wild",d:"Open-air adventure.",y:2017,g:"Action/Adventure"},ar:{n:"زيلدا: بريث أوف ذا وايلد",d:"مغامرة في الهواء الطلق.",y:2017,g:"أكشن/مغامرة"},seriesParts:19, parts:[{en:{n:"Tears of the Kingdom",y:2023},ar:{n:"دموع المملكة",y:2023}}]},
+  {en:{n:"Super Mario Odyssey",d:"3D platforming masterpiece.",y:2017,g:"Platformer"},ar:{n:"سوبر ماريو أوديسي",d:"لعبة منصات ثلاثية الأبعاد رائعة.",y:2017,g:"منصات"},seriesParts:15, parts:[]},
+  {en:{n:"Red Dead Redemption",d:"Western epic.",y:2010,g:"Action/Adventure"},ar:{n:"ريد ديد ريدمبشن",d:"ملحمة غربية.",y:2010,g:"أكشن/مغامرة"},seriesParts:2, parts:[{en:{n:"Undead Nightmare",y:2010},ar:{n:"كابوس الموتى",y:2010}}]},
+  {en:{n:"Grand Theft Auto V",d:"Criminal enterprise.",y:2013,g:"Action/Adventure"},ar:{n:"جراند ثيفت أوتو V",d:"مشروع إجرامي.",y:2013,g:"أكشن/مغامرة"},seriesParts:5, parts:[{en:{n:"Online",y:2013},ar:{n:"أونلاين",y:2013}}]},
+  {en:{n:"The Last of Us",d:"Post-apocalyptic survival.",y:2013,g:"Action/Adventure"},ar:{n:"ذا لاست أوف أس",d:"بقاء ما بعد نهاية العالم.",y:2013,g:"أكشن/مغامرة"},seriesParts:2, parts:[{en:{n:"Left Behind",y:2014},ar:{n:"اليسار خلف",y:2014}}]},
+  {en:{n:"Uncharted 4: A Thief's End",d:"Treasure hunter finale.",y:2016,g:"Action/Adventure"},ar:{n:"أنشارتد 4: نهاية لص",d:"ختام صياد الكنوز.",y:2016,g:"أكشن/مغامرة"},seriesParts:4, parts:[]},
+  {en:{n:"Spider-Man",d:"Web-slinging adventure.",y:2018,g:"Action/Adventure"},ar:{n:"سبايدرمان",d:"مغامرة خيوط العنكبوت.",y:2018,g:"أكشن/مغامرة"},seriesParts:2, parts:[{en:{n:"City That Never Sleeps",y:2018},ar:{n:"المدينة التي لا تنام",y:2018}}]},
+  {en:{n:"Spider-Man: Miles Morales",d:"A new Spider-Man rises.",y:2020,g:"Action/Adventure"},ar:{n:"سبايدرمان: مايلز موراليس",d:"ظهور سبايدرمان جديد.",y:2020,g:"أكشن/مغامرة"},seriesParts:2, parts:[]},
+  {en:{n:"Horizon Forbidden West",d:"Post-apocalyptic frontier.",y:2022,g:"Action/Adventure"},ar:{n:"هورايزن الغرب المحظور",d:"حدود ما بعد نهاية العالم.",y:2022,g:"أكشن/مغامرة"},seriesParts:2, parts:[{en:{n:"Burning Shores",y:2023},ar:{n:"الشواطئ المحترقة",y:2023}}]},
+  {en:{n:"God of War Ragnarok",d:"Norse saga finale.",y:2022,g:"Action/Adventure"},ar:{n:"جود أوف وور راغناروك",d:"ختام الملحمة النوردية.",y:2022,g:"أكشن/مغامرة"},seriesParts:8, parts:[]},
+  {en:{n:"Final Fantasy XVI",d:"Dark fantasy epic.",y:2023,g:"RPG"},ar:{n:"فاينل فانتازي 16",d:"ملحمة فانتازيا مظلمة.",y:2023,g:"تقمص أدوار"},seriesParts:16, parts:[{en:{n:"Echoes of the Fallen",y:2023},ar:{n:"أصداء الساقطين",y:2023}}]},
+  {en:{n:"Final Fantasy VII Remake",d:"Reimagining a classic.",y:2020,g:"RPG"},ar:{n:"فاينل فانتازي 7 ريميك",d:"إعادة تصور كلاسيكي.",y:2020,g:"تقمص أدوار"},seriesParts:3, parts:[{en:{n:"Intergrade",y:2021},ar:{n:"إنترغريد",y:2021}}]},
+  {en:{n:"Persona 5",d:"Stylish JRPG.",y:2016,g:"RPG"},ar:{n:"بيرسونا 5",d:"لعبة يابانية أنيقة.",y:2016,g:"تقمص أدوار"},seriesParts:6, parts:[]},
+  {en:{n:"Persona 4 Golden",d:"Murder mystery RPG.",y:2012,g:"RPG"},ar:{n:"بيرسونا 4 غولدن",d:"لغز قتل RPG.",y:2012,g:"تقمص أدوار"},seriesParts:6, parts:[]},
+  {en:{n:"Nier: Automata",d:"Philosophical action RPG.",y:2017,g:"Action/RPG"},ar:{n:"نير: أوتوماتا",d:"أكشن فلسفي.",y:2017,g:"أكشن/تقمص أدوار"},seriesParts:2, parts:[]},
+  {en:{n:"Sekiro: Shadows Die Twice",d:"Feudal Japan action.",y:2019,g:"Action"},ar:{n:"سيكيرو: الظلال تموت مرتين",d:"أكشن في اليابان الإقطاعية.",y:2019,g:"أكشن"},seriesParts:1, parts:[]},
+  {en:{n:"Demon's Souls",d:"Soulslike origin.",y:2009,g:"RPG"},ar:{n:"ديمونز سولز",d:"أصل ألعاب السولز.",y:2009,g:"تقمص أدوار"},seriesParts:1, parts:[]},
+  {en:{n:"Dark Souls II",d:"Challenging sequel.",y:2014,g:"RPG"},ar:{n:"دارك سولز 2",d:"تكملة صعبة.",y:2014,g:"تقمص أدوار"},seriesParts:3, parts:[{en:{n:"Scholar of the First Sin",y:2015},ar:{n:"عالم الخطيئة الأولى",y:2015}}]},
+  {en:{n:"Bloodborne: The Old Hunters",d:"Hunter's nightmare.",y:2015,g:"Action"},ar:{n:"بلودبورن: الصيادون القدامى",d:"كابوس الصياد.",y:2015,g:"أكشن"},seriesParts:1, parts:[]},
+  {en:{n:"Resident Evil 2",d:"Survival horror remake.",y:2019,g:"Horror"},ar:{n:"ريزيدنت إيفل 2",d:"إعادة صنع رعب البقاء.",y:2019,g:"رعب"},seriesParts:15, parts:[]},
+  {en:{n:"Resident Evil 3",d:"Raccoon City escape.",y:2020,g:"Horror"},ar:{n:"ريزيدنت إيفل 3",d:"الهروب من راكون سيتي.",y:2020,g:"رعب"},seriesParts:15, parts:[]},
+  {en:{n:"Resident Evil Village",d:"Gothic horror FPS.",y:2021,g:"Horror"},ar:{n:"ريزيدنت إيفل فيلدج",d:"رعب قوطي من منظور أول.",y:2021,g:"رعب"},seriesParts:15, parts:[{en:{n:"Winters' Expansion",y:2022},ar:{n:"توسعة وينترز",y:2022}}]},
+  {en:{n:"Silent Hill",d:"Psychological horror origin.",y:1999,g:"Horror"},ar:{n:"سايلنت هيل",d:"أصل الرعب النفسي.",y:1999,g:"رعب"},seriesParts:4, parts:[]},
+  {en:{n:"Amnesia: The Dark Descent",d:"First-person terror.",y:2010,g:"Horror"},ar:{n:"أمنيشيا: النزول المظلم",d:"رعب من منظور أول.",y:2010,g:"رعب"},seriesParts:2, parts:[]},
+  {en:{n:"Outlast",d:"Asylum horror.",y:2013,g:"Horror"},ar:{n:"أوت لاست",d:"رعب المصح.",y:2013,g:"رعب"},seriesParts:2, parts:[{en:{n:"Whistleblower",y:2014},ar:{n:"المبلغ",y:2014}}]},
+  {en:{n:"Alien: Isolation",d:"Survival horror in space.",y:2014,g:"Horror"},ar:{n:"أليان: العزلة",d:"رعب بقاء في الفضاء.",y:2014,g:"رعب"},seriesParts:1, parts:[]},
+  {en:{n:"The Evil Within",d:"Psychological horror.",y:2014,g:"Horror"},ar:{n:"ذا إيفل ويذين",d:"رعب نفسي.",y:2014,g:"رعب"},seriesParts:2, parts:[{en:{n:"The Assignment",y:2015},ar:{n:"المهمة",y:2015}}]},
+  {en:{n:"The Evil Within 2",d:"Nightmare continues.",y:2017,g:"Horror"},ar:{n:"ذا إيفل ويذين 2",d:"الكابوس مستمر.",y:2017,g:"رعب"},seriesParts:2, parts:[]},
+  {en:{n:"Control",d:"Paranormal action.",y:2019,g:"Action"},ar:{n:"كونترول",d:"أكشن خارق للطبيعة.",y:2019,g:"أكشن"},seriesParts:1, parts:[{en:{n:"AWE",y:2020},ar:{n:"إيه دبليو إي",y:2020}}]},
+  {en:{n:"Alan Wake",d:"Psychological thriller.",y:2010,g:"Action"},ar:{n:"ألان ويك",d:"إثارة نفسية.",y:2010,g:"أكشن"},seriesParts:2, parts:[{en:{n:"American Nightmare",y:2012},ar:{n:"كابوس أمريكي",y:2012}}]},
+  {en:{n:"Alan Wake 2",d:"Horror returns.",y:2023,g:"Action"},ar:{n:"ألان ويك 2",d:"عودة الرعب.",y:2023,g:"أكشن"},seriesParts:2, parts:[]},
+  {en:{n:"Quantum Break",d:"Time-manipulation action.",y:2016,g:"Action"},ar:{n:"كوانتم بريك",d:"أكشن التلاعب بالزمن.",y:2016,g:"أكشن"},seriesParts:1, parts:[]},
+  {en:{n:"Hellblade: Senua's Sacrifice",d:"Psychological journey.",y:2017,g:"Action"},ar:{n:"هيلبليد: تضحية سينوا",d:"رحلة نفسية.",y:2017,g:"أكشن"},seriesParts:2, parts:[]},
+  {en:{n:"Senua's Saga: Hellblade II",d:"Nordic nightmare.",y:2024,g:"Action"},ar:{n:"ملحمة سينوا: هيلبليد 2",d:"كابوس نورسي.",y:2024,g:"أكشن"},seriesParts:2, parts:[]},
+  {en:{n:"A Plague Tale: Innocence",d:"Medieval plague survival.",y:2019,g:"Action/Adventure"},ar:{n:"حكاية الطاعون: البراءة",d:"البقاء في العصور الوسطى.",y:2019,g:"أكشن/مغامرة"},seriesParts:2, parts:[]},
+  {en:{n:"A Plague Tale: Requiem",d:"Escape the curse.",y:2022,g:"Action/Adventure"},ar:{n:"حكاية الطاعون: قداس",d:"الهروب من اللعنة.",y:2022,g:"أكشن/مغامرة"},seriesParts:2, parts:[]},
+  {en:{n:"Stray",d:"Cat adventure.",y:2022,g:"Adventure"},ar:{n:"ستري",d:"مغامرة القط.",y:2022,g:"مغامرة"},seriesParts:1, parts:[]},
+  {en:{n:"Kena: Bridge of Spirits",d:"Spirit guide adventure.",y:2021,g:"Action/Adventure"},ar:{n:"كينا: جسر الأرواح",d:"مغامرة دليل الأرواح.",y:2021,g:"أكشن/مغامرة"},seriesParts:1, parts:[]},
+  {en:{n:"Sifu",d:"Kung fu revenge.",y:2022,g:"Action"},ar:{n:"سيفو",d:"انتقام الكونغ فو.",y:2022,g:"أكشن"},seriesParts:1, parts:[]},
+  {en:{n:"Returnal",d:"Roguelike shooter.",y:2021,g:"Action"},ar:{n:"ريتورنال",d:"لعبة إطلاق نار روجلايك.",y:2021,g:"أكشن"},seriesParts:1, parts:[]},
+  {en:{n:"Ratchet & Clank",d:"Lombax adventure.",y:2016,g:"Adventure"},ar:{n:"راتشيت أند كلانك",d:"مغامرة لومباكس.",y:2016,g:"مغامرة"},seriesParts:10, parts:[]},
+  {en:{n:"Crash Bandicoot 4: It's About Time",d:"Bandicoot returns.",y:2020,g:"Platformer"},ar:{n:"كراش 4: حان الوقت",d:"عودة بانديكوت.",y:2020,g:"منصات"},seriesParts:4, parts:[]},
+  {en:{n:"Spyro Reignited Trilogy",d:"Dragon remaster.",y:2018,g:"Platformer"},ar:{n:"سبايرو الثلاثية",d:"إعادة إحياء التنين.",y:2018,g:"منصات"},seriesParts:3, parts:[]},
+  {en:{n:"Sackboy: A Big Adventure",d:"Craftworld adventure.",y:2020,g:"Platformer"},ar:{n:"ساكبوي: مغامرة كبيرة",d:"مغامرة عالم الحرف.",y:2020,g:"منصات"},seriesParts:1, parts:[]},
+  {en:{n:"LittleBigPlanet 3",d:"Creative platforming.",y:2014,g:"Platformer"},ar:{n:"ليتل بيغ بلانيت 3",d:"منصات إبداعية.",y:2014,g:"منصات"},seriesParts:3, parts:[]},
+  {en:{n:"Astro's Playroom",d:"PlayStation celebration.",y:2020,g:"Platformer"},ar:{n:"أستروز بلاي روم",d:"احتفال بلايستيشن.",y:2020,g:"منصات"},seriesParts:1, parts:[]},
+  {en:{n:"Demon Slayer: Hinokami Chronicles",d:"Anime action.",y:2021,g:"Action"},ar:{n:"قاتل الشياطين: كرونيكلز",d:"أكشن أنمي.",y:2021,g:"أكشن"},seriesParts:1, parts:[]},
+  {en:{n:"Dragon Ball Z: Kakarot",d:"DBZ RPG.",y:2020,g:"RPG"},ar:{n:"دراغون بول زد: كاروت",d:"آر بي جي دراغون بول.",y:2020,g:"تقمص أدوار"},seriesParts:1, parts:[{en:{n:"A New Power Awakens",y:2020},ar:{n:"قوة جديدة تنهض",y:2020}}]},
+  {en:{n:"One Piece: Pirate Warriors 4",d:"Musou action.",y:2020,g:"Action"},ar:{n:"ون بيس: بايرت ووريورز 4",d:"أكشن موسو.",y:2020,g:"أكشن"},seriesParts:4, parts:[]},
+  {en:{n:"Naruto Shippuden: Ultimate Ninja Storm 4",d:"Ninja arena fighter.",y:2016,g:"Fighting"},ar:{n:"ناروتو: العاصفة 4",d:"مقاتل نينجا.",y:2016,g:"قتال"},seriesParts:4, parts:[{en:{n:"Road to Boruto",y:2017},ar:{n:"الطريق إلى بوروتو",y:2017}}]},
+  {en:{n:"Jump Force",d:"Anime crossover.",y:2019,g:"Fighting"},ar:{n:"جامب فورس",d:"تقاطع أنمي.",y:2019,g:"قتال"},seriesParts:1, parts:[]},
+  {en:{n:"My Hero One's Justice 2",d:"Hero academia fighting.",y:2020,g:"Fighting"},ar:{n:"ماي هيرو ونز جاستس 2",d:"قتال أكاديمية الأبطال.",y:2020,g:"قتال"},seriesParts:2, parts:[]},
+  {en:{n:"Dragon Ball FighterZ",d:"2D fighting masterpiece.",y:2018,g:"Fighting"},ar:{n:"دراغون بول فايترز",d:"روعة القتال ثنائي الأبعاد.",y:2018,g:"قتال"},seriesParts:1, parts:[]},
+  {en:{n:"Guilty Gear Strive",d:"Anime fighter.",y:2021,g:"Fighting"},ar:{n:"جيلتي جير سترايف",d:"مقاتل أنمي.",y:2021,g:"قتال"},seriesParts:7, parts:[]},
+  {en:{n:"Street Fighter V",d:"Legendary fighting.",y:2016,g:"Fighting"},ar:{n:"ستريت فايتر 5",d:"قتال أسطوري.",y:2016,g:"قتال"},seriesParts:6, parts:[{en:{n:"Champion Edition",y:2020},ar:{n:"نسخة الأبطال",y:2020}}]},
+  {en:{n:"Street Fighter 6",d:"New generation fighting.",y:2023,g:"Fighting"},ar:{n:"ستريت فايتر 6",d:"قتال الجيل الجديد.",y:2023,g:"قتال"},seriesParts:6, parts:[]},
+  {en:{n:"Mortal Kombat 11",d:"Brutal fighting.",y:2019,g:"Fighting"},ar:{n:"مورتال كومبات 11",d:"قتال وحشي.",y:2019,g:"قتال"},seriesParts:12, parts:[{en:{n:"Aftermath",y:2020},ar:{n:" aftermath",y:2020}}]},
+  {en:{n:"Injustice 2",d:"DC superhero fighting.",y:2017,g:"Fighting"},ar:{n:"إن جاستس 2",d:"قتال أبطال DC.",y:2017,g:"قتال"},seriesParts:2, parts:[]},
+  {en:{n:"SoulCalibur VI",d:"Weapon-based fighting.",y:2018,g:"Fighting"},ar:{n:"سول كاليبر 6",d:"قتال بالأسلحة.",y:2018,g:"قتال"},seriesParts:6, parts:[]}
 ];
 
 // ==== باقي السكريبت ====
