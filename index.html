@@ -1,442 +1,2175 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Game Zone Archive</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
- --bg:#05070a;--card:#0f1216;--gold:#d4af37;
- --text:#e6e6e6;--muted:#9aa0a6;--border:#1e232b
+:root {
+  --bg: #06080d;
+  --bg2: #0a0d14;
+  --card: #0e1118;
+  --card2: #131720;
+  --gold: #d4af37;
+  --gold2: #f0cc55;
+  --blue: #1a7bff;
+  --cyan: #00e5ff;
+  --red: #ff3b5c;
+  --green: #00e676;
+  --text: #e8eaf0;
+  --muted: #6b7280;
+  --border: #1c2230;
+  --border2: #242d3d;
+  --glow: rgba(212,175,55,0.15);
+  --radius: 16px;
 }
-*{box-sizing:border-box;margin:0;padding:0;font-family:Segoe UI,Tahoma}
-body{background:var(--bg);color:var(--text);padding:30px}
-header{text-align:center;margin-bottom:25px}
-h1{color:var(--gold);font-size:2.6rem}
-nav{display:flex;justify-content:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
-nav button{padding:10px 15px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
-nav button.active{border-color:var(--gold)}
-.controls{display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap}
-input,select,button{
- background:var(--card);color:var(--text);
- border:1px solid var(--border);
- padding:10px 14px;border-radius:10px
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Exo 2', 'Noto Kufi Arabic', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
-button.lang {
- width: 50px;height: 50px;border-radius: 50%;
- background: linear-gradient(145deg,#0055ff,#1a7bff);
- color: #fff;font-weight: bold;font-size: 1rem;
- border: none;cursor: pointer;
- box-shadow: 0 5px #003cb3;transition: all 0.2s ease;
+
+/* === BACKGROUND === */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(26,123,255,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(212,175,55,0.06) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
 }
-button.lang:active {transform: translateY(4px);box-shadow: 0 1px #003cb3;}
-button.lang:hover {background: linear-gradient(145deg,#0066ff,#3399ff);}
-.archive{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
- gap:25px;max-width:1400px;margin:auto
+
+/* === LOADER === */
+#loader {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 20px;
+  z-index: 9999;
+  transition: opacity 0.5s ease, visibility 0.5s;
 }
-.card{
- background:var(--card);
- border:1px solid var(--border);
- border-radius:16px;padding:22px;
- transition:.3s;cursor:pointer;
+#loader.hidden { opacity: 0; visibility: hidden; }
+.loader-logo {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2.5rem; font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 4px;
+  animation: pulse 1.5s ease-in-out infinite;
 }
-.card:hover{transform:translateY(-5px);border-color:var(--gold)}
-.card h2{color:var(--gold);margin-bottom:10px}
-.tag{
- display:inline-block;margin:10px 0;
- font-size:.75rem;padding:4px 10px;
- border-radius:20px;
- background:rgba(212,175,55,.15);color:var(--gold)
+.loader-bar {
+  width: 200px; height: 3px;
+  background: var(--border2);
+  border-radius: 99px; overflow: hidden;
 }
-.section{font-size:.8rem;color:var(--muted);margin-top:12px;text-transform:uppercase}
-.parts-list{margin-top:20px;display:none;background:rgba(0,0,0,0.3);padding:15px;border-radius:12px;}
-.parts-list p{margin:8px 0;}
-.parts-count{font-weight:bold;margin:15px 0 10px;color:var(--gold);font-size:1rem}
-.series-count{font-weight:bold;margin:10px 0;color:var(--gold);font-size:1rem}
-footer{text-align:center;margin-top:40px;color:var(--muted)}
+.loader-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--cyan));
+  border-radius: 99px;
+  animation: loadfill 1.2s ease forwards;
+}
+@keyframes loadfill { from { width: 0 } to { width: 100% } }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* === HEADER === */
+header {
+  position: relative; z-index: 10;
+  text-align: center;
+  padding: 50px 20px 30px;
+}
+.header-badge {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--cyan); padding: 5px 14px;
+  border: 1px solid rgba(0,229,255,0.3);
+  border-radius: 99px;
+  margin-bottom: 15px;
+  background: rgba(0,229,255,0.05);
+}
+h1 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: 3px;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--gold2) 0%, var(--gold) 50%, #a07c20 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+}
+.subtitle {
+  color: var(--muted);
+  font-size: 0.9rem; font-weight: 300;
+  letter-spacing: 2px;
+}
+.stats-bar {
+  display: flex; justify-content: center; gap: 30px;
+  margin-top: 25px; flex-wrap: wrap;
+}
+.stat-item {
+  text-align: center;
+}
+.stat-num {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.8rem; font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+.stat-label {
+  font-size: 0.65rem; color: var(--muted);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+
+/* === NAV === */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 12px 20px;
+  background: rgba(6,8,13,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.tab-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--border2);
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem; font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.25s ease;
+}
+.tab-btn:hover { color: var(--text); border-color: var(--border2); transform: translateY(-1px); }
+.tab-btn.active {
+  background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
+  border-color: rgba(212,175,55,0.5);
+  color: var(--gold);
+}
+.tab-btn .icon { font-size: 1rem; }
+.lang-btn {
+  padding: 9px 18px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0044cc, #0066ff);
+  color: #fff; border: none;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem; font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(0,68,204,0.4);
+  letter-spacing: 1px;
+}
+.lang-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,68,204,0.5); }
+.lang-btn:active { transform: translateY(1px); }
+
+/* === CONTROLS === */
+.controls-wrap {
+  position: relative; z-index: 10;
+  max-width: 1400px; margin: 24px auto;
+  padding: 0 20px;
+  display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+}
+.search-wrap {
+  flex: 1; min-width: 220px;
+  position: relative;
+}
+.search-icon {
+  position: absolute; left: 14px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted); font-size: 1rem; pointer-events: none;
+}
+[dir="rtl"] .search-icon { left: auto; right: 14px; }
+#search {
+  width: 100%; padding: 11px 14px 11px 40px;
+  background: var(--card2); color: var(--text);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  font-family: inherit; font-size: 0.9rem;
+  transition: all 0.2s;
+  outline: none;
+}
+[dir="rtl"] #search { padding: 11px 40px 11px 14px; }
+#search:focus { border-color: rgba(212,175,55,0.4); box-shadow: 0 0 0 3px rgba(212,175,55,0.08); }
+#search::placeholder { color: var(--muted); }
+select, .filter-select {
+  padding: 11px 14px;
+  background: var(--card2); color: var(--text);
+  border: 1px solid var(--border2); border-radius: 12px;
+  font-family: inherit; font-size: 0.85rem;
+  cursor: pointer; outline: none;
+  transition: all 0.2s;
+}
+select:focus { border-color: rgba(212,175,55,0.4); }
+.view-btns {
+  display: flex; gap: 4px;
+  background: var(--card2); border-radius: 10px;
+  padding: 4px; border: 1px solid var(--border2);
+}
+.view-btn {
+  padding: 6px 10px; border-radius: 7px; border: none;
+  background: transparent; color: var(--muted);
+  cursor: pointer; font-size: 1rem;
+  transition: all 0.2s;
+}
+.view-btn.active { background: var(--card); color: var(--gold); }
+.results-count {
+  font-size: 0.8rem; color: var(--muted);
+  padding: 0 4px; align-self: center;
+  white-space: nowrap;
+}
+
+/* === GRID === */
+.archive {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+  position: relative; z-index: 1;
+}
+.archive.list-view {
+  grid-template-columns: 1fr;
+}
+.archive.list-view .card {
+  display: flex; flex-direction: row;
+  align-items: center; gap: 20px;
+  padding: 16px 20px;
+}
+.archive.list-view .card-img { width: 80px; height: 80px; flex-shrink: 0; }
+.archive.list-view .card-body { flex: 1; }
+.archive.list-view .card-meta { flex-direction: row; align-items: center; }
+
+/* === CARD === */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, border-color 0.3s, box-shadow 0.3s;
+  animation: fadeIn 0.4s ease both;
+  position: relative;
+}
+@keyframes fadeIn { from { opacity:0; transform: translateY(12px) } to { opacity:1; transform: translateY(0) } }
+.card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(212,175,55,0.4);
+  box-shadow: 0 12px 40px rgba(212,175,55,0.1), 0 4px 12px rgba(0,0,0,0.4);
+}
+.card-img {
+  width: 100%; height: 160px;
+  background: linear-gradient(135deg, var(--card2), #1a1f2e);
+  position: relative; overflow: hidden;
+}
+.card-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.card:hover .card-img img { transform: scale(1.06); }
+.card-img-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.5rem;
+  background: linear-gradient(135deg, #0e1118, #131720);
+}
+.card-img-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(14,17,24,0.9) 0%, transparent 60%);
+}
+.card-badge {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 1px;
+  padding: 4px 10px; border-radius: 99px;
+  text-transform: uppercase;
+}
+[dir="rtl"] .card-badge { right: auto; left: 10px; }
+.badge-new { background: rgba(0,230,118,0.15); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+.badge-top { background: rgba(212,175,55,0.15); color: var(--gold); border: 1px solid rgba(212,175,55,0.3); }
+.card-body { padding: 18px; }
+.card-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.25rem; font-weight: 700;
+  color: var(--text); margin-bottom: 6px;
+  line-height: 1.2;
+}
+.card-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.7rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 99px;
+  background: rgba(212,175,55,0.1); color: var(--gold);
+  border: 1px solid rgba(212,175,55,0.2);
+  margin-bottom: 10px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.card-desc {
+  font-size: 0.82rem; color: var(--muted);
+  line-height: 1.6; margin-bottom: 12px;
+}
+.card-meta {
+  display: flex; gap: 10px;
+  flex-wrap: wrap; align-items: center;
+}
+.meta-item {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.75rem; color: var(--muted);
+}
+.meta-item .mi { color: var(--cyan); font-size: 0.8rem; }
+
+/* === STAR RATING === */
+.stars {
+  display: flex; gap: 2px; align-items: center;
+}
+.star {
+  font-size: 0.85rem;
+  color: var(--border2);
+  transition: color 0.2s;
+  cursor: pointer;
+}
+.star.filled { color: var(--gold); }
+.star.half { color: var(--gold); opacity: 0.5; }
+.star:hover { color: var(--gold2); }
+.rating-num {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem; font-weight: 700;
+  color: var(--gold); margin-left: 4px;
+}
+[dir="rtl"] .rating-num { margin-left: 0; margin-right: 4px; }
+
+/* === SCORE BADGES === */
+.score-wrap {
+  display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;
+}
+.score-badge {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 8px;
+  font-size: 0.75rem; font-weight: 700;
+  border: 1px solid;
+}
+.score-meta { background: rgba(26,123,255,0.1); color: #60a5fa; border-color: rgba(26,123,255,0.25); }
+.score-user { background: rgba(0,230,118,0.1); color: var(--green); border-color: rgba(0,230,118,0.25); }
+.score-critic { background: rgba(255,59,92,0.1); color: var(--red); border-color: rgba(255,59,92,0.25); }
+.score-icon { font-size: 0.8rem; }
+
+/* === EXPANDABLE PARTS === */
+.parts-toggle {
+  width: 100%; padding: 10px 18px;
+  background: transparent;
+  border: none; border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-family: inherit; font-size: 0.8rem;
+  cursor: pointer; display: flex; align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s;
+}
+.parts-toggle:hover { color: var(--gold); background: rgba(212,175,55,0.04); }
+.parts-toggle .arrow { transition: transform 0.3s; display: inline-block; }
+.parts-toggle.open .arrow { transform: rotate(180deg); }
+.parts-list {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.4s ease;
+  background: rgba(0,0,0,0.3);
+}
+.parts-list.open { max-height: 500px; }
+.parts-inner { padding: 12px 18px 16px; }
+.series-info {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.8rem; color: var(--gold);
+  font-weight: 600; margin-bottom: 10px;
+}
+.part-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.8rem;
+}
+.part-item:last-child { border-bottom: none; }
+.part-year {
+  font-family: 'Rajdhani', sans-serif;
+  color: var(--cyan); font-size: 0.75rem; font-weight: 700;
+  background: rgba(0,229,255,0.08);
+  padding: 2px 7px; border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* === MODAL === */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; visibility: hidden;
+  transition: all 0.3s ease;
+}
+.modal-overlay.open { opacity: 1; visibility: visible; }
+.modal {
+  background: var(--card2);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  width: 100%; max-width: 700px;
+  max-height: 90vh; overflow-y: auto;
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+.modal-overlay.open .modal { transform: translateY(0) scale(1); }
+.modal::-webkit-scrollbar { width: 6px; }
+.modal::-webkit-scrollbar-track { background: transparent; }
+.modal::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+.modal-header {
+  position: relative; height: 220px;
+  overflow: hidden; border-radius: 20px 20px 0 0;
+}
+.modal-header-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.modal-header-bg {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 6rem;
+  background: linear-gradient(135deg, #0e1118, #1a1f2e);
+}
+.modal-header-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, var(--card2) 0%, rgba(19,23,32,0.7) 50%, transparent 100%);
+}
+.modal-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 36px; height: 36px;
+  background: rgba(0,0,0,0.5); border: 1px solid var(--border2);
+  border-radius: 50%; color: var(--text); font-size: 1.1rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; z-index: 10;
+}
+[dir="rtl"] .modal-close { right: auto; left: 14px; }
+.modal-close:hover { background: var(--red); border-color: var(--red); }
+.modal-body { padding: 24px; }
+.modal-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2rem; font-weight: 700;
+  color: var(--text); line-height: 1.1;
+  margin-bottom: 8px;
+}
+.modal-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.modal-tag {
+  font-size: 0.7rem; font-weight: 600;
+  padding: 4px 12px; border-radius: 99px;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
+.modal-tag-gold { background: rgba(212,175,55,0.12); color: var(--gold); border: 1px solid rgba(212,175,55,0.25); }
+.modal-tag-blue { background: rgba(26,123,255,0.12); color: #60a5fa; border: 1px solid rgba(26,123,255,0.25); }
+.modal-tag-cyan { background: rgba(0,229,255,0.12); color: var(--cyan); border: 1px solid rgba(0,229,255,0.25); }
+.modal-section-title {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 8px; margin-top: 18px;
+}
+.modal-desc { font-size: 0.9rem; line-height: 1.7; color: #b0b8c8; }
+.modal-scores {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-top: 8px;
+}
+.modal-score-item {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 12px; padding: 14px;
+  text-align: center;
+}
+.modal-score-num {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2rem; font-weight: 700;
+  line-height: 1;
+}
+.modal-score-label {
+  font-size: 0.65rem; color: var(--muted);
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-top: 4px;
+}
+.user-rating-wrap {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 12px; padding: 16px;
+  margin-top: 8px;
+}
+.user-rating-label {
+  font-size: 0.75rem; color: var(--muted);
+  margin-bottom: 10px;
+}
+.user-stars { display: flex; gap: 5px; }
+.user-star {
+  font-size: 1.5rem; cursor: pointer; color: var(--border2);
+  transition: all 0.15s; line-height: 1;
+}
+.user-star:hover, .user-star.active { color: var(--gold); transform: scale(1.2); }
+.modal-info-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-top: 8px;
+}
+.modal-info-item {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 10px; padding: 12px;
+}
+.modal-info-key { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.modal-info-val { font-size: 0.9rem; color: var(--text); font-weight: 600; margin-top: 3px; }
+.modal-parts-list { margin-top: 8px; }
+.modal-part-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+.modal-part-name { font-size: 0.85rem; }
+.modal-part-year {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.8rem; color: var(--cyan); font-weight: 700;
+}
+
+/* === TOP CHARTS === */
+.charts-section {
+  max-width: 1400px; margin: 0 auto 30px;
+  padding: 0 20px;
+  position: relative; z-index: 1;
+}
+.charts-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--gold); letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.top-list {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.top-item {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 12px 14px;
+  cursor: pointer; transition: all 0.2s;
+}
+.top-item:hover { border-color: rgba(212,175,55,0.35); transform: translateX(3px); }
+.top-rank {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.4rem; font-weight: 700;
+  color: var(--border2); min-width: 28px;
+  line-height: 1;
+}
+.top-rank.r1 { color: var(--gold); }
+.top-rank.r2 { color: #9aa0a6; }
+.top-rank.r3 { color: #cd7f32; }
+.top-info { flex: 1; min-width: 0; }
+.top-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top-sub { font-size: 0.7rem; color: var(--muted); }
+.top-score {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--green);
+}
+
+/* === EMPTY STATE === */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center; padding: 80px 20px;
+}
+.empty-icon { font-size: 4rem; margin-bottom: 16px; opacity: 0.4; }
+.empty-text { color: var(--muted); font-size: 1rem; }
+
+/* === FOOTER === */
+footer {
+  text-align: center; padding: 30px 20px;
+  color: var(--muted); font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  position: relative; z-index: 1;
+}
+
+/* === TOAST === */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--card2); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 12px 20px;
+  font-size: 0.85rem; color: var(--text);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transition: transform 0.3s ease;
+  z-index: 9999; white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* === FAVORITES HEART === */
+.fav-btn {
+  position: absolute; top: 10px; left: 10px;
+  width: 32px; height: 32px;
+  background: rgba(0,0,0,0.5); border: 1px solid var(--border2);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1rem; transition: all 0.2s; z-index: 5;
+}
+[dir="rtl"] .fav-btn { left: auto; right: 10px; }
+.fav-btn:hover { transform: scale(1.2); }
+.fav-btn.active { background: rgba(255,59,92,0.2); border-color: var(--red); }
+
+/* === PRICE BADGES === */
+.price-wrap {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-top: 10px;
+}
+.price-tag {
+  display: flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 8px;
+  font-size: 0.7rem; font-weight: 700;
+  border: 1px solid;
+}
+.price-ps { background: rgba(0,112,209,0.1); color: #4fc3f7; border-color: rgba(0,112,209,0.25); }
+.price-xbox { background: rgba(16,124,16,0.1); color: #81c784; border-color: rgba(16,124,16,0.25); }
+.price-pc { background: rgba(100,180,255,0.1); color: #90caf9; border-color: rgba(100,180,255,0.2); }
+.price-free { background: rgba(0,230,118,0.1); color: var(--green); border-color: rgba(0,230,118,0.25); }
+
+/* === QUOTE BADGE === */
+.char-quote {
+  font-style: italic; font-size: 0.82rem;
+  color: var(--gold); margin-top: 8px;
+  border-left: 2px solid var(--gold);
+  padding-left: 10px; line-height: 1.5;
+}
+[dir="rtl"] .char-quote { border-left: none; border-right: 2px solid var(--gold); padding-left: 0; padding-right: 10px; }
+
+/* === RANDOM BTN === */
+.random-btn {
+  padding: 9px 18px; border-radius: 10px;
+  background: linear-gradient(135deg, #2d1b69, #4a2b8a);
+  color: #c084fc; border: 1px solid rgba(192,132,252,0.3);
+  font-family: inherit; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.random-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(192,132,252,0.3); }
+
+/* === AI ASSISTANT === */
+.ai-panel {
+  max-width: 1400px; margin: 0 auto 24px;
+  padding: 0 20px; position: relative; z-index: 1;
+}
+.ai-box {
+  background: var(--card2);
+  border: 1px solid var(--border2);
+  border-radius: 16px; padding: 20px;
+}
+.ai-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+}
+.ai-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, #0044cc, #0066ff);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+}
+.ai-title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.1rem; }
+.ai-sub { font-size: 0.75rem; color: var(--muted); }
+.ai-genres {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;
+}
+.ai-genre-chip {
+  padding: 6px 14px; border-radius: 99px;
+  border: 1px solid var(--border2); background: var(--card);
+  color: var(--muted); font-size: 0.78rem; cursor: pointer;
+  transition: all 0.2s; user-select: none;
+}
+.ai-genre-chip.sel {
+  background: rgba(212,175,55,0.12); border-color: rgba(212,175,55,0.4); color: var(--gold);
+}
+.ai-ask-btn {
+  padding: 10px 22px; border-radius: 10px;
+  background: linear-gradient(135deg, #0044cc, #0066ff);
+  color: #fff; border: none; font-family: inherit;
+  font-size: 0.85rem; font-weight: 700; cursor: pointer;
+  transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+}
+.ai-ask-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,68,204,0.4); }
+.ai-ask-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.ai-result {
+  margin-top: 14px; padding: 14px;
+  background: var(--card); border-radius: 12px;
+  border: 1px solid var(--border);
+  font-size: 0.85rem; line-height: 1.7; color: #b0b8c8;
+  display: none;
+}
+.ai-result.show { display: block; animation: fadeIn 0.3s ease; }
+.ai-typing { display: flex; gap: 4px; align-items: center; padding: 8px 0; }
+.ai-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: typingDot 1.2s infinite; }
+.ai-dot:nth-child(2) { animation-delay: 0.2s; }
+.ai-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingDot { 0%,80%,100%{opacity:0.3;transform:scale(1)} 40%{opacity:1;transform:scale(1.2)} }
+
+/* === NEWS & CALENDAR === */
+.news-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px; margin-top: 0;
+}
+.news-card {
+  background: var(--card2); border: 1px solid var(--border2);
+  border-radius: 14px; padding: 16px;
+  transition: all 0.2s; cursor: default;
+}
+.news-card:hover { border-color: rgba(212,175,55,0.3); transform: translateY(-3px); }
+.news-date {
+  font-size: 0.65rem; color: var(--cyan);
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.news-headline { font-size: 0.9rem; font-weight: 600; line-height: 1.4; margin-bottom: 6px; }
+.news-src { font-size: 0.72rem; color: var(--muted); }
+.news-tag {
+  display: inline-block; padding: 2px 8px; border-radius: 99px;
+  font-size: 0.65rem; font-weight: 700; margin-bottom: 8px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.nt-release { background: rgba(0,230,118,0.12); color: var(--green); }
+.nt-update  { background: rgba(212,175,55,0.12); color: var(--gold); }
+.nt-dlc     { background: rgba(0,229,255,0.12);  color: var(--cyan); }
+.nt-event   { background: rgba(192,132,252,0.12); color: #c084fc; }
+
+/* === CALENDAR === */
+.cal-list { display: flex; flex-direction: column; gap: 10px; }
+.cal-item {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card2); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 14px 16px;
+  transition: all 0.2s;
+}
+.cal-item:hover { border-color: rgba(212,175,55,0.3); }
+.cal-date-box {
+  text-align: center; min-width: 52px;
+  background: rgba(212,175,55,0.08);
+  border: 1px solid rgba(212,175,55,0.2);
+  border-radius: 10px; padding: 8px 6px;
+}
+.cal-month { font-size: 0.6rem; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
+.cal-day { font-family: 'Rajdhani', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--text); line-height: 1; }
+.cal-info { flex: 1; }
+.cal-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 3px; }
+.cal-detail { font-size: 0.75rem; color: var(--muted); }
+.cal-platform {
+  font-size: 0.7rem; padding: 3px 9px; border-radius: 99px;
+  border: 1px solid var(--border2); color: var(--muted);
+}
+
+/* === PROFILE === */
+.profile-grid {
+  display: grid; grid-template-columns: 280px 1fr;
+  gap: 20px; max-width: 1400px; margin: 0 auto;
+  padding: 0 20px 60px; position: relative; z-index: 1;
+}
+@media (max-width: 768px) { .profile-grid { grid-template-columns: 1fr; } }
+.profile-card {
+  background: var(--card2); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 24px; text-align: center;
+  height: fit-content;
+}
+.profile-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), #a07c20);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; margin: 0 auto 14px;
+  border: 3px solid rgba(212,175,55,0.3);
+}
+.profile-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.4rem; font-weight: 700; margin-bottom: 4px;
+}
+.profile-level {
+  font-size: 0.75rem; color: var(--cyan);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+.profile-stats {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-top: 16px;
+}
+.pstat {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px;
+}
+.pstat-num {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.5rem; font-weight: 700; color: var(--gold); line-height: 1;
+}
+.pstat-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.profile-main { display: flex; flex-direction: column; gap: 16px; }
+.profile-section {
+  background: var(--card2); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 20px;
+}
+.profile-section-title {
+  font-family: 'Rajdhani', sans-serif; font-size: 1rem;
+  font-weight: 700; color: var(--gold); letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.rated-game-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.rated-game-row:last-child { border-bottom: none; }
+.rated-game-name { font-size: 0.85rem; }
+.rated-game-score { font-family: 'Rajdhani', sans-serif; color: var(--gold); font-weight: 700; }
+.genre-bar-wrap { margin-bottom: 10px; }
+.genre-bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px; }
+.genre-bar-track { height: 6px; background: var(--border2); border-radius: 99px; overflow: hidden; }
+.genre-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--gold), var(--cyan)); }
+.fav-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.fav-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 99px;
+  background: rgba(255,59,92,0.08); border: 1px solid rgba(255,59,92,0.2);
+  font-size: 0.78rem; color: #ff8a9a; cursor: pointer;
+  transition: all 0.2s;
+}
+.fav-chip:hover { background: rgba(255,59,92,0.15); }
+.fav-chip .remove { color: var(--red); font-size: 0.7rem; }
+
+/* === SECTION PANEL === */
+.section-panel {
+  max-width: 1400px; margin: 0 auto;
+  padding: 0 20px 60px; position: relative; z-index: 1;
+}
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+}
+.section-title-big {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.4rem; font-weight: 700;
+  display: flex; align-items: center; gap: 10px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 600px) {
+  h1 { font-size: 2rem; }
+  .archive { grid-template-columns: 1fr; padding: 0 12px 40px; }
+  .controls-wrap { padding: 0 12px; }
+  .stats-bar { gap: 16px; }
+  .modal-scores { grid-template-columns: 1fr 1fr 1fr; }
+  .modal-info-grid { grid-template-columns: 1fr 1fr; }
+  nav { gap: 6px; padding: 10px 12px; }
+  .tab-btn { padding: 8px 14px; font-size: 0.8rem; }
+}
+
+/* === SCROLL BAR === */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #2d3748; }
 </style>
 </head>
 <body>
-<header>
-<h1 id="title">Game Zone Archive</h1>
-<p id="subtitle">Video Game Encyclopedia</p>
-</header>
-<nav>
-<button class="tab active" data-tab="characters">Characters</button>
-<button class="tab" data-tab="games">Games</button>
-<button class="lang">EN</button>
-</nav>
-<div class="controls" id="controls">
-<input id="search" placeholder="Search...">
-<select id="filter">
-<option value="all">All</option>
-</select>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">GAME ZONE</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
 </div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header" id="modalHeader">
+      <div class="modal-header-bg" id="modalHeaderBg"></div>
+      <div class="modal-header-overlay"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-badge" id="headerBadge">VIDEO GAME ENCYCLOPEDIA</div>
+  <h1 id="title">GAME ZONE</h1>
+  <p class="subtitle" id="subtitle">ARCHIVE · ENCYCLOPEDIA · DATABASE</p>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num">100</div><div class="stat-label" id="sl1">Characters</div></div>
+    <div class="stat-item"><div class="stat-num">100</div><div class="stat-label" id="sl2">Games</div></div>
+    <div class="stat-item"><div class="stat-num">50+</div><div class="stat-label" id="sl3">Franchises</div></div>
+    <div class="stat-item"><div class="stat-num" id="ratedCount">0</div><div class="stat-label" id="sl4">Rated</div></div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <button class="tab-btn active" data-tab="characters" onclick="switchTab(this)">
+    <span class="icon">🎭</span><span id="tabChar">Characters</span>
+  </button>
+  <button class="tab-btn" data-tab="games" onclick="switchTab(this)">
+    <span class="icon">🎮</span><span id="tabGames">Games</span>
+  </button>
+  <button class="tab-btn" data-tab="charts" onclick="switchTab(this)">
+    <span class="icon">🏆</span><span id="tabCharts">Top Charts</span>
+  </button>
+  <button class="tab-btn" data-tab="favorites" onclick="switchTab(this)">
+    <span class="icon">❤️</span><span id="tabFavs">Favorites</span>
+  </button>
+  <button class="tab-btn" data-tab="news" onclick="switchTab(this)">
+    <span class="icon">📰</span><span id="tabNews">News</span>
+  </button>
+  <button class="tab-btn" data-tab="calendar" onclick="switchTab(this)">
+    <span class="icon">🗓️</span><span id="tabCal">Calendar</span>
+  </button>
+  <button class="tab-btn" data-tab="profile" onclick="switchTab(this)">
+    <span class="icon">👤</span><span id="tabProfile">Profile</span>
+  </button>
+  <button class="random-btn" onclick="openRandomGame()" id="randomBtn">
+    🎲 <span id="randomLabel">Random</span>
+  </button>
+  <button class="lang-btn" onclick="toggleLang()" id="langBtn">AR</button>
+</nav>
+
+<!-- CONTROLS -->
+<div class="controls-wrap" id="controlsWrap">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search" placeholder="Search...">
+  </div>
+  <select id="genreFilter"><option value="all">All Genres</option></select>
+  <select id="yearFilter"><option value="all">All Years</option></select>
+  <select id="ratingFilter">
+    <option value="all">All Ratings</option>
+    <option value="90">90+</option>
+    <option value="80">80+</option>
+    <option value="70">70+</option>
+  </select>
+  <div class="view-btns">
+    <button class="view-btn active" onclick="setView('grid')" title="Grid">⊞</button>
+    <button class="view-btn" onclick="setView('list')" title="List">☰</button>
+  </div>
+  <span class="results-count" id="resultsCount"></span>
+</div>
+
+<!-- AI ASSISTANT -->
+<div class="ai-panel" id="aiPanel" style="display:none">
+  <div class="ai-box">
+    <div class="ai-header">
+      <div class="ai-icon">🤖</div>
+      <div>
+        <div class="ai-title" id="aiTitle">AI Game Recommender</div>
+        <div class="ai-sub" id="aiSub">Pick genres you love and get personalized recommendations</div>
+      </div>
+    </div>
+    <div class="ai-genres" id="aiGenres"></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="ai-ask-btn" id="aiAskBtn" onclick="askAI()">
+        <span>✨</span><span id="aiAskLabel">Recommend Games</span>
+      </button>
+      <button class="ai-ask-btn" style="background:linear-gradient(135deg,#2d1b69,#4a2b8a);box-shadow:none" onclick="clearAI()">
+        <span id="aiClearLabel">Clear</span>
+      </button>
+    </div>
+    <div class="ai-result" id="aiResult"></div>
+  </div>
+</div>
+
+<!-- NEWS SECTION -->
+<div class="section-panel" id="newsSection" style="display:none">
+  <div class="section-header">
+    <div class="section-title-big">📰 <span id="newsTitleTxt">Gaming News</span></div>
+  </div>
+  <div class="news-grid" id="newsGrid"></div>
+</div>
+
+<!-- CALENDAR SECTION -->
+<div class="section-panel" id="calSection" style="display:none">
+  <div class="section-header">
+    <div class="section-title-big">🗓️ <span id="calTitleTxt">Upcoming Releases 2025–2026</span></div>
+  </div>
+  <div class="cal-list" id="calList"></div>
+</div>
+
+<!-- PROFILE SECTION -->
+<div id="profileSection" style="display:none">
+  <div class="profile-grid">
+    <div class="profile-card">
+      <div class="profile-avatar">🎮</div>
+      <div class="profile-name" id="profileName">Gamer</div>
+      <div class="profile-level" id="profileLevel">LEVEL 1 · ROOKIE</div>
+      <div class="profile-stats">
+        <div class="pstat"><div class="pstat-num" id="ps1">0</div><div class="pstat-label" id="psl1">Rated</div></div>
+        <div class="pstat"><div class="pstat-num" id="ps2">0</div><div class="pstat-label" id="psl2">Favorites</div></div>
+        <div class="pstat"><div class="pstat-num" id="ps3">0</div><div class="pstat-label" id="psl3">Avg Score</div></div>
+        <div class="pstat"><div class="pstat-num" id="ps4">0</div><div class="pstat-label" id="psl4">Top Genre</div></div>
+      </div>
+    </div>
+    <div class="profile-main" id="profileMain"></div>
+  </div>
+</div>
+
+<!-- TOP CHARTS (hidden initially) -->
+<div class="charts-section" id="chartsSection" style="display:none"></div>
+
+<!-- ARCHIVE -->
 <section class="archive" id="archive"></section>
-<footer>© 2026 — Game Zone Archive</footer>
+
+<footer>© 2026 — Game Zone Archive &nbsp;·&nbsp; <span id="footerSub">Built with passion for gaming</span></footer>
 
 <script>
-// ==== اللغة ====
+// ============================================================
+// DATA
+// ============================================================
 let lang = "en";
-document.body.dir = "ltr";
-
-// ==== Tabs ====
-const tabs = document.querySelectorAll(".tab");
 let currentTab = "characters";
-tabs.forEach(t => {
-  t.onclick = () => {
-    tabs.forEach(b => b.classList.remove("active"));
-    t.classList.add("active");
-    currentTab = t.dataset.tab;
-    setupFilter();
+let currentView = "grid";
+let userRatings = JSON.parse(localStorage.getItem('gzRatings') || '{}');
+
+// Game scores data (metacritic / user scores)
+const gameScores = {
+  "The Witcher 3": { meta: 92, user: 9.3, opencritic: 91 },
+  "God of War": { meta: 94, user: 9.6, opencritic: 94 },
+  "Elden Ring": { meta: 96, user: 9.2, opencritic: 96 },
+  "Red Dead Redemption 2": { meta: 97, user: 9.0, opencritic: 97 },
+  "Skyrim": { meta: 94, user: 8.6, opencritic: 93 },
+  "Cyberpunk 2077": { meta: 86, user: 7.8, opencritic: 85 },
+  "BioShock Infinite": { meta: 94, user: 8.6, opencritic: 93 },
+  "Mass Effect 3": { meta: 89, user: 7.9, opencritic: 89 },
+  "Bloodborne": { meta: 92, user: 9.0, opencritic: 92 },
+  "Half-Life 2": { meta: 96, user: 9.4, opencritic: 96 },
+  "Baldur's Gate 3": { meta: 96, user: 9.5, opencritic: 97 },
+  "Ghost of Tsushima": { meta: 83, user: 8.7, opencritic: 85 },
+  "Persona 5 Royal": { meta: 95, user: 9.3, opencritic: 95 },
+  "God of War Ragnarok": { meta: 94, user: 8.9, opencritic: 94 },
+  "The Last of Us": { meta: 95, user: 9.0, opencritic: 95 },
+  "Sekiro: Shadows Die Twice": { meta: 90, user: 8.5, opencritic: 91 },
+  "Hades": { meta: 93, user: 9.3, opencritic: 93 },
+  "Dark Souls III": { meta: 89, user: 8.6, opencritic: 89 },
+  "Grand Theft Auto V": { meta: 97, user: 8.3, opencritic: 97 },
+  "Spider-Man": { meta: 87, user: 8.7, opencritic: 88 },
+  "Detroit: Become Human": { meta: 78, user: 8.5, opencritic: 79 },
+  "Control": { meta: 82, user: 8.0, opencritic: 82 },
+  "Resident Evil 4": { meta: 96, user: 9.5, opencritic: 95 },
+  "Final Fantasy X": { meta: 92, user: 8.8, opencritic: 91 },
+  "Kingdom Hearts III": { meta: 83, user: 8.0, opencritic: 82 },
+  "Hitman": { meta: 82, user: 8.3, opencritic: 83 },
+  "Portal 2": { meta: 95, user: 9.2, opencritic: 95 },
+  "Silent Hill 2": { meta: 89, user: 9.2, opencritic: 88 },
+  "Undertale": { meta: 92, user: 9.5, opencritic: 91 },
+  "Tekken 8": { meta: 90, user: 8.4, opencritic: 89 },
+  "Dragon Ball FighterZ": { meta: 86, user: 8.2, opencritic: 85 },
+  "Street Fighter 6": { meta: 92, user: 8.7, opencritic: 91 },
+  "Mortal Kombat 1": { meta: 82, user: 7.6, opencritic: 81 },
+  "Guilty Gear Strive": { meta: 88, user: 8.5, opencritic: 87 },
+  "Final Fantasy VII Rebirth": { meta: 92, user: 8.4, opencritic: 92 },
+  "Alan Wake 2": { meta: 89, user: 8.1, opencritic: 88 },
+  "A Plague Tale: Requiem": { meta: 87, user: 7.9, opencritic: 87 },
+  "Senua's Saga: Hellblade II": { meta: 82, user: 7.5, opencritic: 81 },
+  "Horizon Zero Dawn": { meta: 89, user: 8.4, opencritic: 88 },
+};
+
+// Emojis for cards without images
+const gameEmojis = {
+  "RPG":"⚔️","Action":"🔥","Horror":"💀","Stealth":"🕵️","Fighting":"🥊",
+  "Puzzle":"🧩","Adventure":"🗺️","Platformer":"🏃","Strategy":"♟️",
+  "Simulation":"🏠","Action/Adventure":"🎯","Action/RPG":"🌟","FPS":"🎯"
+};
+const charEmojis = {
+  "Skyrim":"❄️","God of War":"⚡","The Witcher 3":"🐺","Elden Ring":"💎",
+  "Red Dead Redemption 2":"🤠","Halo":"🚀","Metal Gear":"🐍","Final Fantasy VII":"⚔️",
+  "Batman: Arkham City":"🦇","Overwatch":"🎯","Ghost of Tsushima":"🌸",
+  "Hitman":"💼","Bloodborne":"🩸","Undertale":"❤️","Persona 5":"🃏",
+  "default":"🎮"
+};
+
+// ============================================================
+// CHARACTERS (100)
+// ============================================================
+const characters = [
+  {w:"Skyrim",en:{n:"Dragonborn",p:"Words shape reality.",m:"Hero on a frozen peak."},ar:{n:"دراجونبورن",p:"الكلمات تشكّل الواقع.",m:"بطل فوق قمة جليدية."}},
+  {w:"Skyrim",en:{n:"Alduin",p:"Destruction is destiny.",m:"World-eating dragon."},ar:{n:"ألدوين",p:"الدمار هو القدر.",m:"تنين يلتهم العالم."}},
+  {w:"The Witcher 3",en:{n:"Geralt of Rivia",p:"Balance over chaos.",m:"White wolf swordsman."},ar:{n:"جيرالت من ريفيا",p:"التوازن قبل الفوضى.",m:"الذئب الأبيض."}},
+  {w:"God of War",en:{n:"Kratos",p:"Master your rage.",m:"Scarred god-slayer."},ar:{n:"كريتوس",p:"سيطر على غضبك.",m:"قاتل الآلهة."}},
+  {w:"God of War Ragnarok",en:{n:"Freya",p:"Love turns to wrath.",m:"Vengeful mother."},ar:{n:"فريا",p:"الحب ينقلب غضبًا.",m:"أم غاضبة."}},
+  {w:"Elden Ring",en:{n:"The Tarnished",p:"Will over destiny.",m:"Exiled warrior."},ar:{n:"التارنشد",p:"الإرادة فوق القدر.",m:"محارب منفي."}},
+  {w:"Red Dead Redemption 2",en:{n:"Arthur Morgan",p:"Outlaw on the run.",m:"Leader in the gang."},ar:{n:"آرثر مورغان",p:"خارج عن القانون.",m:"زعيم في العصابة."}},
+  {w:"Assassin's Creed Valhalla",en:{n:"Eivor",p:"Viking warrior.",m:"Seeker of glory."},ar:{n:"إيفور",p:"محارب فايكنغ.",m:"باحث عن المجد."}},
+  {w:"Super Mario",en:{n:"Mario",p:"It's-a me!",m:"Plumber hero."},ar:{n:"ماريو",p:"إنه أنا!",m:"بطل السباك."}},
+  {w:"The Legend of Zelda",en:{n:"Link",p:"Silent courage.",m:"Hero of time."},ar:{n:"لينك",p:"شجاعة صامتة.",m:"بطل الزمن."}},
+  {w:"Halo",en:{n:"Master Chief",p:"Finish the fight.",m:"Spartan super soldier."},ar:{n:"ماستر تشيف",p:"أنهِ القتال.",m:"جندي خارق."}},
+  {w:"Metal Gear",en:{n:"Solid Snake",p:"Kept you waiting.",m:"Stealth operative."},ar:{n:"سوليد سنايك",p:"جعلتك تنتظر.",m:"عميل تخفي."}},
+  {w:"Final Fantasy VII",en:{n:"Cloud Strife",p:"Not interested.",m:"Mercenary with a big sword."},ar:{n:"كلاود سترايف",p:"غير مهتم.",m:"مرتزق بسيف كبير."}},
+  {w:"Pac-Man",en:{n:"Pac-Man",p:"Waka waka.",m:"Maze eater."},ar:{n:"باك-مان",p:"واكا واكا.",m:"آكل المتاهات."}},
+  {w:"Tomb Raider",en:{n:"Lara Croft",p:"Adventure awaits.",m:"Archaeologist explorer."},ar:{n:"لارا كروفت",p:"المغامرة تنتظر.",m:"مستكشفة آثار."}},
+  {w:"Half-Life",en:{n:"Gordon Freeman",p:"Silent protagonist.",m:"Physicist with crowbar."},ar:{n:"غوردون فريمان",p:"بطل صامت.",m:"فيزيائي بعصا."}},
+  {w:"Sonic the Hedgehog",en:{n:"Sonic",p:"Gotta go fast.",m:"Blue hedgehog."},ar:{n:"سونيك",p:"يجب الذهاب بسرعة.",m:"قنفذ أزرق."}},
+  {w:"Crash Bandicoot",en:{n:"Crash Bandicoot",p:"Whoa!",m:"Spinning marsupial."},ar:{n:"كراش بانديكوت",p:"واو!",m:"مارسوبيال دوار."}},
+  {w:"Call of Duty",en:{n:"Soap MacTavish",p:"Stay frosty.",m:"SAS soldier."},ar:{n:"سوب ماكتافيش",p:"ابقَ باردًا.",m:"جندي SAS."}},
+  {w:"Ninja Gaiden",en:{n:"Ryu Hayabusa",p:"Ninja way.",m:"Master ninja."},ar:{n:"ريو هايابوسا",p:"طريق النينجا.",m:"نينجا ماهر."}},
+  {w:"Final Fantasy",en:{n:"Sephiroth",p:"Despair.",m:"One-winged angel."},ar:{n:"سيفيروث",p:"اليأس.",m:"ملاك بجناح واحد."}},
+  {w:"The Legend of Zelda",en:{n:"Ganondorf",p:"Power incarnate.",m:"King of evil."},ar:{n:"غانوندورف",p:"القوة المتجسدة.",m:"ملك الشر."}},
+  {w:"Super Mario",en:{n:"Bowser",p:"King Koopa.",m:"Fire-breathing turtle."},ar:{n:"باوزر",p:"ملك كوبا.",m:"سلحفاة تنفث نارًا."}},
+  {w:"Kirby",en:{n:"Kirby",p:"Poyo!",m:"Pink puffball."},ar:{n:"كيربي",p:"بويو!",m:"كرة وردية."}},
+  {w:"Devil May Cry",en:{n:"Dante",p:"Jackpot!",m:"Demon hunter."},ar:{n:"دانتي",p:"جائزة كبرى!",m:"صياد شياطين."}},
+  {w:"God of War",en:{n:"Atreus",p:"Boy.",m:"Young archer."},ar:{n:"أتريوس",p:"يا ولد.",m:"قناص صغير."}},
+  {w:"Hollow Knight",en:{n:"The Knight",p:"Silent vessel.",m:"Bug explorer."},ar:{n:"الفارس",p:"وعاء صامت.",m:"مستكشف حشرات."}},
+  {w:"Resident Evil",en:{n:"Leon Kennedy",p:"No thanks, bro.",m:"Zombie fighter."},ar:{n:"ليون كينيدي",p:"لا شكرًا، أخي.",m:"مقاتل زومبي."}},
+  {w:"Portal",en:{n:"Chell",p:"Silent tester.",m:"Portal gun user."},ar:{n:"شيل",p:"مختبرة صامتة.",m:"مستخدمة مسدس البوابات."}},
+  {w:"Overwatch",en:{n:"Tracer",p:"Cheers, love!",m:"Time jumper."},ar:{n:"تريسر",p:"تحية، حبي!",m:"قافزة زمن."}},
+  {w:"Minecraft",en:{n:"Steve",p:"Build anything.",m:"Blocky survivor."},ar:{n:"ستيف",p:"ابنِ أي شيء.",m:"ناجٍ مكعبات."}},
+  {w:"Fortnite",en:{n:"Jonesy",p:"Battle royale.",m:"Default skin."},ar:{n:"جونزي",p:"باتل رويال.",m:"جلد افتراضي."}},
+  {w:"League of Legends",en:{n:"Ezreal",p:"Adventure calls.",m:"Artifact hunter."},ar:{n:"إزريال",p:"المغامرة تنادي.",m:"صياد آثار."}},
+  {w:"Street Fighter",en:{n:"Ryu",p:"Hadouken!",m:"Martial artist."},ar:{n:"ريو",p:"هادوكين!",m:"فنان قتالي."}},
+  {w:"Mortal Kombat",en:{n:"Sub-Zero",p:"Freeze!",m:"Ice ninja."},ar:{n:"ساب-زيرو",p:"تجميد!",m:"نينجا جليدي."}},
+  {w:"Pokémon",en:{n:"Ash Ketchum",p:"Gotta catch 'em all.",m:"Pokémon trainer."},ar:{n:"أش كيتشوم",p:"يجب التقاطهم جميعًا.",m:"مدرب بوكيمون."}},
+  {w:"Grand Theft Auto V",en:{n:"Michael De Santa",p:"Family man.",m:"Retired criminal."},ar:{n:"مايكل دي سانتا",p:"رجل عائلة.",m:"مجرم متقاعد."}},
+  {w:"The Last of Us",en:{n:"Ellie",p:"Survive.",m:"Immune survivor."},ar:{n:"إيلي",p:"ابقَ على قيد الحياة.",m:"ناجية محصنة."}},
+  {w:"BioShock",en:{n:"Jack",p:"Would you kindly.",m:"Rapture explorer."},ar:{n:"جاك",p:"هل تتفضل.",m:"مستكشف رابيتشر."}},
+  {w:"Doom",en:{n:"Doom Slayer",p:"Rip and tear.",m:"Demon killer."},ar:{n:"دوم سلاير",p:"مزق ومزق.",m:"قاتل شياطين."}},
+  {w:"Assassin's Creed",en:{n:"Ezio Auditore",p:"Requiescat in pace.",m:"Italian assassin."},ar:{n:"إيزيو أوديتوري",p:"ارقد بسلام.",m:"قاتل إيطالي."}},
+  {w:"Uncharted",en:{n:"Nathan Drake",p:"Sic parvis magna.",m:"Treasure hunter."},ar:{n:"ناثان دريك",p:"عظمة من صغر.",m:"صياد كنوز."}},
+  {w:"Mass Effect",en:{n:"Commander Shepard",p:"I'm Commander Shepard.",m:"Galaxy savior."},ar:{n:"القائد شيبرد",p:"أنا القائد شيبرد.",m:"منقذ المجرة."}},
+  {w:"Dragon Age",en:{n:"The Inquisitor",p:"Close the breach.",m:"Fade walker."},ar:{n:"المحقق",p:"أغلق الصدع.",m:"سائر التلاشي."}},
+  {w:"Cyberpunk 2077",en:{n:"V",p:"Night City legend.",m:"Mercenary in dystopia."},ar:{n:"في",p:"أسطورة نايت سيتي.",m:"مرتزق في ديستوبيا."}},
+  {w:"Sekiro",en:{n:"Sekiro",p:"Hesitation is defeat.",m:"Shinobi warrior."},ar:{n:"سيكيرو",p:"التردد هو الهزيمة.",m:"محارب شينوبي."}},
+  {w:"Control",en:{n:"Jesse Faden",p:"Director.",m:"Paranormal investigator."},ar:{n:"جيسي فادن",p:"مديرة.",m:"محققة خارقة."}},
+  {w:"Hades",en:{n:"Zagreus",p:"Escape hell.",m:"Son of Hades."},ar:{n:"زاغريوس",p:"هرب من الجحيم.",m:"ابن هاديس."}},
+  {w:"Animal Crossing",en:{n:"Tom Nook",p:"Yes, yes.",m:"Raccoon businessman."},ar:{n:"توم نوك",p:"نعم، نعم.",m:"رجل أعمال راكون."}},
+  {w:"Genshin Impact",en:{n:"Traveler",p:"Find sibling.",m:"Elemental adventurer."},ar:{n:"المسافر",p:"ابحث عن الأخ.",m:"مغامر عنصري."}},
+  {w:"Final Fantasy X",en:{n:"Tidus",p:"This is my story.",m:"Blitzball star."},ar:{n:"تيدوس",p:"هذه قصتي.",m:"نجم بلتزبول."}},
+  {w:"Dark Souls",en:{n:"Solaire of Astora",p:"Praise the sun!",m:"Joyful knight."},ar:{n:"سولير أوف أستورا",p:"احمدوا الشمس!",m:"فارس مبتهج."}},
+  {w:"Metal Gear Solid",en:{n:"Revolver Ocelot",p:"You're pretty good.",m:"Gunslinger spy."},ar:{n:"ريفولفر أوسيليت",p:"أنت جيد جدًا.",m:"جاسوس مبارز."}},
+  {w:"The Last of Us Part II",en:{n:"Abby",p:"Strength for survival.",m:"Muscular warrior."},ar:{n:"آبي",p:"القوة من أجل البقاء.",m:"محاربة عضلية."}},
+  {w:"Persona 5",en:{n:"Joker",p:"Take your heart.",m:"Phantom thief."},ar:{n:"جوكر",p:"خذ قلبك.",m:"لص شبح."}},
+  {w:"Kingdom Hearts",en:{n:"Sora",p:"My friends are my power.",m:"Keyblade wielder."},ar:{n:"سورا",p:"أصدقائي هم قوتي.",m:"حامل مفتاح النصل."}},
+  {w:"Street Fighter II",en:{n:"Chun-Li",p:"Justice must prevail.",m:"Interpol agent."},ar:{n:"تشون لي",p:"يجب أن يسود العدل.",m:"عميلة إنتربول."}},
+  {w:"Minecraft",en:{n:"Alex",p:"Creative builder.",m:"Survival expert."},ar:{n:"أليكس",p:"بانية مبدعة.",m:"خبيرة بقاء."}},
+  {w:"Batman: Arkham City",en:{n:"Batman",p:"I am vengeance.",m:"Dark knight."},ar:{n:"باتمان",p:"أنا الانتقام.",m:"الفارس المظلم."}},
+  {w:"Overwatch 2",en:{n:"Reaper",p:"Death walks among you.",m:"Shotgun wraith."},ar:{n:"ريبر",p:"الموت يسير بينكم.",m:"شبح البندقية."}},
+  {w:"Ghost of Tsushima",en:{n:"Jin Sakai",p:"Honor vs survival.",m:"Ghost samurai."},ar:{n:"جين ساكاي",p:"الشرف مقابل البقاء.",m:"ساموراي شبح."}},
+  {w:"Ghost of Tsushima",en:{n:"Lord Shimura",p:"Honor above all.",m:"Stoic uncle."},ar:{n:"لورد شيمورا",p:"الشرف فوق كل شيء.",m:"عم متقشف."}},
+  {w:"Hitman",en:{n:"Agent 47",p:"Names are for friends.",m:"Bald assassin."},ar:{n:"العميل 47",p:"الأسماء للأصدقاء فقط.",m:"قاتل أصلع."}},
+  {w:"Metal Gear Solid",en:{n:"Big Boss",p:"Loyalty to the end.",m:"Legendary soldier."},ar:{n:"بيج بوس",p:"الولاء حتى النهاية.",m:"جندي أسطوري."}},
+  {w:"Final Fantasy VII",en:{n:"Aerith Gainsborough",p:"The future isn't fixed.",m:"Flower girl."},ar:{n:"إيريث جينزبورو",p:"المستقبل ليس ثابتاً.",m:"بائعة زهور."}},
+  {w:"Resident Evil",en:{n:"Jill Valentine",p:"Master of unlocking.",m:"Special forces survivor."},ar:{n:"جيل فالنتاين",p:"براعة في فتح الأقفال.",m:"ناجية من القوات الخاصة."}},
+  {w:"Resident Evil",en:{n:"Chris Redfield",p:"Finish the mission.",m:"Strong fighter."},ar:{n:"كريس ريدفيلد",p:"أنهِ المهمة.",m:"مقاتل قوي."}},
+  {w:"Silent Hill 2",en:{n:"Pyramid Head",p:"Judgment is coming.",m:"Executioner with a metal head."},ar:{n:"بيراميد هيد",p:"الدينونة قادمة.",m:"سياف برأس معدني."}},
+  {w:"The Walking Dead",en:{n:"Clementine",p:"Keep moving.",m:"Young survivor."},ar:{n:"كليمنتاين",p:"استمر في التحرك.",m:"ناجية صغيرة."}},
+  {w:"Mass Effect",en:{n:"Garrus Vakarian",p:"Justice is a choice.",m:"Turian sniper."},ar:{n:"جاروس فاكاريان",p:"العدالة هي خيار.",m:"قناص توريان."}},
+  {w:"Baldur's Gate 3",en:{n:"Shadowheart",p:"Darkness protects.",m:"Cleric of Shar."},ar:{n:"شادوهارت",p:"الظلام يحمي.",m:"كاهنة الظلام."}},
+  {w:"Baldur's Gate 3",en:{n:"Astarion",p:"Blood is life.",m:"Pale elf rogue."},ar:{n:"أستاريون",p:"الدم هو الحياة.",m:"لص قزم شاحب."}},
+  {w:"Yakuza",en:{n:"Kazuma Kiryu",p:"Dragon's honor.",m:"The Dragon of Dojima."},ar:{n:"كازوما كيريو",p:"شرف التنين.",m:"تنين دوجيما."}},
+  {w:"Tekken",en:{n:"Kazuya Mishima",p:"Power is everything.",m:"Devil gene fighter."},ar:{n:"كازويا ميشيما",p:"القوة هي كل شيء.",m:"مقاتل شيطاني."}},
+  {w:"Metroid",en:{n:"Samus Aran",p:"The last Metroid is in captivity.",m:"Armored bounty hunter."},ar:{n:"ساموس أران",p:"آخر مترويد في الأسر.",m:"صائدة مدرعة."}},
+  {w:"Detroit: Become Human",en:{n:"Connor",p:"I am a machine.",m:"Android investigator."},ar:{n:"كونور",p:"أنا آلة.",m:"محقق آلي."}},
+  {w:"Borderlands",en:{n:"Handsome Jack",p:"Everyone is the hero.",m:"Sarcastic dictator."},ar:{n:"هاندسوم جاك",p:"الكل بطل في قصته.",m:"ديكتاتور ساخر."}},
+  {w:"Portal 2",en:{n:"Wheatley",p:"I'm not a moron!",m:"Chatty robotic eye."},ar:{n:"ويتلي",p:"لست أحمقاً!",m:"عين روبوتية ثرثارة."}},
+  {w:"Overwatch",en:{n:"Genji",p:"I am whole.",m:"Cyborg ninja."},ar:{n:"جينجي",p:"أنا مكتمل الآن.",m:"نينجا آلي."}},
+  {w:"Splinter Cell",en:{n:"Sam Fisher",p:"Believe in the dark.",m:"Stealth spy."},ar:{n:"سام فيشر",p:"آمن بالظلام.",m:"جاسوس تخفي."}},
+  {w:"Assassin's Creed",en:{n:"Altaïr Ibn-La'Ahad",p:"Nothing is true.",m:"Legendary assassin."},ar:{n:"الطائر ابن لا أحد",p:"لا شيء واقعي.",m:"أساسن أسطوري."}},
+  {w:"Street Fighter",en:{n:"Akuma",p:"Master of the fist.",m:"Demon fighter."},ar:{n:"أكوما",p:"سيد القبضة.",m:"مقاتل شيطاني."}},
+  {w:"Castlevania",en:{n:"Alucard",p:"The son of Dracula.",m:"Vampire hero."},ar:{n:"ألوكارد",p:"ابن دراكولا.",m:"مصاص دماء بطولي."}},
+  {w:"Hades",en:{n:"Melinoë",p:"Death to Chronos.",m:"Princess of the Underworld."},ar:{n:"ميلينوي",p:"الموت لكرونوس.",m:"أميرة العالم السفلي."}},
+  {w:"League of Legends",en:{n:"Jinx",p:"Rules are made to be broken.",m:"Blue-haired maniac."},ar:{n:"جينكس",p:"القواعد وُجدت لتُكسر.",m:"مجنونة بشعر أزرق."}},
+  {w:"God of War",en:{n:"Baldur",p:"I feel nothing.",m:"Immortal Norse god."},ar:{n:"بالدر",p:"لا أشعر بشيء.",m:"إله نورسي خالد."}},
+  {w:"Horizon",en:{n:"Aloy",p:"Find the truth.",m:"Machine hunter."},ar:{n:"آلوي",p:"ابحث عن الحقيقة.",m:"صائدة آلات."}},
+  {w:"Devil May Cry",en:{n:"Vergil",p:"I need more power.",m:"Elegant swordsman."},ar:{n:"فيرجل",p:"أحتاج لمزيد من القوة.",m:"سياف أنيق."}},
+  {w:"Bloodborne",en:{n:"Lady Maria",p:"A corpse should be left alone.",m:"Clocktower hunter."},ar:{n:"ليدي ماريا",p:"الجثث يجب أن تُترك.",m:"صائدة برج الساعة."}},
+  {w:"Elder Scrolls",en:{n:"Sheogorath",p:"Cheese for everyone!",m:"God of Madness."},ar:{n:"شيوجوراث",p:"جبن للجميع!",m:"إله الجنون."}},
+  {w:"Mortal Kombat",en:{n:"Scorpion",p:"Get over here!",m:"Fire ninja."},ar:{n:"سكوربيون",p:"تعال إلى هنا!",m:"نينجا ناري."}},
+  {w:"Genshin Impact",en:{n:"Raiden Shogun",p:"Eternity.",m:"Electro Archon."},ar:{n:"رايدن شوغون",p:"الأبدية.",m:"حاكمة البرق."}},
+  {w:"Undertale",en:{n:"Sans",p:"Do you want a bad time?",m:"Pun-loving skeleton."},ar:{n:"سانز",p:"هل تريد وقتاً سيئاً؟",m:"هيكل عظمي نكتجي."}},
+  {w:"Ratchet & Clank",en:{n:"Ratchet",p:"Saving the galaxy.",m:"Lombax mechanic."},ar:{n:"راتشيت",p:"إنقاذ المجرة.",m:"ميكانيكي لومباكس."}},
+  {w:"Dead Space",en:{n:"Isaac Clarke",p:"Make us whole again.",m:"Engineer in space suit."},ar:{n:"آيزاك كلارك",p:"اجعلنا مكتملين.",m:"مهندس ببدلة فضاء."}},
+  {w:"Bayonetta",en:{n:"Bayonetta",p:"Time to play.",m:"Umbra Witch."},ar:{n:"بايونيتا",p:"حان وقت اللعب.",m:"ساحرة أنيقة."}},
+  {w:"Monster Hunter",en:{n:"The Hunter",p:"For the thrill of the hunt.",m:"Monster slayer."},ar:{n:"الصياد",p:"من أجل متعة الصيد.",m:"صائد وحوش."}}
+];
+
+// ============================================================
+// GAMES (100)
+// ============================================================
+const games = [
+  {en:{n:"The Witcher 3",d:"Dark fantasy RPG set in a war-ravaged world with outstanding storytelling.",y:2015,g:"RPG"},ar:{n:"ذا ويتشر 3",d:"تقمص أدوار فانتازي مظلم في عالم مدمر بحروب، بقصة استثنائية.",y:2015,g:"تقمص أدوار"},seriesParts:3,parts:[{en:{n:"Hearts of Stone",y:2015},ar:{n:"هارتس أوف ستون",y:2015}},{en:{n:"Blood and Wine",y:2016},ar:{n:"دم وعنب",y:2016}}]},
+  {en:{n:"God of War",d:"Mythic action adventure following Kratos and his son Atreus in Norse mythology.",y:2018,g:"Action/Adventure"},ar:{n:"جود أوف وور",d:"مغامرة أكشن أسطورية تتبع كريتوس وابنه في الميثولوجيا النوردية.",y:2018,g:"أكشن/مغامرة"},seriesParts:8,parts:[{en:{n:"Ragnarok",y:2022},ar:{n:"راغناروك",y:2022}}]},
+  {en:{n:"Elden Ring",d:"Open-world soulslike crafted with George R.R. Martin. A brutal masterpiece.",y:2022,g:"RPG"},ar:{n:"إلدن رينغ",d:"عالم مفتوح سولزلايك مصنوع مع جورج R.R. مارتن. تحفة فنية.",y:2022,g:"تقمص أدوار"},seriesParts:1,parts:[{en:{n:"Shadow of the Erdtree",y:2024},ar:{n:"شادو أوف ذي إردتري",y:2024}}]},
+  {en:{n:"Red Dead Redemption 2",d:"A breathtaking open-world western with one of gaming's best stories.",y:2018,g:"Action/Adventure"},ar:{n:"ريد ديد ريدمبشن 2",d:"عالم مفتوح غربي مذهل بواحدة من أفضل القصص في تاريخ الألعاب.",y:2018,g:"أكشن/مغامرة"},seriesParts:2,parts:[]},
+  {en:{n:"Skyrim",d:"Epic fantasy RPG that defined a generation with its vast open world.",y:2011,g:"RPG"},ar:{n:"سكايريم",d:"تقمص أدوار ملحمي حدد جيلاً بأكمله بعالمه المفتوح الضخم.",y:2011,g:"تقمص أدوار"},seriesParts:5,parts:[{en:{n:"Dawnguard",y:2012},ar:{n:"داونغارد",y:2012}},{en:{n:"Dragonborn",y:2012},ar:{n:"دراجونبورن",y:2012}}]},
+  {en:{n:"Cyberpunk 2077",d:"Futuristic RPG in Night City, an open world of crime and neon.",y:2020,g:"RPG"},ar:{n:"سايبربانك 2077",d:"تقمص أدوار مستقبلي في نايت سيتي، عالم مفتوح من الجريمة والنيون.",y:2020,g:"تقمص أدوار"},seriesParts:1,parts:[{en:{n:"Phantom Liberty",y:2023},ar:{n:"فانتوم ليبرتي",y:2023}}]},
+  {en:{n:"Baldur's Gate 3",d:"Epic D&D-based RPG with unmatched player freedom and depth.",y:2023,g:"RPG"},ar:{n:"بالدورز جيت 3",d:"لعبة تقمص أدوار D&D ملحمية بحرية لاعب لا مثيل لها.",y:2023,g:"تقمص أدوار"},seriesParts:3,parts:[]},
+  {en:{n:"Bloodborne",d:"Gothic horror soulslike set in a plague-ridden Victorian city.",y:2015,g:"Action"},ar:{n:"بلودبورن",d:"سولزلايك رعب قوطي في مدينة فيكتورية مصابة بوباء.",y:2015,g:"أكشن"},seriesParts:1,parts:[{en:{n:"The Old Hunters",y:2015},ar:{n:"ذي أولد هانترز",y:2015}}]},
+  {en:{n:"Half-Life 2",d:"Revolutionary sci-fi FPS that changed game design forever.",y:2004,g:"FPS"},ar:{n:"هالف-لايف 2",d:"إطلاق نار خيال علمي ثوري غيّر تصميم الألعاب إلى الأبد.",y:2004,g:"إطلاق نار"},seriesParts:2,parts:[{en:{n:"Episode One",y:2006},ar:{n:"إبيسود ون",y:2006}},{en:{n:"Episode Two",y:2007},ar:{n:"إبيسود تو",y:2007}}]},
+  {en:{n:"Ghost of Tsushima",d:"Beautiful open-world samurai adventure set in feudal Japan.",y:2020,g:"Action/Adventure"},ar:{n:"غوست أوف تسوشيما",d:"مغامرة ساموراي جميلة في اليابان الإقطاعية.",y:2020,g:"أكشن/مغامرة"},seriesParts:1,parts:[{en:{n:"Iki Island",y:2021},ar:{n:"جزيرة إيكي",y:2021}}]},
+  {en:{n:"Persona 5 Royal",d:"Stylish JRPG blending social simulation with dungeon crawling.",y:2019,g:"RPG"},ar:{n:"بيرسونا 5 رويال",d:"لعبة يابانية أنيقة تمزج المحاكاة الاجتماعية بالقتال.",y:2019,g:"تقمص أدوار"},seriesParts:6,parts:[]},
+  {en:{n:"God of War Ragnarok",d:"The Norse saga concludes in this emotional and epic sequel.",y:2022,g:"Action/Adventure"},ar:{n:"جود أوف وور راغناروك",d:"تنتهي الملحمة النوردية في هذا التكملة المذهلة.",y:2022,g:"أكشن/مغامرة"},seriesParts:8,parts:[]},
+  {en:{n:"Dark Souls III",d:"Challenging action RPG with incredible lore and precise combat.",y:2016,g:"RPG"},ar:{n:"دارك سولز 3",d:"تقمص أدوار صعب مع تاريخ مذهل وقتال دقيق.",y:2016,g:"تقمص أدوار"},seriesParts:3,parts:[{en:{n:"Ashes of Ariandel",y:2016},ar:{n:"آشيز أوف أرياندل",y:2016}},{en:{n:"The Ringed City",y:2017},ar:{n:"ذا رينغد سيتي",y:2017}}]},
+  {en:{n:"The Last of Us",d:"Post-apocalyptic survival story with exceptional emotional depth.",y:2013,g:"Action/Adventure"},ar:{n:"ذا لاست أوف أس",d:"قصة بقاء ما بعد نهاية العالم بعمق عاطفي استثنائي.",y:2013,g:"أكشن/مغامرة"},seriesParts:2,parts:[{en:{n:"Left Behind",y:2014},ar:{n:"اليسار خلف",y:2014}}]},
+  {en:{n:"Portal 2",d:"Physics-based puzzle masterpiece with brilliant co-op mode.",y:2011,g:"Puzzle"},ar:{n:"بورتال 2",d:"تحفة ألغاز تعتمد على الفيزياء مع وضع تعاوني رائع.",y:2011,g:"ألغاز"},seriesParts:2,parts:[{en:{n:"Peer Review",y:2011},ar:{n:"بير ريفيو",y:2011}}]},
+  {en:{n:"Sekiro: Shadows Die Twice",d:"Demanding samurai action set in Sengoku-era Japan.",y:2019,g:"Action"},ar:{n:"سيكيرو: الظلال تموت مرتين",d:"أكشن ساموراي مطلوب في اليابان في حقبة سنغوكو.",y:2019,g:"أكشن"},seriesParts:1,parts:[]},
+  {en:{n:"Resident Evil 4",d:"Survival horror classic that reinvented the genre.",y:2005,g:"Action"},ar:{n:"ريزيدنت إيفل 4",d:"كلاسيكيات رعب البقاء التي أعادت اختراع النوع.",y:2005,g:"أكشن"},seriesParts:15,parts:[{en:{n:"Separate Ways",y:2023},ar:{n:"سيباريت وايز",y:2023}}]},
+  {en:{n:"Grand Theft Auto V",d:"Massive open-world crime epic with three playable protagonists.",y:2013,g:"Action/Adventure"},ar:{n:"جراند ثيفت أوتو V",d:"ملحمة جريمة ضخمة في عالم مفتوح مع ثلاثة أبطال.",y:2013,g:"أكشن/مغامرة"},seriesParts:5,parts:[{en:{n:"Online",y:2013},ar:{n:"أونلاين",y:2013}}]},
+  {en:{n:"Spider-Man",d:"Thrilling web-slinging adventure through New York City.",y:2018,g:"Action/Adventure"},ar:{n:"سبايدرمان",d:"مغامرة مثيرة بخيوط العنكبوت عبر مدينة نيويورك.",y:2018,g:"أكشن/مغامرة"},seriesParts:2,parts:[{en:{n:"City That Never Sleeps",y:2018},ar:{n:"المدينة التي لا تنام",y:2018}}]},
+  {en:{n:"Hitman",d:"Professional assassination sandbox with creative kill mechanics.",y:2016,g:"Stealth"},ar:{n:"هيتمان",d:"محاكي اغتيال احترافي مع ميكانيكيات قتل مبتكرة.",y:2016,g:"تخفي"},seriesParts:8,parts:[{en:{n:"World of Assassination",y:2021},ar:{n:"عالم الاغتيال",y:2021}}]},
+  {en:{n:"Metal Gear Solid V",d:"Tactical espionage in a massive open world.",y:2015,g:"Stealth"},ar:{n:"ميتال جير سوليد 5",d:"تجسس تكتيكي في عالم مفتوح ضخم.",y:2015,g:"تخفي"},seriesParts:5,parts:[{en:{n:"The Phantom Pain",y:2015},ar:{n:"ألم الشبح",y:2015}}]},
+  {en:{n:"Silent Hill 2",d:"Psychological horror masterpiece with deep symbolism.",y:2001,g:"Horror"},ar:{n:"سايلنت هيل 2",d:"تحفة رعب نفسي برمزية عميقة.",y:2001,g:"رعب"},seriesParts:4,parts:[{en:{n:"Remake",y:2024},ar:{n:"النسخة المحسنة",y:2024}}]},
+  {en:{n:"Undertale",d:"Indie RPG where pacifism is as valid as violence.",y:2015,g:"RPG"},ar:{n:"أندرتيل",d:"RPG مستقلة حيث السلام صالح مثل العنف.",y:2015,g:"تقمص أدوار"},seriesParts:1,parts:[]},
+  {en:{n:"Tekken 8",d:"High-octane 3D fighting game with deep mechanics.",y:2024,g:"Fighting"},ar:{n:"تيكن 8",d:"لعبة قتال ثلاثية الأبعاد بميكانيكيات عميقة.",y:2024,g:"قتال"},seriesParts:8,parts:[]},
+  {en:{n:"Mortal Kombat 1",d:"Brutal fighting game reboot with fatalities and fluid combat.",y:2023,g:"Fighting"},ar:{n:"مورتال كومبات 1",d:"إعادة تشغيل لعبة قتال وحشية.",y:2023,g:"قتال"},seriesParts:12,parts:[{en:{n:"Khaos Reigns",y:2024},ar:{n:"فوضى عارمة",y:2024}}]},
+  {en:{n:"Street Fighter 6",d:"Polished fighting game with a new open World Tour mode.",y:2023,g:"Fighting"},ar:{n:"ستريت فايتر 6",d:"لعبة قتال محكمة مع وضع World Tour مفتوح.",y:2023,g:"قتال"},seriesParts:6,parts:[]},
+  {en:{n:"Devil May Cry 5",d:"Stylish over-the-top action with three distinct playable characters.",y:2019,g:"Action"},ar:{n:"ديفل ماي كراي 5",d:"أكشن أنيق مع ثلاث شخصيات قابلة للعب.",y:2019,g:"أكشن"},seriesParts:5,parts:[{en:{n:"Vergil DLC",y:2020},ar:{n:"إضافة فيرجل",y:2020}}]},
+  {en:{n:"Control",d:"Paranormal action set in the brutalist Federal Bureau of Control.",y:2019,g:"Action"},ar:{n:"كونترول",d:"أكشن خارق في مكتب فيدرالي غريب.",y:2019,g:"أكشن"},seriesParts:1,parts:[{en:{n:"AWE",y:2020},ar:{n:"إيه دبليو إي",y:2020}}]},
+  {en:{n:"Alan Wake 2",d:"Psychological horror sequel blending games and film noir.",y:2023,g:"Action"},ar:{n:"ألان ويك 2",d:"تكملة رعب نفسي تمزج الألعاب والنوار.",y:2023,g:"أكشن"},seriesParts:2,parts:[]},
+  {en:{n:"A Plague Tale: Requiem",d:"Medieval survival sequel with stunning visuals.",y:2022,g:"Action/Adventure"},ar:{n:"حكاية الطاعون: قداس",d:"تكملة بقاء في العصور الوسطى بصريات مذهلة.",y:2022,g:"أكشن/مغامرة"},seriesParts:2,parts:[]},
+  {en:{n:"Horizon Zero Dawn",d:"Post-apocalyptic adventure with machines roaming a lush world.",y:2017,g:"Action/Adventure"},ar:{n:"هورايزن زيرو داون",d:"مغامرة ما بعد نهاية العالم مع آلات في عالم خضراء.",y:2017,g:"أكشن/مغامرة"},seriesParts:2,parts:[{en:{n:"The Frozen Wilds",y:2017},ar:{n:"ذا فروزن وايلدز",y:2017}}]},
+  {en:{n:"Detroit: Become Human",d:"Choice-driven android story about freedom and humanity.",y:2018,g:"Adventure"},ar:{n:"ديترويت: نحو الإنسانية",d:"قصة آليين تعتمد على الاختيار عن الحرية والإنسانية.",y:2018,g:"مغامرة"},seriesParts:1,parts:[]},
+  {en:{n:"Dead Space",d:"Sci-fi survival horror aboard a derelict spacecraft.",y:2008,g:"Horror"},ar:{n:"ديد سبيس",d:"رعب بقاء خيال علمي على متن مركبة فضائية.",y:2008,g:"رعب"},seriesParts:3,parts:[{en:{n:"Severed",y:2011},ar:{n:"سيفريد",y:2011}}]},
+  {en:{n:"Resident Evil Village",d:"Gothic horror FPS continuing Ethan Winters' nightmare.",y:2021,g:"Horror"},ar:{n:"ريزيدنت إيفل فيلدج",d:"رعب قوطي يستمر مع إيثان وينترز.",y:2021,g:"رعب"},seriesParts:15,parts:[{en:{n:"Winters' Expansion",y:2022},ar:{n:"توسعة وينترز",y:2022}}]},
+  {en:{n:"Alien: Isolation",d:"Tense survival horror aboard Sevastopol Station.",y:2014,g:"Horror"},ar:{n:"أليان: العزلة",d:"رعب بقاء متوتر في محطة سيفاستوبول.",y:2014,g:"رعب"},seriesParts:1,parts:[]},
+  {en:{n:"Hellblade: Senua's Sacrifice",d:"Psychological journey through Norse mythology and psychosis.",y:2017,g:"Action"},ar:{n:"هيلبليد",d:"رحلة نفسية عبر الميثولوجيا النوردية والذهان.",y:2017,g:"أكشن"},seriesParts:2,parts:[]},
+  {en:{n:"Final Fantasy VII Rebirth",d:"Massive open-world continuation of the FF7 remake trilogy.",y:2024,g:"RPG"},ar:{n:"فاينل فانتازي 7 ريبرث",d:"استمرار ضخم في عالم مفتوح لثلاثية إعادة صنع FF7.",y:2024,g:"تقمص أدوار"},seriesParts:3,parts:[]},
+  {en:{n:"Senua's Saga: Hellblade II",d:"Visually stunning Norse nightmare continuation.",y:2024,g:"Action"},ar:{n:"ملحمة سينوا: هيلبليد 2",d:"استمرار كابوس نورسي مذهل بصريًا.",y:2024,g:"أكشن"},seriesParts:2,parts:[]},
+  {en:{n:"Kena: Bridge of Spirits",d:"Charming action-adventure with stunning visuals.",y:2021,g:"Action/Adventure"},ar:{n:"كينا: جسر الأرواح",d:"مغامرة رائعة بصريًا مع أرواح.",y:2021,g:"أكشن/مغامرة"},seriesParts:1,parts:[]},
+  {en:{n:"Stray",d:"Cat adventure through a dystopian city — no humans required.",y:2022,g:"Adventure"},ar:{n:"ستري",d:"مغامرة قط في مدينة ديستوبية.",y:2022,g:"مغامرة"},seriesParts:1,parts:[]},
+  {en:{n:"Sifu",d:"Kung fu revenge with a brutal aging mechanic.",y:2022,g:"Action"},ar:{n:"سيفو",d:"انتقام كونغ فو مع ميكانيكية تقدم السن الوحشية.",y:2022,g:"أكشن"},seriesParts:1,parts:[]},
+  {en:{n:"Returnal",d:"Roguelike third-person shooter with a cryptic sci-fi story.",y:2021,g:"Action"},ar:{n:"ريتورنال",d:"إطلاق نار روجلايك بقصة خيال علمي غامضة.",y:2021,g:"أكشن"},seriesParts:1,parts:[]},
+  {en:{n:"Dragon Ball FighterZ",d:"2D fighting masterpiece capturing the DBZ anime look.",y:2018,g:"Fighting"},ar:{n:"دراغون بول فايترز",d:"تحفة قتال ثنائية الأبعاد تجسد أنمي DBZ.",y:2018,g:"قتال"},seriesParts:1,parts:[]},
+  {en:{n:"Guilty Gear Strive",d:"Beautiful anime fighter with exceptional online infrastructure.",y:2021,g:"Fighting"},ar:{n:"جيلتي جير سترايف",d:"مقاتل أنمي جميل مع بنية أونلاين ممتازة.",y:2021,g:"قتال"},seriesParts:7,parts:[]},
+  {en:{n:"Monster Hunter: World",d:"Immersive beast-hunting RPG in lush ecosystems.",y:2018,g:"Action/Adventure"},ar:{n:"مونستر هانتر: وورلد",d:"تقمص أدوار صيد وحوش في بيئات خصبة.",y:2018,g:"أكشن/مغامرة"},seriesParts:5,parts:[{en:{n:"Iceborne",y:2019},ar:{n:"آيسبورن",y:2019}}]},
+  {en:{n:"Bayonetta 3",d:"Outrageous stylish action with multiverse-hopping gameplay.",y:2022,g:"Action"},ar:{n:"بايونيتا 3",d:"أكشن متفجر مع جيمبلاي عبر الأكوان المتعددة.",y:2022,g:"أكشن"},seriesParts:3,parts:[]},
+  {en:{n:"Nier: Automata",d:"Philosophical action RPG exploring androids and humanity.",y:2017,g:"Action/RPG"},ar:{n:"نير: أوتوماتا",d:"أكشن فلسفي يستكشف الآلات والإنسانية.",y:2017,g:"أكشن/تقمص"},seriesParts:2,parts:[]},
+  {en:{n:"Yakuza: Like a Dragon",d:"Crime drama RPG set in modern Japan.",y:2020,g:"RPG"},ar:{n:"ياكوزا: مثل التنين",d:"دراما جريمة في اليابان الحديثة.",y:2020,g:"تقمص أدوار"},seriesParts:8,parts:[]},
+  {en:{n:"Persona 5",d:"Original version of the acclaimed social-RPG.",y:2016,g:"RPG"},ar:{n:"بيرسونا 5",d:"النسخة الأصلية من لعبة RPG الاجتماعية الرائجة.",y:2016,g:"تقمص أدوار"},seriesParts:6,parts:[]},
+  {en:{n:"Kingdom Hearts III",d:"Disney meets Final Fantasy in this long-awaited finale.",y:2019,g:"Action/RPG"},ar:{n:"كينغدوم هارتس 3",d:"ديزني تلتقي فاينل فانتازي في هذه الخاتمة المنتظرة.",y:2019,g:"أكشن/تقمص"},seriesParts:3,parts:[{en:{n:"Re Mind",y:2020},ar:{n:"ري مايند",y:2020}}]},
+  {en:{n:"Final Fantasy X",d:"Epic journey across Spira to defeat the monster Sin.",y:2001,g:"RPG"},ar:{n:"فاينل فانتازي X",d:"رحلة ملحمية عبر سبايرا لهزيمة الوحش سين.",y:2001,g:"تقمص أدوار"},seriesParts:2,parts:[{en:{n:"Final Fantasy X-2",y:2003},ar:{n:"فاينل فانتازي X-2",y:2003}}]},
+  {en:{n:"Dark Souls",d:"The originator of a genre — punishing and deeply rewarding.",y:2011,g:"RPG"},ar:{n:"دارك سولز",d:"مؤسس نوع كامل — عقابي وممتع بعمق.",y:2011,g:"تقمص أدوار"},seriesParts:3,parts:[{en:{n:"Artorias of the Abyss",y:2012},ar:{n:"أرتورياس أوف ذي أبيس",y:2012}}]},
+  {en:{n:"Mass Effect 3",d:"The emotional conclusion of Shepard's galactic saga.",y:2012,g:"RPG"},ar:{n:"ماس إفكت 3",d:"الخاتمة العاطفية لملحمة شيبرد المجرية.",y:2012,g:"تقمص أدوار"},seriesParts:3,parts:[{en:{n:"Citadel",y:2013},ar:{n:"سيتادل",y:2013}}]},
+  {en:{n:"Dragon Age: Origins",d:"Epic choice-driven fantasy RPG with deep world-building.",y:2009,g:"RPG"},ar:{n:"دراغون إيج: أوريجينز",d:"تقمص أدوار فانتازي ملحمي مع بناء عالم عميق.",y:2009,g:"تقمص أدوار"},seriesParts:3,parts:[{en:{n:"Awakening",y:2010},ar:{n:"أواكينينغ",y:2010}}]},
+  {en:{n:"Horizon Forbidden West",d:"Expanded post-apocalyptic world with new machines and biomes.",y:2022,g:"Action/Adventure"},ar:{n:"هورايزن الغرب المحظور",d:"عالم موسع بعد نهاية العالم مع آلات جديدة.",y:2022,g:"أكشن/مغامرة"},seriesParts:2,parts:[{en:{n:"Burning Shores",y:2023},ar:{n:"الشواطئ المحترقة",y:2023}}]},
+  {en:{n:"The Legend of Zelda: Breath of the Wild",d:"Open-air adventure that redefined open-world games.",y:2017,g:"Action/Adventure"},ar:{n:"زيلدا: بريث أوف ذا وايلد",d:"مغامرة أعادت تعريف ألعاب العالم المفتوح.",y:2017,g:"أكشن/مغامرة"},seriesParts:19,parts:[{en:{n:"Tears of the Kingdom",y:2023},ar:{n:"دموع المملكة",y:2023}}]},
+  {en:{n:"Super Mario Odyssey",d:"3D platforming at its absolute finest.",y:2017,g:"Platformer"},ar:{n:"سوبر ماريو أوديسي",d:"منصات ثلاثية الأبعاد في أبهى صورها.",y:2017,g:"منصات"},seriesParts:15,parts:[]},
+  {en:{n:"Red Dead Redemption",d:"The original western epic that set the standard.",y:2010,g:"Action/Adventure"},ar:{n:"ريد ديد ريدمبشن",d:"الملحمة الغربية الأصلية التي وضعت المعيار.",y:2010,g:"أكشن/مغامرة"},seriesParts:2,parts:[{en:{n:"Undead Nightmare",y:2010},ar:{n:"كابوس الموتى",y:2010}}]},
+  {en:{n:"Uncharted 4: A Thief's End",d:"Action-adventure farewell to Nathan Drake.",y:2016,g:"Action/Adventure"},ar:{n:"أنشارتد 4: نهاية لص",d:"وداع مغامرة أكشن لناثان دريك.",y:2016,g:"أكشن/مغامرة"},seriesParts:4,parts:[]},
+  {en:{n:"Spider-Man: Miles Morales",d:"A new Spider-Man rises in a festive New York.",y:2020,g:"Action/Adventure"},ar:{n:"سبايدرمان: مايلز موراليس",d:"سبايدرمان جديد يظهر في نيويورك احتفالية.",y:2020,g:"أكشن/مغامرة"},seriesParts:2,parts:[]},
+  {en:{n:"Injustice 2",d:"DC superhero arena fighter with gear and story.",y:2017,g:"Fighting"},ar:{n:"إن جاستس 2",d:"مقاتل ساحة DC مع معدات وقصة.",y:2017,g:"قتال"},seriesParts:2,parts:[]},
+  {en:{n:"Street Fighter V",d:"Competitive 2D fighter with diverse global roster.",y:2016,g:"Fighting"},ar:{n:"ستريت فايتر 5",d:"مقاتل تنافسي ثنائي الأبعاد.",y:2016,g:"قتال"},seriesParts:6,parts:[{en:{n:"Champion Edition",y:2020},ar:{n:"نسخة الأبطال",y:2020}}]},
+  {en:{n:"Mortal Kombat 11",d:"Brutal fighting with cinematic story and brutal fatalities.",y:2019,g:"Fighting"},ar:{n:"مورتال كومبات 11",d:"قتال وحشي مع قصة سينمائية.",y:2019,g:"قتال"},seriesParts:12,parts:[{en:{n:"Aftermath",y:2020},ar:{n:"الآثار",y:2020}}]},
+  {en:{n:"Ratchet & Clank: Rift Apart",d:"Dimension-hopping PS5 showcase with fast-paced action.",y:2021,g:"Adventure"},ar:{n:"راتشيت أند كلانك: ريفت أبارت",d:"مغامرة PS5 بالتنقل بين الأبعاد.",y:2021,g:"مغامرة"},seriesParts:10,parts:[]},
+  {en:{n:"Crash Bandicoot 4: It's About Time",d:"The beloved bandicoot returns in a challenging platformer.",y:2020,g:"Platformer"},ar:{n:"كراش 4: حان الوقت",d:"عودة بانديكوت المحبوب في منصات تحدي.",y:2020,g:"منصات"},seriesParts:4,parts:[]},
+  {en:{n:"Final Fantasy XVI",d:"Dark fantasy action-RPG with epic political drama.",y:2023,g:"RPG"},ar:{n:"فاينل فانتازي 16",d:"أكشن فانتازيا مظلمة مع دراما سياسية ملحمية.",y:2023,g:"تقمص أدوار"},seriesParts:16,parts:[{en:{n:"Echoes of the Fallen",y:2023},ar:{n:"أصداء الساقطين",y:2023}}]},
+  {en:{n:"Bloodborne: The Old Hunters",d:"Expanded nightmare in the hunter's dream.",y:2015,g:"Action"},ar:{n:"بلودبورن: الصيادون القدامى",d:"كابوس موسع في حلم الصياد.",y:2015,g:"أكشن"},seriesParts:1,parts:[]},
+  {en:{n:"Persona 4 Golden",d:"Murder mystery JRPG set in a small Japanese town.",y:2012,g:"RPG"},ar:{n:"بيرسونا 4 غولدن",d:"لغز قتل JRPG في بلدة يابانية صغيرة.",y:2012,g:"تقمص أدوار"},seriesParts:6,parts:[]},
+  {en:{n:"Resident Evil 2",d:"Survival horror remake of the classic with over-the-shoulder view.",y:2019,g:"Horror"},ar:{n:"ريزيدنت إيفل 2",d:"إعادة صنع رعب البقاء الكلاسيكي بمنظور الكتف.",y:2019,g:"رعب"},seriesParts:15,parts:[]},
+  {en:{n:"The Elder Scrolls IV: Oblivion",d:"Classic open-world RPG with Daedric quests.",y:2006,g:"RPG"},ar:{n:"أوبليفيون",d:"تقمص أدوار كلاسيكي في عالم مفتوح.",y:2006,g:"تقمص أدوار"},seriesParts:5,parts:[{en:{n:"Shivering Isles",y:2007},ar:{n:"شيفرينغ آيلز",y:2007}}]},
+  {en:{n:"Borderlands 2",d:"Loot-shooter with irreverent humor and endless builds.",y:2012,g:"FPS"},ar:{n:"بورديرلاندز 2",d:"إطلاق نار غنائم بدعابة لا حدود لها.",y:2012,g:"إطلاق نار"},seriesParts:4,parts:[{en:{n:"Tiny Tina DLC",y:2013},ar:{n:"إضافة تيني تينا",y:2013}}]},
+  {en:{n:"A Plague Tale: Innocence",d:"Emotional medieval survival with rats and plague.",y:2019,g:"Action/Adventure"},ar:{n:"حكاية الطاعون: البراءة",d:"بقاء عاطفي في العصور الوسطى مع الجرذان والطاعون.",y:2019,g:"أكشن/مغامرة"},seriesParts:2,parts:[]},
+  {en:{n:"Diablo II",d:"Action RPG loot-fest that defined the genre.",y:2000,g:"RPG"},ar:{n:"ديابلو 2",d:"تقمص أدوار غنائم أسس النوع.",y:2000,g:"تقمص أدوار"},seriesParts:4,parts:[{en:{n:"Lord of Destruction",y:2001},ar:{n:"لورد أوف ديستراكشن",y:2001}}]},
+  {en:{n:"Demon's Souls",d:"The origin of the Soulsborne genre.",y:2009,g:"RPG"},ar:{n:"ديمونز سولز",d:"أصل عالم ألعاب السولز.",y:2009,g:"تقمص أدوار"},seriesParts:1,parts:[]},
+  {en:{n:"SoulCalibur VI",d:"Weapon-based fighting with rich historical roster.",y:2018,g:"Fighting"},ar:{n:"سول كاليبر 6",d:"قتال بالأسلحة مع قائمة شخصيات تاريخية.",y:2018,g:"قتال"},seriesParts:6,parts:[]},
+  {en:{n:"Outriders",d:"Co-op sci-fi shooter with class-based abilities.",y:2021,g:"FPS"},ar:{n:"أوترايدرز",d:"إطلاق نار خيال علمي تعاوني بقدرات متخصصة.",y:2021,g:"إطلاق نار"},seriesParts:1,parts:[]},
+  {en:{n:"Astro's Playroom",d:"PlayStation history celebration bundled with PS5.",y:2020,g:"Platformer"},ar:{n:"أستروز بلاي روم",d:"احتفال بتاريخ بلايستيشن مرفق مع PS5.",y:2020,g:"منصات"},seriesParts:1,parts:[]},
+  {en:{n:"Naruto: Ultimate Ninja Storm 4",d:"Final chapter of the iconic anime fighter series.",y:2016,g:"Fighting"},ar:{n:"ناروتو: العاصفة 4",d:"الفصل الأخير من سلسلة المقاتل الأنمي الأيقونية.",y:2016,g:"قتال"},seriesParts:4,parts:[{en:{n:"Road to Boruto",y:2017},ar:{n:"الطريق إلى بوروتو",y:2017}}]},
+  {en:{n:"Quantum Break",d:"Time-manipulation action with live-action TV episodes.",y:2016,g:"Action"},ar:{n:"كوانتم بريك",d:"أكشن التلاعب بالزمن مع حلقات تلفزيونية.",y:2016,g:"أكشن"},seriesParts:1,parts:[]},
+  {en:{n:"Dark Souls II",d:"Challenging sequel exploring new lands and lore.",y:2014,g:"RPG"},ar:{n:"دارك سولز 2",d:"تكملة صعبة تستكشف أراضي وتاريخ جديد.",y:2014,g:"تقمص أدوار"},seriesParts:3,parts:[{en:{n:"Scholar of the First Sin",y:2015},ar:{n:"عالم الخطيئة الأولى",y:2015}}]},
+  {en:{n:"Splinter Cell: Blacklist",d:"Ultimate stealth experience with Sam Fisher.",y:2013,g:"Stealth"},ar:{n:"سبلينتر سيل: بلاك ليست",d:"تجربة التخفي المطلقة مع سام فيشر.",y:2013,g:"تخفي"},seriesParts:6,parts:[]},
+  {en:{n:"Yakuza 0",d:"Prequel exploring Kiryu and Majima's origins in 1988 Japan.",y:2015,g:"Action/Adventure"},ar:{n:"ياكوزا 0",d:"قبل الحدث يستكشف أصول كيريو وماجيما في اليابان 1988.",y:2015,g:"أكشن/مغامرة"},seriesParts:8,parts:[]},
+  {en:{n:"Hollow Knight",d:"Deep and atmospheric indie metroidvania.",y:2017,g:"Action/Adventure"},ar:{n:"هولو نايت",d:"مترويدفانيا مستقلة عميقة وغامضة.",y:2017,g:"أكشن/مغامرة"},seriesParts:1,parts:[{en:{n:"Silksong (TBA)",y:2025},ar:{n:"سيلكسونغ",y:2025}}]},
+  {en:{n:"Alan Wake",d:"Writer-hero battles darkness in a Pacific Northwest town.",y:2010,g:"Action"},ar:{n:"ألان ويك",d:"كاتب يحارب الظلام في بلدة ساحل المحيط الهادئ.",y:2010,g:"أكشن"},seriesParts:2,parts:[{en:{n:"American Nightmare",y:2012},ar:{n:"كابوس أمريكي",y:2012}}]},
+  {en:{n:"The Evil Within",d:"Tense psychological horror from Resident Evil's creator.",y:2014,g:"Horror"},ar:{n:"ذا إيفل ويذين",d:"رعب نفسي متوتر من مبتكر ريزيدنت إيفل.",y:2014,g:"رعب"},seriesParts:2,parts:[{en:{n:"The Assignment",y:2015},ar:{n:"المهمة",y:2015}}]},
+  {en:{n:"Outlast",d:"First-person asylum horror with no way to fight back.",y:2013,g:"Horror"},ar:{n:"أوت لاست",d:"رعب مصح من منظور أول بلا طريقة للقتال.",y:2013,g:"رعب"},seriesParts:2,parts:[{en:{n:"Whistleblower",y:2014},ar:{n:"المبلغ",y:2014}}]},
+];
+
+// ============================================================
+// NEW DATA: PRICES, QUOTES, NEWS, CALENDAR
+// ============================================================
+const gamePrices = {
+  "The Witcher 3":        {ps:"$19.99",xbox:"$19.99",pc:"$9.99"},
+  "God of War":           {ps:"$19.99",xbox:null,pc:"$49.99"},
+  "Elden Ring":           {ps:"$59.99",xbox:"$59.99",pc:"$59.99"},
+  "Red Dead Redemption 2":{ps:"$29.99",xbox:"$29.99",pc:"$29.99"},
+  "Skyrim":               {ps:"$19.99",xbox:"$19.99",pc:"$9.99"},
+  "Cyberpunk 2077":       {ps:"$29.99",xbox:"$29.99",pc:"$19.99"},
+  "Baldur's Gate 3":      {ps:"$59.99",xbox:"$59.99",pc:"$59.99"},
+  "Bloodborne":           {ps:"$19.99",xbox:null,pc:null},
+  "Ghost of Tsushima":    {ps:"$39.99",xbox:null,pc:"$49.99"},
+  "Persona 5 Royal":      {ps:"$39.99",xbox:"$39.99",pc:"$39.99"},
+  "God of War Ragnarok":  {ps:"$49.99",xbox:null,pc:"$59.99"},
+  "Dark Souls III":       {ps:"$19.99",xbox:"$19.99",pc:"$19.99"},
+  "The Last of Us":       {ps:"$29.99",xbox:null,pc:"$29.99"},
+  "Portal 2":             {ps:"$9.99",xbox:"$9.99",pc:"Free"},
+  "Sekiro: Shadows Die Twice":{ps:"$39.99",xbox:"$39.99",pc:"$39.99"},
+  "Resident Evil 4":      {ps:"$29.99",xbox:"$29.99",pc:"$29.99"},
+  "Grand Theft Auto V":   {ps:"$19.99",xbox:"$19.99",pc:"$19.99"},
+  "Spider-Man":           {ps:"$19.99",xbox:null,pc:"$39.99"},
+  "Hitman":               {ps:"$29.99",xbox:"$29.99",pc:"$29.99"},
+  "Silent Hill 2":        {ps:"$49.99",xbox:null,pc:"$49.99"},
+  "Undertale":            {ps:"$14.99",xbox:"$14.99",pc:"$9.99"},
+  "Tekken 8":             {ps:"$59.99",xbox:"$59.99",pc:"$59.99"},
+  "Street Fighter 6":     {ps:"$59.99",xbox:"$59.99",pc:"$59.99"},
+  "Final Fantasy VII Rebirth":{ps:"$69.99",xbox:null,pc:"$69.99"},
+  "Horizon Zero Dawn":    {ps:"$19.99",xbox:null,pc:"$19.99"},
+};
+
+const characterQuotes = {
+  "Dragonborn":       {en:"FUS RO DAH!",                         ar:"فوس رو داه!"},
+  "Geralt of Rivia":  {en:"Evil is evil.",                       ar:"الشر هو الشر."},
+  "Kratos":           {en:"Boy!",                                 ar:"يا ولد!"},
+  "Arthur Morgan":    {en:"We're more ghosts than men.",          ar:"نحن أشباح أكثر من بشر."},
+  "Cloud Strife":     {en:"I am... I'm not just a memory.",       ar:"أنا... لست مجرد ذكرى."},
+  "Master Chief":     {en:"I need a weapon.",                     ar:"أحتاج سلاحًا."},
+  "Solid Snake":      {en:"War has changed.",                     ar:"الحرب تغيرت."},
+  "The Tarnished":    {en:"Rise, Tarnished.",                     ar:"انهض، يا تارنشد."},
+  "Lara Croft":       {en:"A famous explorer once said...",       ar:"قال مستكشف شهير ذات مرة..."},
+  "Ezio Auditore":    {en:"Nothing is true, everything is permitted.", ar:"لا شيء واقعي، كل شيء مسموح."},
+  "Nathan Drake":     {en:"Fortune favours the bold.",            ar:"الحظ يحالف الجريئين."},
+  "Joel":             {en:"You have no idea what loss is.",       ar:"ليس لديك فكرة ما هي الخسارة."},
+  "Ellie":            {en:"I'm not afraid of you.",               ar:"لست خائفة منك."},
+  "V":                {en:"Night City always takes more than it gives.", ar:"نايت سيتي تأخذ دائماً أكثر مما تعطي."},
+  "Joker":            {en:"You are a slave. Want emancipation?",  ar:"أنت عبد. تريد التحرر؟"},
+  "Doom Slayer":      {en:"They are rage.",                       ar:"هم الغضب."},
+  "Sekiro":           {en:"Hesitation is defeat.",                ar:"التردد هو الهزيمة."},
+  "Jin Sakai":        {en:"I became the Ghost.",                  ar:"أصبحت الشبح."},
+  "Agent 47":         {en:"Never underestimate your target.",     ar:"لا تستهن أبدًا بهدفك."},
+  "Zagreus":          {en:"The night is yours, Father.",          ar:"الليل لك يا أبي."},
+  "Scorpion":         {en:"GET OVER HERE!",                       ar:"تعال إلى هنا!"},
+  "Sans":             {en:"it's a beautiful day outside...",      ar:"إنه يوم جميل في الخارج..."},
+  "Batman":           {en:"I am the night.",                      ar:"أنا الليل."},
+  "Dante":            {en:"Jackpot!",                             ar:"جائزة كبرى!"},
+  "Vergil":           {en:"I need more power.",                   ar:"أحتاج لمزيد من القوة."},
+};
+
+const newsData = [
+  {tag:"release",date:"Mar 2026",en:{h:"GTA VI Launch Date Confirmed for Fall 2026",s:"Rockstar Games"},ar:{h:"تأكيد تاريخ إطلاق GTA VI في خريف 2026",s:"روكستار جيمز"}},
+  {tag:"update",date:"Feb 2026",en:{h:"Elden Ring: New DLC Expansion Rumored for 2026",s:"FromSoftware Insiders"},ar:{h:"شائعات عن DLC جديد لإلدن رينغ في 2026",s:"مصادر فروم سوفتوير"}},
+  {tag:"release",date:"Mar 2026",en:{h:"Death Stranding 2: On The Beach Releases April 2026",s:"Kojima Productions"},ar:{h:"ديث ستراندينغ 2 يصدر في أبريل 2026",s:"كوجيما برودكشنز"}},
+  {tag:"dlc",date:"Feb 2026",en:{h:"Cyberpunk 2077: Phantom Liberty 2 Announced",s:"CD Projekt RED"},ar:{h:"إعلان فانتوم ليبرتي 2 لسايبربانك 2077",s:"CD بروجيكت ريد"}},
+  {tag:"event",date:"Mar 2026",en:{h:"State of Play March 2026: 12 Games Announced",s:"PlayStation Blog"},ar:{h:"ستيت أوف بلاي مارس 2026: 12 لعبة جديدة",s:"بلايستيشن بلوغ"}},
+  {tag:"release",date:"Jan 2026",en:{h:"Monster Hunter Wilds Breaks Sales Records",s:"Capcom"},ar:{h:"مونستر هانتر وايلدز يكسر أرقام المبيعات",s:"كابكوم"}},
+  {tag:"update",date:"Feb 2026",en:{h:"Hollow Knight: Silksong Finally Gets Release Window",s:"Team Cherry"},ar:{h:"هولو نايت: سيلكسونغ أخيرًا يحصل على نافذة إصدار",s:"تيم تشيري"}},
+  {tag:"event",date:"Mar 2026",en:{h:"Xbox Game Pass Adds 8 Day-One Titles for Q2",s:"Xbox Wire"},ar:{h:"Xbox Game Pass يضيف 8 ألعاب من يوم الإصدار",s:"إكسبوكس وير"}},
+  {tag:"release",date:"Feb 2026",en:{h:"Assassin's Creed Shadows Receives Major Update",s:"Ubisoft"},ar:{h:"أساسن كريد شادوز يحصل على تحديث ضخم",s:"يوبيسوفت"}},
+];
+
+const calendarData = [
+  {month:"APR",day:"2",en:{n:"Death Stranding 2",d:"Kojima Productions · PS5",p:"PS5"},ar:{n:"ديث ستراندينغ 2",d:"كوجيما برودكشنز · PS5",p:"PS5"}},
+  {month:"APR",day:"25",en:{n:"Doom: The Dark Ages",d:"id Software · All Platforms",p:"PC/PS5/Xbox"},ar:{n:"دووم: العصور المظلمة",d:"آي دي سوفتوير · كل المنصات",p:"PC/PS5/Xbox"}},
+  {month:"MAY",day:"13",en:{n:"Ghost of Yōtei",d:"Sucker Punch Productions · PS5",p:"PS5"},ar:{n:"غوست أوف يوتي",d:"ساكر بانش · PS5",p:"PS5"}},
+  {month:"JUN",day:"6",en:{n:"Mafia: The Old Country",d:"Hangar 13 · All Platforms",p:"PC/PS5/Xbox"},ar:{n:"مافيا: البلد القديم",d:"هانغار 13 · كل المنصات",p:"PC/PS5/Xbox"}},
+  {month:"JUN",day:"20",en:{n:"Borderlands 4",d:"Gearbox Software · All Platforms",p:"PC/PS5/Xbox"},ar:{n:"بورديرلاندز 4",d:"جيربوكس · كل المنصات",p:"PC/PS5/Xbox"}},
+  {month:"SEP",day:"TBD",en:{n:"Hollow Knight: Silksong",d:"Team Cherry · All Platforms",p:"PC/Switch/PS5"},ar:{n:"هولو نايت: سيلكسونغ",d:"تيم تشيري · كل المنصات",p:"PC/Switch/PS5"}},
+  {month:"2026",day:"TBD",en:{n:"Grand Theft Auto VI",d:"Rockstar Games · PS5/Xbox",p:"PS5/Xbox"},ar:{n:"GTA VI",d:"روكستار جيمز · PS5/Xbox",p:"PS5/Xbox"}},
+  {month:"2026",day:"TBD",en:{n:"The Elder Scrolls VI",d:"Bethesda · TBA",p:"TBA"},ar:{n:"ذا إلدر سكرولز 6",d:"بيثيسدا · غير محدد",p:"TBA"}},
+];
+
+let favorites = JSON.parse(localStorage.getItem('gzFavs') || '[]');
+
+function saveFavs() { localStorage.setItem('gzFavs', JSON.stringify(favorites)); }
+function isFav(id) { return favorites.includes(id); }
+function toggleFav(id, name) {
+  if (isFav(id)) {
+    favorites = favorites.filter(f => f !== id);
+    showToast(lang==='en' ? `Removed from favorites` : `تمت الإزالة من المفضلة`);
+  } else {
+    favorites.push(id);
+    showToast(lang==='en' ? `❤️ Added to favorites!` : `❤️ أُضيف للمفضلة!`);
+  }
+  saveFavs();
+  updateRatedCount();
+  if (currentTab === 'favorites') renderFavorites();
+  else render();
+}
+
+function openRandomGame() {
+  const idx = Math.floor(Math.random() * games.length);
+  openGameModal(games[idx]);
+  showToast(lang==='en' ? '🎲 Random game!' : '🎲 لعبة عشوائية!');
+}
+
+// ============================================================
+function getMetaScore(name) {
+  const s = gameScores[name];
+  return s ? s.meta : null;
+}
+function getScoreColor(score) {
+  if (!score) return '#6b7280';
+  if (score >= 90) return '#00e676';
+  if (score >= 75) return '#d4af37';
+  return '#ff3b5c';
+}
+function renderStars(rating, interactive=false, id='') {
+  let html = '<div class="stars">';
+  for (let i = 1; i <= 5; i++) {
+    const cls = i <= Math.floor(rating) ? 'filled' : (i - 0.5 <= rating ? 'half' : '');
+    if (interactive) {
+      html += `<span class="star ${cls}" data-id="${id}" data-val="${i}">${i <= rating ? '★' : '☆'}</span>`;
+    } else {
+      html += `<span class="star ${cls}">${cls ? '★' : '☆'}</span>`;
+    }
+  }
+  html += `<span class="rating-num">${rating > 0 ? rating.toFixed(1) : '—'}</span></div>`;
+  return html;
+}
+function hoverStar(el, n) {
+  const stars = el.parentElement.querySelectorAll('.star');
+  stars.forEach((s,i) => { s.textContent = i < n ? '★' : '☆'; s.style.color = i < n ? 'var(--gold2)' : ''; });
+}
+function unhoverStars(el) {
+  // re-render handled by setRating / initial load
+}
+function setRating(id, val) {
+  userRatings[id] = val;
+  localStorage.setItem('gzRatings', JSON.stringify(userRatings));
+  updateRatedCount();
+  render();
+  showToast(lang==='en' ? `Rated ${val}/5 ⭐` : `تقييمك ${val}/5 ⭐`);
+}
+function updateRatedCount() {
+  document.getElementById('ratedCount').textContent = Object.keys(userRatings).length;
+  document.getElementById('sl4').textContent = lang==='ar' ? 'مقيّم' : 'Rated';
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+function getGameEmoji(genre) {
+  return gameEmojis[genre] || '🎮';
+}
+function getCharEmoji(world) {
+  return charEmojis[world] || charEmojis['default'];
+}
+function isNew(year) { return year >= 2023; }
+function isTop(name) {
+  const s = gameScores[name];
+  return s && s.meta >= 92;
+}
+
+// ============================================================
+// FILTER SETUP
+// ============================================================
+function setupFilters() {
+  const gf = document.getElementById('genreFilter');
+  const yf = document.getElementById('yearFilter');
+  const rf = document.getElementById('ratingFilter');
+  
+  gf.innerHTML = `<option value="all">${lang==='en'?'All Genres':'كل الأنواع'}</option>`;
+  yf.innerHTML = `<option value="all">${lang==='en'?'All Years':'كل السنوات'}</option>`;
+  rf.innerHTML = `<option value="all">${lang==='en'?'All Ratings':'كل التقييمات'}</option>
+    <option value="90">90+</option><option value="80">80+</option><option value="70">70+</option>`;
+
+  if (currentTab === 'characters') {
+    const worlds = [...new Set(characters.map(c => c.w))].sort();
+    worlds.forEach(w => gf.innerHTML += `<option value="${w}">${w}</option>`);
+    yf.style.display = 'none'; rf.style.display = 'none';
+  } else if (currentTab === 'games') {
+    const genres = [...new Set(games.map(g => g[lang].g))].sort();
+    genres.forEach(g => gf.innerHTML += `<option value="${g}">${g}</option>`);
+    const years = [...new Set(games.map(g => g[lang].y))].sort((a,b)=>b-a);
+    years.forEach(y => yf.innerHTML += `<option value="${y}">${y}</option>`);
+    yf.style.display = ''; rf.style.display = '';
+  } else {
+    document.getElementById('controlsWrap').style.display = 'none';
+    return;
+  }
+  document.getElementById('controlsWrap').style.display = 'flex';
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render() {
+  const arc = document.getElementById('archive');
+  const q = document.getElementById('search').value.toLowerCase();
+  const gf = document.getElementById('genreFilter').value;
+  const yf = document.getElementById('yearFilter').value;
+  const rf = document.getElementById('ratingFilter').value;
+  arc.className = 'archive ' + (currentView === 'list' ? 'list-view' : '');
+  
+  if (currentTab === 'charts') {
+    renderCharts(); arc.innerHTML = ''; return;
+  }
+
+  arc.innerHTML = '';
+  let count = 0;
+
+  if (currentTab === 'characters') {
+    let filtered = characters.filter(c =>
+      (gf === 'all' || c.w === gf) &&
+      c[lang].n.toLowerCase().includes(q)
+    );
+    count = filtered.length;
+    filtered.forEach((c, idx) => {
+      const favId = 'char_' + c.en.n;
+      const emoji = getCharEmoji(c.w);
+      const userR = userRatings['char_'+c[lang].n] || 0;
+      const quote = characterQuotes[c.en.n];
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.style.animationDelay = (idx % 20 * 0.04) + 's';
+      div.innerHTML = `
+        <div class="card-img">
+          <div class="card-img-placeholder">${emoji}</div>
+          <div class="card-img-overlay"></div>
+          <span class="card-badge badge-top">${c.w.length > 18 ? c.w.substring(0,16)+'…' : c.w}</span>
+          <button class="fav-btn ${isFav(favId)?'active':''}" data-fav-id="${favId}" data-fav-name="${c[lang].n}" title="Favorite">${isFav(favId)?'❤️':'🤍'}</button>
+        </div>
+        <div class="card-body">
+          <div class="card-title">${c[lang].n}</div>
+          <div class="card-desc">${c[lang].m}</div>
+          ${quote ? `<div class="char-quote">"${quote[lang]||quote.en}"</div>` : `<div class="meta-item"><span class="mi">💬</span> <em>"${c[lang].p}"</em></div>`}
+          <div style="margin-top:10px">${renderStars(userR, true, 'char_'+c.en.n)}</div>
+        </div>`;
+      div.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('star')) openCharModal(c);
+      });
+      arc.appendChild(div);
+    });
+  } else {
+    let filtered = games.filter(g => {
+      const score = getMetaScore(g.en.n);
+      return (gf === 'all' || g[lang].g === gf) &&
+        (yf === 'all' || g[lang].y == yf) &&
+        (rf === 'all' || (score && score >= parseInt(rf))) &&
+        g[lang].n.toLowerCase().includes(q);
+    });
+    count = filtered.length;
+    filtered.forEach((g, idx) => {
+      const score = getMetaScore(g.en.n);
+      const userR = userRatings['game_'+g.en.n] || 0;
+      const scores = gameScores[g.en.n];
+      const prices = gamePrices[g.en.n];
+      const emoji = getGameEmoji(g.en.g);
+      const favId = 'game_' + g.en.n;
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.style.animationDelay = (idx % 20 * 0.04) + 's';
+
+      let badgeHtml = '';
+      if (isNew(g.en.y)) badgeHtml = `<span class="card-badge badge-new">${lang==='en'?'NEW':'جديد'}</span>`;
+      else if (isTop(g.en.n)) badgeHtml = `<span class="card-badge badge-top">TOP</span>`;
+
+      let scoreHtml = '';
+      if (scores) {
+        scoreHtml = `<div class="score-wrap">
+          <div class="score-badge score-meta"><span class="score-icon">📊</span>${scores.meta}</div>
+          <div class="score-badge score-user"><span class="score-icon">👥</span>${scores.user}</div>
+          <div class="score-badge score-critic"><span class="score-icon">✍️</span>${scores.opencritic}</div>
+        </div>`;
+      }
+
+      let priceHtml = '';
+      if (prices) {
+        priceHtml = `<div class="price-wrap">
+          ${prices.ps ? `<span class="price-tag price-ps">🎮 PS ${prices.ps}</span>` : ''}
+          ${prices.xbox ? `<span class="price-tag price-xbox">🟩 Xbox ${prices.xbox}</span>` : ''}
+          ${prices.pc ? `<span class="price-tag price-pc">${prices.pc==='Free'?'🆓 PC Free':`💻 PC ${prices.pc}`}</span>` : ''}
+        </div>`;
+      }
+
+      const partsLen = g.parts ? g.parts.length : 0;
+      const toggleLabel = lang==='en'
+        ? `${partsLen} expansion${partsLen!==1?'s':''} · Series: ${g.seriesParts} games`
+        : `${partsLen} إضافة · السلسلة: ${g.seriesParts} أجزاء`;
+
+      div.innerHTML = `
+        <div class="card-img">
+          <div class="card-img-placeholder">${emoji}</div>
+          <div class="card-img-overlay"></div>
+          ${badgeHtml}
+          <button class="fav-btn ${isFav(favId)?'active':''}" data-fav-id="${favId}" data-fav-name="${g[lang].n}" title="Favorite">${isFav(favId)?'❤️':'🤍'}</button>
+        </div>
+        <div class="card-body">
+          <div class="card-title">${g[lang].n}</div>
+          <span class="card-tag">🎮 ${g[lang].g}</span>
+          <div class="card-desc">${g[lang].d}</div>
+          <div class="card-meta">
+            <div class="meta-item"><span class="mi">📅</span>${g[lang].y}</div>
+          </div>
+          ${scoreHtml}
+          ${priceHtml}
+          <div style="margin-top:10px">${renderStars(userR, true, 'game_'+g.en.n)}</div>
+        </div>
+        <button class="parts-toggle" onclick="toggleParts(this, event)">
+          <span>📦 ${toggleLabel}</span><span class="arrow">▼</span>
+        </button>
+        <div class="parts-list">
+          <div class="parts-inner">
+            ${g.seriesParts > 1 ? `<div class="series-info">🎮 ${lang==='en'?`Series has ${g.seriesParts} total games`:`السلسلة تحتوي ${g.seriesParts} أجزاء`}</div>` : ''}
+            ${partsLen > 0
+              ? g.parts.map(p=>`<div class="part-item"><span>${p[lang].n}</span><span class="part-year">${p[lang].y}</span></div>`).join('')
+              : `<div class="part-item"><span>${lang==='en'?'No expansions listed':'لا توجد إضافات مدرجة'}</span></div>`
+            }
+          </div>
+        </div>`;
+
+      div.addEventListener('click', (e) => {
+        if (!e.target.closest('.parts-toggle') && !e.target.classList.contains('star')) {
+          openGameModal(g);
+        }
+      });
+      arc.appendChild(div);
+    });
+  }
+
+  document.getElementById('resultsCount').textContent = `${count} ${lang==='en'?'results':'نتيجة'}`;
+}
+
+function toggleParts(btn, e) {
+  e.stopPropagation();
+  const list = btn.nextElementSibling;
+  const isOpen = list.classList.contains('open');
+  list.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
+// ============================================================
+// CHARTS
+// ============================================================
+function renderCharts() {
+  const sec = document.getElementById('chartsSection');
+  sec.style.display = 'block';
+  const topGames = [...games]
+    .filter(g => gameScores[g.en.n])
+    .sort((a,b) => (gameScores[b.en.n]?.meta||0) - (gameScores[a.en.n]?.meta||0))
+    .slice(0, 10);
+
+  const topByUser = [...games]
+    .filter(g => userRatings['game_'+g.en.n])
+    .sort((a,b) => (userRatings['game_'+b.en.n]||0) - (userRatings['game_'+a.en.n]||0))
+    .slice(0, 5);
+
+  sec.innerHTML = `
+    <div class="charts-title">🏆 ${lang==='en'?'Top Rated by Critics':'الأعلى تقييماً من النقاد'}</div>
+    <div class="top-list">${topGames.map((g,i) => {
+      const s = gameScores[g.en.n];
+      const gIdx = games.indexOf(g);
+      return `<div class="top-item" data-game-index="${gIdx}" style="cursor:pointer">
+        <div class="top-rank ${i<3?'r'+(i+1):''}">#${i+1}</div>
+        <div class="top-info">
+          <div class="top-name">${g[lang].n}</div>
+          <div class="top-sub">${g[lang].g} · ${g[lang].y}</div>
+        </div>
+        <div class="top-score" style="color:${getScoreColor(s.meta)}">${s.meta}</div>
+      </div>`;
+    }).join('')}</div>
+    ${topByUser.length > 0 ? `
+    <div class="charts-title" style="margin-top:24px">⭐ ${lang==='en'?'Your Top Rated':'تقييماتك الأعلى'}</div>
+    <div class="top-list">${topByUser.map((g,i) => {
+      const r = userRatings['game_'+g.en.n];
+      return `<div class="top-item">
+        <div class="top-rank ${i<3?'r'+(i+1):''}">#${i+1}</div>
+        <div class="top-info">
+          <div class="top-name">${g[lang].n}</div>
+          <div class="top-sub">${g[lang].g}</div>
+        </div>
+        <div class="top-score">★ ${r}/5</div>
+      </div>`;
+    }).join('')}</div>` : ''}
+  `;
+}
+
+// ============================================================
+// MODALS
+// ============================================================
+function openGameModal(g) {
+  if (!g) return;
+  const overlay = document.getElementById('modalOverlay');
+  const header = document.getElementById('modalHeaderBg');
+  const body = document.getElementById('modalBody');
+  const emoji = getGameEmoji(g.en.g);
+  const scores = gameScores[g.en.n];
+  const userR = userRatings['game_'+g.en.n] || 0;
+  const partsLen = g.parts ? g.parts.length : 0;
+
+  header.innerHTML = `<div style="font-size:7rem">${emoji}</div>`;
+
+  let scoresHtml = '';
+  if (scores) {
+    scoresHtml = `
+      <div class="modal-section-title">${lang==='en'?'Critical Scores':'تقييمات النقاد'}</div>
+      <div class="modal-scores">
+        <div class="modal-score-item">
+          <div class="modal-score-num" style="color:${getScoreColor(scores.meta)}">${scores.meta}</div>
+          <div class="modal-score-label">Metacritic</div>
+        </div>
+        <div class="modal-score-item">
+          <div class="modal-score-num" style="color:${getScoreColor(scores.opencritic)}">${scores.opencritic}</div>
+          <div class="modal-score-label">OpenCritic</div>
+        </div>
+        <div class="modal-score-item">
+          <div class="modal-score-num" style="color:var(--green)">${scores.user}</div>
+          <div class="modal-score-label">${lang==='en'?'User Score':'تقييم المستخدمين'}</div>
+        </div>
+      </div>`;
+  }
+
+  body.innerHTML = `
+    <div class="modal-title">${g[lang].n}</div>
+    <div class="modal-tags">
+      <span class="modal-tag modal-tag-gold">🎮 ${g[lang].g}</span>
+      <span class="modal-tag modal-tag-blue">📅 ${g[lang].y}</span>
+      ${g.seriesParts > 1 ? `<span class="modal-tag modal-tag-cyan">📦 ${lang==='en'?`Series: ${g.seriesParts} games`:`السلسلة: ${g.seriesParts} أجزاء`}</span>` : ''}
+    </div>
+    <div class="modal-section-title">${lang==='en'?'Description':'الوصف'}</div>
+    <div class="modal-desc">${g[lang].d}</div>
+    ${scoresHtml}
+    <div class="modal-section-title">${lang==='en'?'Your Rating':'تقييمك'}</div>
+    <div class="user-rating-wrap">
+      <div class="user-rating-label">${lang==='en'?'Tap a star to rate this game:':'انقر على نجمة لتقييم هذه اللعبة:'}</div>
+      <div class="user-stars" id="modalStars" data-id="game_${g.en.n}" data-type="game">
+        ${[1,2,3,4,5].map(i=>`<span class="user-star ${i<=userR?'active':''}" data-val="${i}">${i<=userR?'★':'☆'}</span>`).join('')}
+      </div>
+    </div>
+    ${partsLen > 0 ? `
+    <div class="modal-section-title">${lang==='en'?'DLC & Expansions':'الإضافات والتوسعات'}</div>
+    <div class="modal-parts-list">
+      ${g.parts.map(p=>`<div class="modal-part-row"><span class="modal-part-name">${p[lang].n}</span><span class="modal-part-year">${p[lang].y}</span></div>`).join('')}
+    </div>` : ''}
+  `;
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function openCharModal(c) {
+  const overlay = document.getElementById('modalOverlay');
+  const header = document.getElementById('modalHeaderBg');
+  const body = document.getElementById('modalBody');
+  const emoji = getCharEmoji(c.w);
+  const userR = userRatings['char_'+c[lang].n] || 0;
+
+  header.innerHTML = `<div style="font-size:7rem">${emoji}</div>`;
+  body.innerHTML = `
+    <div class="modal-title">${c[lang].n}</div>
+    <div class="modal-tags">
+      <span class="modal-tag modal-tag-gold">🎮 ${c.w}</span>
+    </div>
+    <div class="modal-section-title">${lang==='en'?'Mental Image':'الصورة الذهنية'}</div>
+    <div class="modal-desc">${c[lang].m}</div>
+    <div class="modal-section-title">${lang==='en'?'Power Philosophy':'فلسفة القوة'}</div>
+    <div class="modal-desc" style="font-style:italic; font-size:1.1rem; color:var(--gold)">"${c[lang].p}"</div>
+    <div class="modal-section-title">${lang==='en'?'Your Rating':'تقييمك'}</div>
+    <div class="user-rating-wrap">
+      <div class="user-rating-label">${lang==='en'?'Rate this character:':'قيّم هذه الشخصية:'}</div>
+      <div class="user-stars" id="modalStars" data-id="char_${c[lang].n}" data-type="char">
+        ${[1,2,3,4,5].map(i=>`<span class="user-star ${i<=userR?'active':''}" data-val="${i}">${i<=userR?'★':'☆'}</span>`).join('')}
+      </div>
+    </div>
+  `;
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function refreshModalStars(el, val) {
+  const stars = el.querySelectorAll('.user-star');
+  stars.forEach((s,i) => {
+    s.classList.toggle('active', i < val);
+    s.textContent = i < val ? '★' : '☆';
+  });
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modalOverlay') && !e.target.classList.contains('modal-close')) return;
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ============================================================
+// FAVORITES TAB
+// ============================================================
+function renderFavorites() {
+  const arc = document.getElementById('archive');
+  arc.className = 'archive';
+  arc.innerHTML = '';
+  if (favorites.length === 0) {
+    arc.innerHTML = `<div class="empty-state"><div class="empty-icon">❤️</div><div class="empty-text">${lang==='en'?'No favorites yet — heart a game or character!':'لا مفضلة بعد — أضف لعبة أو شخصية!'}</div></div>`;
+    return;
+  }
+  const favGames = games.filter(g => favorites.includes('game_'+g.en.n));
+  const favChars = characters.filter(c => favorites.includes('char_'+c.en.n));
+  [...favGames, ...favChars].forEach((item, idx) => {
+    const isGame = !!item.en.g;
+    const div = document.createElement('div');
+    div.className = 'card'; div.style.animationDelay = (idx*0.04)+'s';
+    const emoji = isGame ? getGameEmoji(item.en.g) : getCharEmoji(item.w);
+    const name = item[lang].n || item[lang].n;
+    const favId = isGame ? 'game_'+item.en.n : 'char_'+item.en.n;
+    div.innerHTML = `
+      <div class="card-img">
+        <div class="card-img-placeholder">${emoji}</div>
+        <div class="card-img-overlay"></div>
+        <button class="fav-btn active" data-fav-id="${favId}" data-fav-name="${name}">❤️</button>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${name}</div>
+        <span class="card-tag">${isGame ? '🎮 '+item[lang].g : '🎭 '+item.w}</span>
+        <div class="card-desc">${isGame ? item[lang].d : item[lang].m}</div>
+      </div>`;
+    div.addEventListener('click', e => {
+      if (!e.target.closest('.fav-btn')) isGame ? openGameModal(item) : openCharModal(item);
+    });
+    arc.appendChild(div);
+  });
+  document.getElementById('resultsCount').textContent = `${favorites.length} ${lang==='en'?'favorites':'مفضلة'}`;
+}
+
+// ============================================================
+// NEWS TAB
+// ============================================================
+function renderNews() {
+  const grid = document.getElementById('newsGrid');
+  const tagLabels = {release:'🚀 Release',update:'🔄 Update',dlc:'📦 DLC',event:'🎪 Event'};
+  const tagLabelsAr = {release:'🚀 إصدار',update:'🔄 تحديث',dlc:'📦 إضافة',event:'🎪 حدث'};
+  grid.innerHTML = newsData.map(n => `
+    <div class="news-card">
+      <span class="news-tag nt-${n.tag}">${lang==='en'?tagLabels[n.tag]:tagLabelsAr[n.tag]}</span>
+      <div class="news-date">${n.date}</div>
+      <div class="news-headline">${n[lang].h}</div>
+      <div class="news-src">📰 ${n[lang].s}</div>
+    </div>`).join('');
+}
+
+// ============================================================
+// CALENDAR TAB
+// ============================================================
+function renderCalendar() {
+  const list = document.getElementById('calList');
+  list.innerHTML = calendarData.map(c => `
+    <div class="cal-item">
+      <div class="cal-date-box">
+        <div class="cal-month">${c.month}</div>
+        <div class="cal-day">${c.day}</div>
+      </div>
+      <div class="cal-info">
+        <div class="cal-name">${c[lang].n}</div>
+        <div class="cal-detail">${c[lang].d}</div>
+      </div>
+      <div class="cal-platform">${c[lang].p}</div>
+    </div>`).join('');
+}
+
+// ============================================================
+// PROFILE TAB
+// ============================================================
+function renderProfile() {
+  const ratedGames = games.filter(g => userRatings['game_'+g.en.n]);
+  const ratedChars = characters.filter(c => userRatings['char_'+c.en.n]);
+  const totalRated = ratedGames.length + ratedChars.length;
+  const totalFavs = favorites.length;
+  const avgScore = ratedGames.length
+    ? (ratedGames.reduce((s,g) => s+(userRatings['game_'+g.en.n]||0),0)/ratedGames.length).toFixed(1)
+    : '—';
+
+  // top genre
+  const genreCounts = {};
+  ratedGames.forEach(g => { const genre = g.en.g.split('/')[0]; genreCounts[genre]=(genreCounts[genre]||0)+(userRatings['game_'+g.en.n]||0); });
+  const topGenre = Object.entries(genreCounts).sort((a,b)=>b[1]-a[1])[0]?.[0] || '—';
+
+  // level
+  const level = totalRated < 5 ? (lang==='en'?'ROOKIE':'مبتدئ')
+    : totalRated < 15 ? (lang==='en'?'PLAYER':'لاعب')
+    : totalRated < 30 ? (lang==='en'?'VETERAN':'محترف')
+    : (lang==='en'?'LEGEND':'أسطورة');
+  const lvlNum = totalRated < 5 ? 1 : totalRated < 15 ? 2 : totalRated < 30 ? 3 : 4;
+
+  document.getElementById('profileLevel').textContent = `LEVEL ${lvlNum} · ${level}`;
+  document.getElementById('ps1').textContent = totalRated;
+  document.getElementById('ps2').textContent = totalFavs;
+  document.getElementById('ps3').textContent = avgScore;
+  document.getElementById('ps4').textContent = topGenre.substring(0,5)||'—';
+  document.getElementById('psl1').textContent = lang==='en'?'Rated':'مقيّم';
+  document.getElementById('psl2').textContent = lang==='en'?'Favorites':'مفضلة';
+  document.getElementById('psl3').textContent = lang==='en'?'Avg Score':'متوسط';
+  document.getElementById('psl4').textContent = lang==='en'?'Top Genre':'النوع';
+
+  // genre bars
+  const maxCount = Math.max(...Object.values(genreCounts), 1);
+  const genreBars = Object.entries(genreCounts).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([g,c])=>`
+    <div class="genre-bar-wrap">
+      <div class="genre-bar-label"><span>${g}</span><span style="color:var(--gold)">${c}</span></div>
+      <div class="genre-bar-track"><div class="genre-bar-fill" style="width:${Math.round(c/maxCount*100)}%"></div></div>
+    </div>`).join('') || `<div style="color:var(--muted);font-size:0.85rem">${lang==='en'?'Rate some games to see stats':'قيّم بعض الألعاب لرؤية الإحصائيات'}</div>`;
+
+  // top rated
+  const topRated = [...ratedGames].sort((a,b)=>(userRatings['game_'+b.en.n]||0)-(userRatings['game_'+a.en.n]||0)).slice(0,6);
+  const ratedRows = topRated.map(g=>`
+    <div class="rated-game-row">
+      <span class="rated-game-name">${g[lang].n}</span>
+      <span class="rated-game-score">${'★'.repeat(userRatings['game_'+g.en.n]||0)}</span>
+    </div>`).join('') || `<div style="color:var(--muted);font-size:0.85rem">${lang==='en'?'No ratings yet':'لا تقييمات بعد'}</div>`;
+
+  // favs list
+  const favChips = favorites.map(id => {
+    const game = games.find(g=>'game_'+g.en.n===id);
+    const char = characters.find(c=>'char_'+c.en.n===id);
+    const item = game||char;
+    if (!item) return '';
+    const name = item[lang].n || item[lang].n;
+    return `<div class="fav-chip" data-fav-id="${id}" data-fav-name="${name}">❤️ ${name} <span class="remove">✕</span></div>`;
+  }).join('') || `<div style="color:var(--muted);font-size:0.85rem">${lang==='en'?'No favorites yet':'لا مفضلة بعد'}</div>`;
+
+  document.getElementById('profileMain').innerHTML = `
+    <div class="profile-section">
+      <div class="profile-section-title">📊 ${lang==='en'?'Genre Preferences':'تفضيلات النوع'}</div>
+      ${genreBars}
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-title">⭐ ${lang==='en'?'Top Rated Games':'أعلى الألعاب تقييماً'}</div>
+      ${ratedRows}
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-title">❤️ ${lang==='en'?'My Favorites':'مفضلتي'}</div>
+      <div class="fav-list">${favChips}</div>
+    </div>`;
+
+  // delegate fav chip remove
+  document.getElementById('profileMain').querySelectorAll('.fav-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const id = chip.dataset.favId;
+      const name = chip.dataset.favName;
+      toggleFav(id, name);
+      renderProfile();
+    });
+  });
+}
+
+// ============================================================
+// AI RECOMMENDER
+// ============================================================
+const allGenres = ['RPG','Action','Horror','Stealth','Fighting','Puzzle','Adventure','Platformer','Strategy'];
+let selectedGenres = [];
+
+function initAI() {
+  const container = document.getElementById('aiGenres');
+  container.innerHTML = allGenres.map(g=>`
+    <div class="ai-genre-chip" data-genre="${g}">${g}</div>`).join('');
+  container.querySelectorAll('.ai-genre-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('sel');
+      selectedGenres = [...container.querySelectorAll('.ai-genre-chip.sel')].map(c=>c.dataset.genre);
+    });
+  });
+}
+
+async function askAI() {
+  const btn = document.getElementById('aiAskBtn');
+  const result = document.getElementById('aiResult');
+  if (selectedGenres.length === 0) { showToast(lang==='en'?'Pick at least one genre!':'اختر نوعاً واحداً على الأقل!'); return; }
+  btn.disabled = true;
+  result.classList.add('show');
+  result.innerHTML = `<div class="ai-typing"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>`;
+
+  // Build context from our games data
+  const matching = games.filter(g => selectedGenres.some(sg => g.en.g.includes(sg)));
+  const gamesList = matching.slice(0,15).map(g => `${g.en.n} (${g.en.g}, ${g.en.y}): ${g.en.d}`).join('\n');
+  const prompt = `You are a gaming expert. The user loves these genres: ${selectedGenres.join(', ')}.
+From this list of games, recommend the TOP 3 that best match their taste and explain why in 1-2 sentences each. Be enthusiastic and specific.
+Games: ${gamesList}
+Format: Game Name - Why you'll love it.`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:400,
+        messages:[{role:"user",content:prompt}]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || 'No response.';
+    result.innerHTML = `<div style="color:var(--cyan);font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">🤖 AI Recommends for: ${selectedGenres.join(' · ')}</div>${text.replace(/\n/g,'<br>')}`;
+  } catch(e) {
+    result.innerHTML = `<span style="color:var(--red)">⚠️ ${lang==='en'?'Could not connect to AI. Try again.':'تعذر الاتصال بالذكاء الاصطناعي.'}</span>`;
+  }
+  btn.disabled = false;
+}
+
+function clearAI() {
+  document.querySelectorAll('.ai-genre-chip').forEach(c=>c.classList.remove('sel'));
+  selectedGenres = [];
+  const result = document.getElementById('aiResult');
+  result.classList.remove('show');
+  result.innerHTML = '';
+}
+
+// ============================================================
+function switchTab(btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentTab = btn.dataset.tab;
+
+  // hide everything
+  document.getElementById('chartsSection').style.display = 'none';
+  document.getElementById('aiPanel').style.display = 'none';
+  document.getElementById('newsSection').style.display = 'none';
+  document.getElementById('calSection').style.display = 'none';
+  document.getElementById('profileSection').style.display = 'none';
+  document.getElementById('archive').innerHTML = '';
+  document.getElementById('archive').style.display = 'grid';
+  document.getElementById('controlsWrap').style.display = 'flex';
+
+  if (currentTab === 'charts') {
+    document.getElementById('chartsSection').style.display = 'block';
+    document.getElementById('controlsWrap').style.display = 'none';
+    document.getElementById('archive').style.display = 'none';
+    renderCharts();
+  } else if (currentTab === 'favorites') {
+    document.getElementById('controlsWrap').style.display = 'none';
+    renderFavorites();
+  } else if (currentTab === 'news') {
+    document.getElementById('newsSection').style.display = 'block';
+    document.getElementById('controlsWrap').style.display = 'none';
+    document.getElementById('archive').style.display = 'none';
+    renderNews();
+  } else if (currentTab === 'calendar') {
+    document.getElementById('calSection').style.display = 'block';
+    document.getElementById('controlsWrap').style.display = 'none';
+    document.getElementById('archive').style.display = 'none';
+    renderCalendar();
+  } else if (currentTab === 'profile') {
+    document.getElementById('profileSection').style.display = 'block';
+    document.getElementById('controlsWrap').style.display = 'none';
+    document.getElementById('archive').style.display = 'none';
+    renderProfile();
+  } else {
+    if (currentTab === 'games') document.getElementById('aiPanel').style.display = 'block';
+    setupFilters();
     render();
+  }
+}
+
+function toggleLang() {
+  lang = lang === 'en' ? 'ar' : 'en';
+  const isAr = lang === 'ar';
+  document.documentElement.lang = lang;
+  document.body.dir = isAr ? 'rtl' : 'ltr';
+  document.getElementById('langBtn').textContent = isAr ? 'EN' : 'AR';
+  document.getElementById('title').textContent = isAr ? 'أرشيف جيم زون' : 'GAME ZONE';
+  document.getElementById('subtitle').textContent = isAr ? 'أرشيف · موسوعة · قاعدة بيانات' : 'ARCHIVE · ENCYCLOPEDIA · DATABASE';
+  document.getElementById('headerBadge').textContent = isAr ? 'موسوعة ألعاب الفيديو' : 'VIDEO GAME ENCYCLOPEDIA';
+  document.getElementById('sl1').textContent = isAr ? 'شخصية' : 'Characters';
+  document.getElementById('sl2').textContent = isAr ? 'لعبة' : 'Games';
+  document.getElementById('sl3').textContent = isAr ? 'سلسلة' : 'Franchises';
+  document.getElementById('sl4').textContent = isAr ? 'مقيّم' : 'Rated';
+  document.getElementById('tabChar').textContent = isAr ? 'الشخصيات' : 'Characters';
+  document.getElementById('tabGames').textContent = isAr ? 'الألعاب' : 'Games';
+  document.getElementById('tabCharts').textContent = isAr ? 'الأفضل' : 'Top Charts';
+  document.getElementById('tabFavs').textContent = isAr ? 'المفضلة' : 'Favorites';
+  document.getElementById('tabNews').textContent = isAr ? 'الأخبار' : 'News';
+  document.getElementById('tabCal').textContent = isAr ? 'التقويم' : 'Calendar';
+  document.getElementById('tabProfile').textContent = isAr ? 'ملفي' : 'Profile';
+  document.getElementById('randomLabel').textContent = isAr ? 'عشوائي' : 'Random';
+  document.getElementById('aiTitle').textContent = isAr ? 'مساعد الذكاء الاصطناعي' : 'AI Game Recommender';
+  document.getElementById('aiSub').textContent = isAr ? 'اختر أنواعك المفضلة واحصل على توصيات' : 'Pick genres you love and get personalized recommendations';
+  document.getElementById('aiAskLabel').textContent = isAr ? 'أوصِ بألعاب' : 'Recommend Games';
+  document.getElementById('aiClearLabel').textContent = isAr ? 'مسح' : 'Clear';
+  document.getElementById('newsTitleTxt').textContent = isAr ? 'أخبار الألعاب' : 'Gaming News';
+  document.getElementById('calTitleTxt').textContent = isAr ? 'الإصدارات القادمة 2025–2026' : 'Upcoming Releases 2025–2026';
+  document.getElementById('search').placeholder = isAr ? 'بحث...' : 'Search...';
+  document.getElementById('footerSub').textContent = isAr ? 'صُنع بشغف للألعاب' : 'Built with passion for gaming';
+  // re-render current tab
+  const activeBtn = document.querySelector('.tab-btn.active');
+  if (activeBtn) switchTab(activeBtn);
+}
+
+function setView(v) {
+  currentView = v;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.view-btn')[v==='grid'?0:1].classList.add('active');
+  render();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('genreFilter').addEventListener('change', render);
+document.getElementById('yearFilter').addEventListener('change', render);
+document.getElementById('ratingFilter').addEventListener('change', render);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal({ target: document.getElementById('modalOverlay') });
+});
+
+// Event delegation for FAV buttons
+document.getElementById('archive').addEventListener('click', e => {
+  const favBtn = e.target.closest('.fav-btn');
+  if (favBtn) {
+    e.stopPropagation();
+    toggleFav(favBtn.dataset.favId, favBtn.dataset.favName);
+    favBtn.textContent = isFav(favBtn.dataset.favId) ? '❤️' : '🤍';
+    favBtn.classList.toggle('active', isFav(favBtn.dataset.favId));
+    return;
+  }
+  const star = e.target.closest('.star[data-id]');
+  if (star) {
+    e.stopPropagation();
+    const id = star.dataset.id;
+    const val = parseInt(star.dataset.val);
+    setRating(id, val);
+  }
+});
+document.getElementById('archive').addEventListener('mouseover', e => {
+  const star = e.target.closest('.star[data-id]');
+  if (star) {
+    const val = parseInt(star.dataset.val);
+    const siblings = star.closest('.stars').querySelectorAll('.star');
+    siblings.forEach((s,i) => { s.textContent = i < val ? '★' : '☆'; s.style.color = i < val ? 'var(--gold2)' : ''; });
+  }
+});
+document.getElementById('archive').addEventListener('mouseout', e => {
+  const star = e.target.closest('.star[data-id]');
+  if (star) {
+    const id = star.dataset.id;
+    const rating = userRatings[id] || 0;
+    const siblings = star.closest('.stars').querySelectorAll('.star');
+    siblings.forEach((s,i) => {
+      s.style.color = '';
+      s.textContent = i < rating ? '★' : '☆';
+    });
   }
 });
 
-// ==== البيانات ====
-// ===== الشخصيات (100 شخصية) =====
-const characters = [
-  {w:"Skyrim", en:{n:"Dragonborn",p:"Words shape reality.",m:"Hero on a frozen peak."},ar:{n:"دراجونبورن",p:"الكلمات تشكّل الواقع.",m:"بطل فوق قمة جليدية."}},
-  {w:"Skyrim", en:{n:"Alduin",p:"Destruction is destiny.",m:"World-eating dragon."},ar:{n:"ألدوين",p:"الدمار هو القدر.",m:"تنين يلتهم العالم."}},
-  {w:"The Witcher 3", en:{n:"Geralt of Rivia",p:"Balance over chaos.",m:"White wolf swordsman."},ar:{n:"جيرالت من ريفيا",p:"التوازن قبل الفوضى.",m:"الذئب الأبيض."}},
-  {w:"God of War", en:{n:"Kratos",p:"Master your rage.",m:"Scarred god-slayer."},ar:{n:"كريتوس",p:"سيطر على غضبك.",m:"قاتل الآلهة."}},
-  {w:"God of War Ragnarok", en:{n:"Freya",p:"Love turns to wrath.",m:"Vengeful mother."},ar:{n:"فريا",p:"الحب ينقلب غضبًا.",m:"أم غاضبة."}},
-  {w:"Elden Ring", en:{n:"The Tarnished",p:"Will over destiny.",m:"Exiled warrior."},ar:{n:"التارنشد",p:"الإرادة فوق القدر.",m:"محارب منفي."}},
-  {w:"Red Dead Redemption 2", en:{n:"Arthur Morgan",p:"Outlaw on the run.",m:"Leader in the gang."},ar:{n:"آرثر مورغان",p:"خارج عن القانون.",m:"زعيم في العصابة."}},
-  {w:"Assassin’s Creed Valhalla", en:{n:"Eivor",p:"Viking warrior.",m:"Seeker of glory."},ar:{n:"إيفور",p:"محارب فايكنغ.",m:"باحث عن المجد."}},
-  {w:"Super Mario", en:{n:"Mario",p:"It's-a me!",m:"Plumber hero."},ar:{n:"ماريو",p:"إنه أنا!",m:"بطل السباك."}},
-  {w:"The Legend of Zelda", en:{n:"Link",p:"Silent courage.",m:"Hero of time."},ar:{n:"لينك",p:"شجاعة صامتة.",m:"بطل الزمن."}},
-  {w:"Halo", en:{n:"Master Chief",p:"Finish the fight.",m:"Spartan super soldier."},ar:{n:"ماستر تشيف",p:"أنهِ القتال.",m:"جندي خارق."}},
-  {w:"Metal Gear", en:{n:"Solid Snake",p:"Kept you waiting.",m:"Stealth operative."},ar:{n:"سوليد سنايك",p:"جعلتك تنتظر.",m:"عميل تخفي."}},
-  {w:"Final Fantasy VII", en:{n:"Cloud Strife",p:"Not interested.",m:"Mercenary with a big sword."},ar:{n:"كلاود سترايف",p:"غير مهتم.",m:"مرتزق بسيف كبير."}},
-  {w:"Pac-Man", en:{n:"Pac-Man",p:"Waka waka.",m:"Maze eater."},ar:{n:"باك-مان",p:"واكا واكا.",m:"آكل المتاهات."}},
-  {w:"Tomb Raider", en:{n:"Lara Croft",p:"Adventure awaits.",m:"Archaeologist explorer."},ar:{n:"لارا كروفت",p:"المغامرة تنتظر.",m:"مستكشفة آثار."}},
-  {w:"Half-Life", en:{n:"Gordon Freeman",p:"Silent protagonist.",m:"Physicist with crowbar."},ar:{n:"غوردون فريمان",p:"بطل صامت.",m:"فيزيائي بعصا."}},
-  {w:"Sonic the Hedgehog", en:{n:"Sonic",p:"Gotta go fast.",m:"Blue hedgehog."},ar:{n:"سونيك",p:"يجب الذهاب بسرعة.",m:"قنفذ أزرق."}},
-  {w:"Crash Bandicoot", en:{n:"Crash Bandicoot",p:"Whoa!",m:"Spinning marsupial."},ar:{n:"كراش بانديكوت",p:"واو!",m:"مارسوبيال دوار."}},
-  {w:"Call of Duty", en:{n:"Soap MacTavish",p:"Stay frosty.",m:"SAS soldier."},ar:{n:"سوب ماكتافيش",p:"ابقَ باردًا.",m:"جندي SAS."}},
-  {w:"Ninja Gaiden", en:{n:"Ryu Hayabusa",p:"Ninja way.",m:"Master ninja."},ar:{n:"ريو هايابوسا",p:"طريق النينجا.",m:"نينجا ماهر."}},
-  {w:"Final Fantasy", en:{n:"Sephiroth",p:"Despair.",m:"One-winged angel."},ar:{n:"سيفيروث",p:"اليأس.",m:"ملاك بجناح واحد."}},
-  {w:"The Legend of Zelda", en:{n:"Ganondorf",p:"Power incarnate.",m:"King of evil."},ar:{n:"غانوندورف",p:"القوة المتجسدة.",m:"ملك الشر."}},
-  {w:"Super Mario", en:{n:"Bowser",p:"King Koopa.",m:"Fire-breathing turtle."},ar:{n:"باوزر",p:"ملك كوبا.",m:"سلحفاة تنفث نارًا."}},
-  {w:"Kirby", en:{n:"Kirby",p:"Poyo!",m:"Pink puffball."},ar:{n:"كيربي",p:"بويو!",m:"كرة وردية."}},
-  {w:"Devil May Cry", en:{n:"Dante",p:"Jackpot!",m:"Demon hunter."},ar:{n:"دانتي",p:"جائزة كبرى!",m:"صياد شياطين."}},
-  {w:"God of War", en:{n:"Atreus",p:"Boy.",m:"Young archer."},ar:{n:"أتريوس",p:"يا ولد.",m:"قناص صغير."}},
-  {w:"Hollow Knight", en:{n:"The Knight",p:"Silent vessel.",m:"Bug explorer."},ar:{n:"الفارس",p:"وعاء صامت.",m:"مستكشف حشرات."}},
-  {w:"Resident Evil", en:{n:"Leon Kennedy",p:"No thanks, bro.",m:"Zombie fighter."},ar:{n:"ليون كينيدي",p:"لا شكرًا، أخي.",m:"مقاتل زومبي."}},
-  {w:"Portal", en:{n:"Chell",p:"Silent tester.",m:"Portal gun user."},ar:{n:"شيل",p:"مختبرة صامتة.",m:"مستخدمة مسدس البوابات."}},
-  {w:"Overwatch", en:{n:"Tracer",p:"Cheers, love!",m:"Time jumper."},ar:{n:"تريسر",p:"تحية، حبي!",m:"قافزة زمن."}},
-  {w:"Minecraft", en:{n:"Steve",p:"Build anything.",m:"Blocky survivor."},ar:{n:"ستيف",p:"ابنِ أي شيء.",m:"ناجٍ مكعبات."}},
-  {w:"Fortnite", en:{n:"Jonesy",p:"Battle royale.",m:"Default skin."},ar:{n:"جونزي",p:"باتل رويال.",m:"جلد افتراضي."}},
-  {w:"League of Legends", en:{n:"Ezreal",p:"Adventure calls.",m:"Artifact hunter."},ar:{n:"إزريال",p:"المغامرة تنادي.",m:"صياد آثار."}},
-  {w:"Street Fighter", en:{n:"Ryu",p:"Hadouken!",m:"Martial artist."},ar:{n:"ريو",p:"هادوكين!",m:"فنان قتالي."}},
-  {w:"Mortal Kombat", en:{n:"Sub-Zero",p:"Freeze!",m:"Ice ninja."},ar:{n:"ساب-زيرو",p:"تجميد!",m:"نينجا جليدي."}},
-  {w:"Pokémon", en:{n:"Ash Ketchum",p:"Gotta catch 'em all.",m:"Pokémon trainer."},ar:{n:"أش كيتشوم",p:"يجب التقاطهم جميعًا.",m:"مدرب بوكيمون."}},
-  {w:"Grand Theft Auto V", en:{n:"Michael De Santa",p:"Family man.",m:"Retired criminal."},ar:{n:"مايكل دي سانتا",p:"رجل عائلة.",m:"مجرم متقاعد."}},
-  {w:"The Last of Us", en:{n:"Ellie",p:"Survive.",m:"Immune survivor."},ar:{n:"إيلي",p:"ابقَ على قيد الحياة.",m:"ناجية محصنة."}},
-  {w:"BioShock", en:{n:"Jack",p:"Would you kindly.",m:"Rapture explorer."},ar:{n:"جاك",p:"هل تتفضل.",m:"مستكشف رابيتشر."}},
-  {w:"Doom", en:{n:"Doom Slayer",p:"Rip and tear.",m:"Demon killer."},ar:{n:"دوم سلاير",p:"مزق ومزق.",m:"قاتل شياطين."}},
-  {w:"Assassin's Creed", en:{n:"Ezio Auditore",p:"Requiescat in pace.",m:"Italian assassin."},ar:{n:"إيزيو أوديتوري",p:"ارقد بسلام.",m:"قاتل إيطالي."}},
-  {w:"Uncharted", en:{n:"Nathan Drake",p:"Sic parvis magna.",m:"Treasure hunter."},ar:{n:"ناثان دريك",p:"عظمة من صغر.",m:"صياد كنوز."}},
-  {w:"Mass Effect", en:{n:"Commander Shepard",p:"I'm Commander Shepard.",m:"Galaxy savior."},ar:{n:"القائد شيبرد",p:"أنا القائد شيبرد.",m:"منقذ المجرة."}},
-  {w:"Dragon Age", en:{n:"The Inquisitor",p:"Close the breach.",m:"Fade walker."},ar:{n:"المحقق",p:"أغلق الصدع.",m:"سائر التلاشي."}},
-  {w:"Cyberpunk 2077", en:{n:"V",p:"Night City legend.",m:"Mercenary in dystopia."},ar:{n:"في",p:"أسطورة نايت سيتي.",m:"مرتزق في ديستوبيا."}},
-  {w:"Sekiro", en:{n:"Sekiro",p:"Hesitation is defeat.",m:"Shinobi warrior."},ar:{n:"سيكيرو",p:"التردد هو الهزيمة.",m:"محارب شينوبي."}},
-  {w:"Control", en:{n:"Jesse Faden",p:"Director.",m:"Paranormal investigator."},ar:{n:"جيسي فادن",p:"مديرة.",m:"محققة خارقة."}},
-  {w:"Hades", en:{n:"Zagreus",p:"Escape hell.",m:"Son of Hades."},ar:{n:"زاغريوس",p:"هرب من الجحيم.",m:"ابن هاديس."}},
-  {w:"Animal Crossing", en:{n:"Tom Nook",p:"Yes, yes.",m:"Raccoon businessman."},ar:{n:"توم نوك",p:"نعم، نعم.",m:"رجل أعمال راكون."}},
-  {w:"Genshin Impact", en:{n:"Traveler",p:"Find sibling.",m:"Elemental adventurer."},ar:{n:"المسافر",p:"ابحث عن الأخ.",m:"مغامر عنصري."}},
-  {w:"Final Fantasy X", en:{n:"Tidus",p:"This is my story.",m:"Blitzball star."},ar:{n:"تيدوس",p:"هذه قصتي.",m:"نجم بلتزبول."}},
-  {w:"Dark Souls", en:{n:"Solaire of Astora",p:"Praise the sun!",m:"Joyful knight."},ar:{n:"سولير أوف أستورا",p:"احمدوا الشمس!",m:"فارس مبتهج."}},
-  {w:"Metal Gear Solid", en:{n:"Revolver Ocelot",p:"You're pretty good.",m:"Gunslinger spy."},ar:{n:"ريفولفر أوسيليت",p:"أنت جيد جدًا.",m:"جاسوس مبارز."}},
-  {w:"The Last of Us Part II", en:{n:"Abby",p:"Strength for survival.",m:"Muscular warrior."},ar:{n:"آبي",p:"القوة من أجل البقاء.",m:"محاربة عضلية."}},
-  {w:"Persona 5", en:{n:"Joker",p:"Take your heart.",m:"Phantom thief."},ar:{n:"جوكر",p:"خذ قلبك.",m:"لص شبح."}},
-  {w:"Kingdom Hearts", en:{n:"Sora",p:"My friends are my power.",m:"Keyblade wielder."},ar:{n:"سورا",p:"أصدقائي هم قوتي.",m:"حامل مفتاح النصل."}},
-  {w:"Street Fighter II", en:{n:"Chun-Li",p:"Justice must prevail.",m:"Interpol agent."},ar:{n:"تشون لي",p:"يجب أن يسود العدل.",m:"عميلة إنتربول."}},
-  {w:"Minecraft", en:{n:"Alex",p:"Creative builder.",m:"Survival expert."},ar:{n:"أليكس",p:"بانية مبدعة.",m:"خبيرة بقاء."}},
-  {w:"Batman: Arkham City", en:{n:"Batman",p:"I am vengeance.",m:"Dark knight."},ar:{n:"باتمان",p:"أنا الانتقام.",m:"الفارس المظلم."}},
-  {w:"Overwatch 2", en:{n:"Reaper",p:"Death walks among you.",m:"Shotgun wraith."},ar:{n:"ريبر",p:"الموت يسير بينكم.",m:"شبح البندقية."}},
-  {w:"Ghost of Tsushima", en:{n:"Jin Sakai",p:"Honor vs survival.",m:"Ghost samurai."},ar:{n:"جين ساكاي",p:"الشرف مقابل البقاء.",m:"ساموراي شبح."}},
-  {w:"Ghost of Tsushima", en:{n:"Lord Shimura",p:"Honor above all.",m:"Stoic uncle."},ar:{n:"لورد شيمورا",p:"الشرف فوق كل شيء.",m:"عم متقشف."}},
-  {w:"Ghost of Tsushima", en:{n:"Khotun Khan",p:"Brutal conqueror.",m:"Mongol invader."},ar:{n:"خوتون خان",p:"فاتح وحشي.",m:"غازي مغولي."}},
-  {w:"Hitman", en:{n:"Agent 47",p:"Names are for friends.",m:"Bald assassin with a barcode."},ar:{n:"العميل 47",p:"الأسماء للأصدقاء فقط.",m:"قاتل أصلع بوشم باركود."}},
-  {w:"Metal Gear Solid", en:{n:"Big Boss",p:"Loyalty to the end.",m:"Legendary soldier with an eyepatch."},ar:{n:"بيج بوس",p:"الولاء حتى النهاية.",m:"جندي أسطوري برقعة عين."}},
-  {w:"Final Fantasy VII", en:{n:"Aerith Gainsborough",p:"The future isn't fixed.",m:"Flower girl with a staff."},ar:{n:"إيريث جينزبورو",p:"المستقبل ليس ثابتاً.",m:"بائعة زهور بعصا سحرية."}},
-  {w:"Resident Evil", en:{n:"Jill Valentine",p:"Master of unlocking.",m:"Special forces survivor."},ar:{n:"جيل فالنتاين",p:"براعة في فتح الأقفال.",m:"ناجية من القوات الخاصة."}},
-  {w:"Resident Evil", en:{n:"Chris Redfield",p:"Finish the mission.",m:"Strong boulder-puncher."},ar:{n:"كريس ريدفيلد",p:"أنهِ المهمة.",m:"مقاتل قوي البنية."}},
-  {w:"Silent Hill 2", en:{n:"Pyramid Head",p:"Judgment is coming.",m:"Executioner with a metal head."},ar:{n:"بيراميد هيد",p:"الدينونة قادمة.",m:"سياف برأس معدني هرمي."}},
-  {w:"The Walking Dead", en:{n:"Clementine",p:"Keep moving.",m:"Young survivor in a cap."},ar:{n:"كليمنتاين",p:"استمر في التحرك.",m:"ناجية صغيرة بقبعة."}},
-  {w:"Mass Effect", en:{n:"Garrus Vakarian",p:"Justice is a choice.",m:"Turian sniper."},ar:{n:"جاروس فاكاريان",p:"العدالة هي خيار.",m:"قناص من عرق التوريان."}},
-  {w:"Baldur's Gate 3", en:{n:"Shadowheart",p:"Darkness protects.",m:"Cleric of Shar."},ar:{n:"شادوهارت",p:"الظلام يحمي.",m:"كاهنة الظلام."}},
-  {w:"Baldur's Gate 3", en:{n:"Astarion",p:"Blood is life.",m:"Pale elf rogue."},ar:{n:"أستاريون",p:"الدم هو الحياة.",m:"لص قزم شاحب."}},
-  {w:"Yakuza", en:{n:"Kazuma Kiryu",p:"Dragon's honor.",m:"The Dragon of Dojima."},ar:{n:"كازوما كيريو",p:"شرف التنين.",m:"تنين دوجيما."}},
-  {w:"Tekken", en:{n:"Kazuya Mishima",p:"Power is everything.",m:"Devil gene fighter."},ar:{n:"كازويا ميشيما",p:"القوة هي كل شيء.",m:"مقاتل بجين الشيطان."}},
-  {w:"Metroid", en:{n:"Samus Aran",p:"The last Metroid is in captivity.",m:"Armored bounty hunter."},ar:{n:"ساموس أران",p:"آخر مترويد في الأسر.",m:"صائدة جوائز مدرعة."}},
-  {w:"Detroit: Become Human", en:{n:"Connor",p:"I am a machine.",m:"Android investigator."},ar:{n:"كونور",p:"أنا آلة.",m:"محقق آلي."}},
-  {w:"Borderlands", en:{n:"Handsome Jack",p:"Everyone is the hero of their story.",m:"Sarcastic dictator."},ar:{n:"هاندسوم جاك",p:"الكل بطل في قصته الخاصة.",m:"ديكتاتور ساخر."}},
-  {w:"Portal 2", en:{n:"Wheatley",p:"I'm not a moron!",m:"Chatty robotic eye."},ar:{n:"ويتلي",p:"لست أحمقاً!",m:"عين روبوتية ثرثارة."}},
-  {w:"Overwatch", en:{n:"Genji",p:"I am whole.",m:"Cyborg ninja."},ar:{n:"جينجي",p:"أنا مكتمل الآن.",m:"نينجا آلي."}},
-  {w:"Splinter Cell", en:{n:"Sam Fisher",p:"Believe in the dark.",m:"Stealth spy with goggles."},ar:{n:"سام فيشر",p:"آمن بالظلام.",m:"جاسوس تخفي بنظارات خضراء."}},
-  {w:"Assassin's Creed", en:{n:"Altaïr Ibn-La'Ahad",p:"Nothing is true.",m:"Legendary Syrian assassin."},ar:{n:"الطائر ابن لا أحد",p:"لا شيء واقعي.",m:"أساسن سوري أسطوري."}},
-  {w:"Street Fighter", en:{n:"Akuma",p:"Master of the fist.",m:"Red-haired demon fighter."},ar:{n:"أكوما",p:"سيد القبضة.",m:"مقاتل شيطاني بشعر أحمر."}},
-  {w:"Castlevania", en:{n:"Alucard",p:"The son of Dracula.",m:"Long-haired vampire hero."},ar:{n:"ألوكارد",p:"ابن دراكولا.",m:"مصاص دماء بشعر طويل."}},
-  {w:"Hades", en:{n:"Melinoë",p:"Death to Chronos.",m:"Princess of the Underworld."},ar:{n:"ميلينوي",p:"الموت لكرونوس.",m:"أميرة العالم السفلي."}},
-  {w:"League of Legends", en:{n:"Jinx",p:"Rules are made to be broken.",m:"Blue-haired maniac."},ar:{n:"جينكس",p:"القواعد وُجدت لتُكسر.",m:"مجنونة بشعر أزرق."}},
-  {w:"God of War", en:{n:"Baldur",p:"I feel nothing.",m:"Immortal Norse god."},ar:{n:"بالدر",p:"لا أشعر بشيء.",m:"إله نورسي خالد."}},
-  {w:"Horizon", en:{n:"Aloy",p:"Find the truth.",m:"Machine hunter with a bow."},ar:{n:"آلوي",p:"ابحث عن الحقيقة.",m:"صائدة آلات بقوس."}},
-  {w:"Team Fortress 2", en:{n:"The Heavy",p:"I am bulletproof.",m:"Giant with a minigun."},ar:{n:"ذا هيفي",p:"أنا مضاد للرصاص.",m:"عملاق بمدفع رشاش."}},
-  {w:"Devil May Cry", en:{n:"Vergil",p:"I need more power.",m:"Blue-clad swordsman."},ar:{n:"فيرجل",p:"أحتاج لمزيد من القوة.",m:"سياف يرتدي الأزرق."}},
-  {w:"Bloodborne", en:{n:"Lady Maria",p:"A corpse should be left well alone.",m:"Clocktower hunter."},ar:{n:"ليدي ماريا",p:"الجثث يجب أن تُترك وشأنها.",m:"صائدة برج الساعة."}},
-  {w:"Elder Scrolls", en:{n:"Sheogorath",p:"Cheese for everyone!",m:"God of Madness."},ar:{n:"شيوجوراث",p:"جبن للجميع!",m:"إله الجنون."}},
-  {w:"Mortal Kombat", en:{n:"Scorpion",p:"Get over here!",m:"Undead fire ninja."},ar:{n:"سكوربيون",p:"تعال إلى هنا!",m:"نينجا ناري ميت حي."}},
-  {w:"Deltarune", en:{n:"Kris",p:"Silent leader.",m:"Human in the dark world."},ar:{n:"كريس",p:"قائد صامت.",m:"بشر في عالم الظلام."}},
-  {w:"Genshin Impact", en:{n:"Raiden Shogun",p:"Eternity.",m:"Electro Archon."},ar:{n:"رايدن شوغون",p:"الأبدية.",m:"حاكمة البرق."}},
-  {w:"Undertale", en:{n:"Sans",p:"Do you want to have a bad time?",m:"Pun-loving skeleton."},ar:{n:"سانز",p:"هل تريد وقتاً سيئاً؟",m:"هيكل عظمي محب للنكات."}},
-  {w:"Ratchet & Clank", en:{n:"Ratchet",p:"Saving the galaxy.",m:"Furry Lombax mechanic."},ar:{n:"راتشيت",p:"إنقاذ المجرة.",m:"ميكانيكي من عرق اللومباكس."}},
-  {w:"Dead Space", en:{n:"Isaac Clarke",p:"Make us whole again.",m:"Engineer in space suit."},ar:{n:"آيزاك كلارك",p:"اجعلنا مكتملين مرة أخرى.",m:"مهندس ببدلة فضاء."}},
-  {w:"Uncharted", en:{n:"Victor Sullivan",p:"Goddamn it, Nate.",m:"Cigar-smoking mentor."},ar:{n:"فيكتور سوليفان",p:"تباً يا نيت.",m:"المعلم المدخن للسيجار."}},
-  {w:"Dragon Age", en:{n:"Morrigan",p:"Change is coming.",m:"Witch of the Wilds."},ar:{n:"موريغان",p:"التغيير قادم.",m:"ساحرة البراري."}},
-  {w:"Bayonetta", en:{n:"Bayonetta",p:"Time to play.",m:"Umbra Witch with stylish moves."},ar:{n:"بايونيتا",p:"حان وقت اللعب.",m:"ساحرة الظل بحركات أنيقة."}},
-  {w:"EarthBound", en:{n:"Ness",p:"PSI powers.",m:"Kid with a baseball bat."},ar:{n:"نيس",p:"قوى PSI.",m:"طفل بعصا بيسبول."}},
-  {w:"Monster Hunter", en:{n:"The Hunter",p:"For the thrill of the hunt.",m:"Armored monster slayer."},ar:{n:"الصياد",p:"من أجل متعة الصيد.",m:"صائد وحوش مدرع."}}
-];
-
-// ===== الألعاب (100 لعبة) =====
-const games = [
-  // الألعاب الأصلية (40)
-  {en:{n:"The Witcher 3",d:"Dark fantasy RPG.",y:2015,g:"RPG"},ar:{n:"ذا ويتشر 3",d:"تقمص أدوار فانتازي مظلم.",y:2015,g:"تقمص أدوار"},
-   seriesParts:3, parts:[{en:{n:"Hearts of Stone",y:2015},ar:{n:"هارتس أوف ستون",y:2015}},{en:{n:"Blood and Wine",y:2016},ar:{n:"دم وعنب",y:2016}}]},
-  {en:{n:"God of War",d:"Mythic action adventure.",y:2018,g:"Action/Adventure"},ar:{n:"جود أوف وور",d:"مغامرة أكشن أسطورية.",y:2018,g:"أكشن/مغامرة"},
-   seriesParts:8, parts:[{en:{n:"Ragnarok",y:2022},ar:{n:"راغناروك",y:2022}}]},
-  {en:{n:"Elden Ring",d:"Open-world soulslike.",y:2022,g:"RPG"},ar:{n:"إلدن رينغ",d:"عالم مفتوح سولزلايك.",y:2022,g:"تقمص أدوار"},
-   seriesParts:1, parts:[{en:{n:"Shadow of the Erdtree",y:2024},ar:{n:"شادو أوف ذي إردتري",y:2024}}]},
-  {en:{n:"Red Dead Redemption 2",d:"Western open world.",y:2018,g:"Action/Adventure"},ar:{n:"ريد ديد ريدمبشن 2",d:"عالم مفتوح غربي.",y:2018,g:"أكشن/مغامرة"},
-   seriesParts:2, parts:[]},
-  {en:{n:"Skyrim",d:"Epic fantasy RPG.",y:2011,g:"RPG"},ar:{n:"سكايريم",d:"تقمص أدوار فانتازي ملحمي.",y:2011,g:"تقمص أدوار"},
-   seriesParts:5, parts:[{en:{n:"Dawnguard",y:2012},ar:{n:"داونغارد",y:2012}},{en:{n:"Dragonborn",y:2012},ar:{n:"دراجونبورن",y:2012}}]},
-  {en:{n:"Cyberpunk 2077",d:"Futuristic RPG.",y:2020,g:"RPG"},ar:{n:"سايبربانك 2077",d:"تقمص أدوار مستقبلي.",y:2020,g:"تقمص أدوار"},
-   seriesParts:1, parts:[{en:{n:"Phantom Liberty",y:2023},ar:{n:"فانتوم ليبرتي",y:2023}}]},
-  {en:{n:"BioShock Infinite",d:"Sky city adventure.",y:2013,g:"FPS"},ar:{n:"بايوشوك إنفينيت",d:"مغامرة مدينة السماء.",y:2013,g:"إطلاق نار من منظور أول"},
-   seriesParts:3, parts:[{en:{n:"Burial at Sea",y:2013},ar:{n:"بيوريال آت سي",y:2013}}]},
-  {en:{n:"Mass Effect 3",d:"Space opera RPG.",y:2012,g:"RPG"},ar:{n:"ماس إفكت 3",d:"تقمص أدوار أوبرا فضائية.",y:2012,g:"تقمص أدوار"},
-   seriesParts:3, parts:[{en:{n:"Citadel",y:2013},ar:{n:"سيتادل",y:2013}}]},
-  {en:{n:"Borderlands 2",d:"Loot shooter.",y:2012,g:"FPS"},ar:{n:"بورديرلاندز 2",d:"إطلاق نار غنائم.",y:2012,g:"إطلاق نار من منظور أول"},
-   seriesParts:4, parts:[{en:{n:"Tiny Tina's Assault on Dragon Keep",y:2013},ar:{n:"تيني تينا أسولت أون دراغون كيب",y:2013}}]},
-  {en:{n:"Bloodborne",d:"Gothic horror soulslike.",y:2015,g:"Action"},ar:{n:"بلودبورن",d:"سولزلايك رعب قوطي.",y:2015,g:"أكشن"},
-   seriesParts:1, parts:[{en:{n:"The Old Hunters",y:2015},ar:{n:"ذي أولد هانترز",y:2015}}]},
-  {en:{n:"Half-Life 2",d:"Sci-fi FPS.",y:2004,g:"FPS"},ar:{n:"هالف-لايف 2",d:"إطلاق نار خيال علمي.",y:2004,g:"إطلاق نار من منظور أول"},
-   seriesParts:2, parts:[{en:{n:"Episode One",y:2006},ar:{n:"إبيسود ون",y:2006}},{en:{n:"Episode Two",y:2007},ar:{n:"إبيسود تو",y:2007}}]},
-  {en:{n:"Diablo II",d:"Action RPG loot fest.",y:2000,g:"RPG"},ar:{n:"ديابلو 2",d:"تقمص أدوار أكشن غنائم.",y:2000,g:"تقمص أدوار"},
-   seriesParts:4, parts:[{en:{n:"Lord of Destruction",y:2001},ar:{n:"لورد أوف ديستراكشن",y:2001}}]},
-  {en:{n:"StarCraft",d:"RTS classic.",y:1998,g:"Strategy"},ar:{n:"ستاركرافت",d:"استراتيجية كلاسيكية.",y:1998,g:"استراتيجية"},
-   seriesParts:2, parts:[{en:{n:"Brood War",y:1998},ar:{n:"برود وور",y:1998}}]},
-  {en:{n:"The Sims 4",d:"Life simulation.",y:2014,g:"Simulation"},ar:{n:"ذا سيمس 4",d:"محاكاة حياة.",y:2014,g:"محاكاة"},
-   seriesParts:4, parts:[{en:{n:"City Living",y:2016},ar:{n:"سيتي ليفينغ",y:2016}},{en:{n:"Cats & Dogs",y:2017},ar:{n:"قطط وكلاب",y:2017}}]},
-  {en:{n:"Horizon Zero Dawn",d:"Post-apocalyptic adventure.",y:2017,g:"Action/Adventure"},ar:{n:"هورايزن زيرو داون",d:"مغامرة ما بعد نهاية العالم.",y:2017,g:"أكشن/مغامرة"},
-   seriesParts:2, parts:[{en:{n:"The Frozen Wilds",y:2017},ar:{n:"ذا فروزن وايلدز",y:2017}}]},
-  {en:{n:"Sleeping Dogs",d:"Hong Kong action.",y:2012,g:"Action"},ar:{n:"سليبينغ دوغز",d:"أكشن هونغ كونغ.",y:2012,g:"أكشن"},
-   seriesParts:1, parts:[{en:{n:"Year of the Snake",y:2013},ar:{n:"يير أوف ذا سنايك",y:2013}}]},
-  {en:{n:"Dark Souls III",d:"Challenging action RPG.",y:2016,g:"RPG"},ar:{n:"دارك سولز 3",d:"تقمص أدوار صعب.",y:2016,g:"تقمص أدوار"},
-   seriesParts:3, parts:[{en:{n:"Ashes of Ariandel",y:2016},ar:{n:"آشيز أوف أرياندل",y:2016}},{en:{n:"The Ringed City",y:2017},ar:{n:"ذا رينغد سيتي",y:2017}}]},
-  {en:{n:"The Elder Scrolls IV: Oblivion",d:"Fantasy open world.",y:2006,g:"RPG"},ar:{n:"ذي إلدر سكرولز 4: أوبليفيون",d:"عالم مفتوح فانتازي.",y:2006,g:"تقمص أدوار"},
-   seriesParts:5, parts:[{en:{n:"Shivering Isles",y:2007},ar:{n:"شيفرينغ آيلز",y:2007}}]},
-  {en:{n:"Dragon Age: Origins",d:"Epic fantasy RPG.",y:2009,g:"RPG"},ar:{n:"دراغون إيج: أوريجينز",d:"تقمص أدوار فانتازي ملحمي.",y:2009,g:"تقمص أدوار"},
-   seriesParts:3, parts:[{en:{n:"Awakening",y:2010},ar:{n:"أواكينينغ",y:2010}}]},
-  {en:{n:"Resident Evil 4",d:"Survival horror.",y:2005,g:"Action"},ar:{n:"ريزيدنت إيفل 4",d:"رعب بقاء.",y:2005,g:"أكشن"},
-   seriesParts:15, parts:[{en:{n:"Separate Ways",y:2023},ar:{n:"سيباريت وايز",y:2023}}]},
-  {en:{n:"Final Fantasy X",d:"Epic journey to save Spira.",y:2001,g:"RPG"},ar:{n:"فاينل فانتازي X",d:"رحلة ملحمية لإنقاذ سبايرا.",y:2001,g:"تقمص أدوار"},
-   seriesParts:2, parts:[{en:{n:"Final Fantasy X-2",y:2003},ar:{n:"فاينل فانتازي X-2",y:2003}}]},
-  {en:{n:"Dark Souls",d:"Hardcore fantasy action.",y:2011,g:"RPG"},ar:{n:"دارك سولز",d:"أكشن فانتازي صعب.",y:2011,g:"تقمص أدوار"},
-   seriesParts:3, parts:[{en:{n:"Artorias of the Abyss",y:2012},ar:{n:"أرتورياس أوف ذي أبيس",y:2012}}]},
-  {en:{n:"Kingdom Hearts III",d:"Disney meets Final Fantasy.",y:2019,g:"Action/RPG"},ar:{n:"كينغدوم هارتس 3",d:"ديزني تلتقي فاينل فانتازي.",y:2019,g:"أكشن/تقمص أدوار"},
-   seriesParts:3, parts:[{en:{n:"Re Mind",y:2020},ar:{n:"ري مايند",y:2020}}]},
-  {en:{n:"Ghost of Tsushima",d:"Samurai open-world adventure.",y:2020,g:"Action/Adventure"},ar:{n:"غوست أوف تسوشيما",d:"مغامرة ساموراي في عالم مفتوح.",y:2020,g:"أكشن/مغامرة"},
-   seriesParts:1, parts:[{en:{n:"Iki Island",y:2021},ar:{n:"جزيرة إيكي",y:2021}},{en:{n:"Legends Mode",y:2020},ar:{n:"وضع الأساطير",y:2020}}]},
-  {en:{n:"Hitman",d:"Professional assassination simulator.",y:2016,g:"Stealth"},ar:{n:"هيتمان",d:"محاكي اغتيال احترافي.",y:2016,g:"تخفي"},seriesParts:8, parts:[{en:{n:"World of Assassination",y:2021},ar:{n:"عالم الاغتيال",y:2021}}]},
-  {en:{n:"Metal Gear Solid V",d:"Tactical espionage operations.",y:2015,g:"Stealth"},ar:{n:"ميتال جير سوليد 5",d:"عمليات تجسس تكتيكية.",y:2015,g:"تخفي"},seriesParts:5, parts:[{en:{n:"The Phantom Pain",y:2015},ar:{n:"ألم الشبح",y:2015}}]},
-  {en:{n:"Splinter Cell: Blacklist",d:"Ultimate stealth experience.",y:2013,g:"Stealth"},ar:{n:"سبلينتر سيل: بلاك ليست",d:"تجربة التخفي النهائية.",y:2013,g:"تخفي"},seriesParts:6, parts:[]},
-  {en:{n:"Silent Hill 2",d:"Psychological survival horror.",y:2001,g:"Horror"},ar:{n:"سايلنت هيل 2",d:"رعب بقاء نفسي.",y:2001,g:"رعب"},seriesParts:4, parts:[{en:{n:"Remake",y:2024},ar:{n:"النسخة المحسنة",y:2024}}]},
-  {en:{n:"Dead Space",d:"Sci-fi survival horror.",y:2008,g:"Horror"},ar:{n:"ديد سبيس",d:"رعب بقاء خيال علمي.",y:2008,g:"رعب"},seriesParts:3, parts:[{en:{n:"Severed",y:2011},ar:{n:"سيفريد",y:2011}}]},
-  {en:{n:"Baldur's Gate 3",d:"Epic D&D based RPG.",y:2023,g:"RPG"},ar:{n:"بالدورز جيت 3",d:"لعبة تقمص أدوار ملحمية.",y:2023,g:"تقمص أدوار"},seriesParts:3, parts:[]},
-  {en:{n:"Final Fantasy VII Rebirth",d:"Massive world RPG remake.",y:2024,g:"RPG"},ar:{n:"فاينل فانتازي 7 ريبرث",d:"إعادة بناء لعالم RPG ضخم.",y:2024,g:"تقمص أدوار"},seriesParts:3, parts:[]},
-  {en:{n:"Yakuza: Like a Dragon",d:"Crime drama with RPG combat.",y:2020,g:"RPG"},ar:{n:"ياكوزا: مثل التنين",d:"دراما جريمة مع قتال RPG.",y:2020,g:"تقمص أدوار"},seriesParts:8, parts:[]},
-  {en:{n:"Undertale",d:"The RPG where no one has to die.",y:2015,g:"RPG"},ar:{n:"أندرتيل",d:"لعبة RPG حيث لا يجب أن يموت أحد.",y:2015,g:"تقمص أدوار"},seriesParts:1, parts:[]},
-  {en:{n:"Persona 5 Royal",d:"Social sim and dungeon crawler.",y:2019,g:"RPG"},ar:{n:"بيرسونا 5 رويال",d:"محاكاة اجتماعية وقتال زنزانات.",y:2019,g:"تقمص أدوار"},seriesParts:6, parts:[]},
-  {en:{n:"EarthBound",d:"Quirky modern-day RPG.",y:1994,g:"RPG"},ar:{n:"إيرث باوند",d:"لعبة RPG عصرية وغريبة الأطوار.",y:1994,g:"تقمص أدوار"},seriesParts:3, parts:[]},
-  {en:{n:"Tekken 8",d:"The ultimate fighting game.",y:2024,g:"Fighting"},ar:{n:"تيكن 8",d:"لعبة القتال النهائية.",y:2024,g:"قتال"},seriesParts:8, parts:[]},
-  {en:{n:"Mortal Kombat 1",d:"Brutal fighting with magic.",y:2023,g:"Fighting"},ar:{n:"مورتال كومبات 1",d:"قتال وحشي مع سحر.",y:2023,g:"قتال"},seriesParts:12, parts:[{en:{n:"Khaos Reigns",y:2024},ar:{n:"فوضى عارمة",y:2024}}]},
-  {en:{n:"Devil May Cry 5",d:"High-octane stylish action.",y:2019,g:"Action"},ar:{n:"ديفل ماي كراي 5",d:"أكشن سريع وأنيق.",y:2019,g:"أكشن"},seriesParts:5, parts:[{en:{n:"Vergil DLC",y:2020},ar:{n:"إضافة فيرجل",y:2020}}]},
-  {en:{n:"Bayonetta 3",d:"Stylish witch action.",y:2022,g:"Action"},ar:{n:"بايونيتا 3",d:"أكشن الساحرة الأنيق.",y:2022,g:"أكشن"},seriesParts:3, parts:[]},
-  {en:{n:"Metroid Dread",d:"Classic 2D exploration action.",y:2021,g:"Action"},ar:{n:"مترويد دريد",d:"أكشن واستكشاف كلاسيكي ثنائي الأبعاد.",y:2021,g:"أكشن"},seriesParts:5, parts:[]},
-  {en:{n:"Monster Hunter: World",d:"Epic beast hunting.",y:2018,g:"Action/Adventure"},ar:{n:"مونستر هانتر: وورلد",d:"صيد وحوش ملحمي.",y:2018,g:"أكشن/مغامرة"},seriesParts:5, parts:[{en:{n:"Iceborne",y:2019},ar:{n:"آيسبورن",y:2019}}]},
-  {en:{n:"Detroit: Become Human",d:"Choice-driven android story.",y:2018,g:"Adventure"},ar:{n:"ديترويت: نحو الإنسانية",d:"قصة آليين مبنية على الاختيارات.",y:2018,g:"مغامرة"},seriesParts:1, parts:[]},
-  {en:{n:"Ratchet & Clank: Rift Apart",d:"Dimension-hopping adventure.",y:2021,g:"Adventure"},ar:{n:"راتشيت أند كلانك",d:"مغامرة التنقل بين الأبعاد.",y:2021,g:"مغامرة"},seriesParts:10, parts:[]},
-  {en:{n:"Portal 2",d:"Physics-based puzzle platformer.",y:2011,g:"Puzzle"},ar:{n:"بورتال 2",d:"منصات ألغاز تعتمد على الفيزياء.",y:2011,g:"ألغاز"},seriesParts:2, parts:[{en:{n:"Peer Review",y:2011},ar:{n:"بير ريفيو",y:2011}}]},
-  
-  // ألعاب إضافية (60 لعبة) ليصبح المجموع 100
-  {en:{n:"The Legend of Zelda: Breath of the Wild",d:"Open-air adventure.",y:2017,g:"Action/Adventure"},ar:{n:"زيلدا: بريث أوف ذا وايلد",d:"مغامرة في الهواء الطلق.",y:2017,g:"أكشن/مغامرة"},seriesParts:19, parts:[{en:{n:"Tears of the Kingdom",y:2023},ar:{n:"دموع المملكة",y:2023}}]},
-  {en:{n:"Super Mario Odyssey",d:"3D platforming masterpiece.",y:2017,g:"Platformer"},ar:{n:"سوبر ماريو أوديسي",d:"لعبة منصات ثلاثية الأبعاد رائعة.",y:2017,g:"منصات"},seriesParts:15, parts:[]},
-  {en:{n:"Red Dead Redemption",d:"Western epic.",y:2010,g:"Action/Adventure"},ar:{n:"ريد ديد ريدمبشن",d:"ملحمة غربية.",y:2010,g:"أكشن/مغامرة"},seriesParts:2, parts:[{en:{n:"Undead Nightmare",y:2010},ar:{n:"كابوس الموتى",y:2010}}]},
-  {en:{n:"Grand Theft Auto V",d:"Criminal enterprise.",y:2013,g:"Action/Adventure"},ar:{n:"جراند ثيفت أوتو V",d:"مشروع إجرامي.",y:2013,g:"أكشن/مغامرة"},seriesParts:5, parts:[{en:{n:"Online",y:2013},ar:{n:"أونلاين",y:2013}}]},
-  {en:{n:"The Last of Us",d:"Post-apocalyptic survival.",y:2013,g:"Action/Adventure"},ar:{n:"ذا لاست أوف أس",d:"بقاء ما بعد نهاية العالم.",y:2013,g:"أكشن/مغامرة"},seriesParts:2, parts:[{en:{n:"Left Behind",y:2014},ar:{n:"اليسار خلف",y:2014}}]},
-  {en:{n:"Uncharted 4: A Thief's End",d:"Treasure hunter finale.",y:2016,g:"Action/Adventure"},ar:{n:"أنشارتد 4: نهاية لص",d:"ختام صياد الكنوز.",y:2016,g:"أكشن/مغامرة"},seriesParts:4, parts:[]},
-  {en:{n:"Spider-Man",d:"Web-slinging adventure.",y:2018,g:"Action/Adventure"},ar:{n:"سبايدرمان",d:"مغامرة خيوط العنكبوت.",y:2018,g:"أكشن/مغامرة"},seriesParts:2, parts:[{en:{n:"City That Never Sleeps",y:2018},ar:{n:"المدينة التي لا تنام",y:2018}}]},
-  {en:{n:"Spider-Man: Miles Morales",d:"A new Spider-Man rises.",y:2020,g:"Action/Adventure"},ar:{n:"سبايدرمان: مايلز موراليس",d:"ظهور سبايدرمان جديد.",y:2020,g:"أكشن/مغامرة"},seriesParts:2, parts:[]},
-  {en:{n:"Horizon Forbidden West",d:"Post-apocalyptic frontier.",y:2022,g:"Action/Adventure"},ar:{n:"هورايزن الغرب المحظور",d:"حدود ما بعد نهاية العالم.",y:2022,g:"أكشن/مغامرة"},seriesParts:2, parts:[{en:{n:"Burning Shores",y:2023},ar:{n:"الشواطئ المحترقة",y:2023}}]},
-  {en:{n:"God of War Ragnarok",d:"Norse saga finale.",y:2022,g:"Action/Adventure"},ar:{n:"جود أوف وور راغناروك",d:"ختام الملحمة النوردية.",y:2022,g:"أكشن/مغامرة"},seriesParts:8, parts:[]},
-  {en:{n:"Final Fantasy XVI",d:"Dark fantasy epic.",y:2023,g:"RPG"},ar:{n:"فاينل فانتازي 16",d:"ملحمة فانتازيا مظلمة.",y:2023,g:"تقمص أدوار"},seriesParts:16, parts:[{en:{n:"Echoes of the Fallen",y:2023},ar:{n:"أصداء الساقطين",y:2023}}]},
-  {en:{n:"Final Fantasy VII Remake",d:"Reimagining a classic.",y:2020,g:"RPG"},ar:{n:"فاينل فانتازي 7 ريميك",d:"إعادة تصور كلاسيكي.",y:2020,g:"تقمص أدوار"},seriesParts:3, parts:[{en:{n:"Intergrade",y:2021},ar:{n:"إنترغريد",y:2021}}]},
-  {en:{n:"Persona 5",d:"Stylish JRPG.",y:2016,g:"RPG"},ar:{n:"بيرسونا 5",d:"لعبة يابانية أنيقة.",y:2016,g:"تقمص أدوار"},seriesParts:6, parts:[]},
-  {en:{n:"Persona 4 Golden",d:"Murder mystery RPG.",y:2012,g:"RPG"},ar:{n:"بيرسونا 4 غولدن",d:"لغز قتل RPG.",y:2012,g:"تقمص أدوار"},seriesParts:6, parts:[]},
-  {en:{n:"Nier: Automata",d:"Philosophical action RPG.",y:2017,g:"Action/RPG"},ar:{n:"نير: أوتوماتا",d:"أكشن فلسفي.",y:2017,g:"أكشن/تقمص أدوار"},seriesParts:2, parts:[]},
-  {en:{n:"Sekiro: Shadows Die Twice",d:"Feudal Japan action.",y:2019,g:"Action"},ar:{n:"سيكيرو: الظلال تموت مرتين",d:"أكشن في اليابان الإقطاعية.",y:2019,g:"أكشن"},seriesParts:1, parts:[]},
-  {en:{n:"Demon's Souls",d:"Soulslike origin.",y:2009,g:"RPG"},ar:{n:"ديمونز سولز",d:"أصل ألعاب السولز.",y:2009,g:"تقمص أدوار"},seriesParts:1, parts:[]},
-  {en:{n:"Dark Souls II",d:"Challenging sequel.",y:2014,g:"RPG"},ar:{n:"دارك سولز 2",d:"تكملة صعبة.",y:2014,g:"تقمص أدوار"},seriesParts:3, parts:[{en:{n:"Scholar of the First Sin",y:2015},ar:{n:"عالم الخطيئة الأولى",y:2015}}]},
-  {en:{n:"Bloodborne: The Old Hunters",d:"Hunter's nightmare.",y:2015,g:"Action"},ar:{n:"بلودبورن: الصيادون القدامى",d:"كابوس الصياد.",y:2015,g:"أكشن"},seriesParts:1, parts:[]},
-  {en:{n:"Resident Evil 2",d:"Survival horror remake.",y:2019,g:"Horror"},ar:{n:"ريزيدنت إيفل 2",d:"إعادة صنع رعب البقاء.",y:2019,g:"رعب"},seriesParts:15, parts:[]},
-  {en:{n:"Resident Evil 3",d:"Raccoon City escape.",y:2020,g:"Horror"},ar:{n:"ريزيدنت إيفل 3",d:"الهروب من راكون سيتي.",y:2020,g:"رعب"},seriesParts:15, parts:[]},
-  {en:{n:"Resident Evil Village",d:"Gothic horror FPS.",y:2021,g:"Horror"},ar:{n:"ريزيدنت إيفل فيلدج",d:"رعب قوطي من منظور أول.",y:2021,g:"رعب"},seriesParts:15, parts:[{en:{n:"Winters' Expansion",y:2022},ar:{n:"توسعة وينترز",y:2022}}]},
-  {en:{n:"Silent Hill",d:"Psychological horror origin.",y:1999,g:"Horror"},ar:{n:"سايلنت هيل",d:"أصل الرعب النفسي.",y:1999,g:"رعب"},seriesParts:4, parts:[]},
-  {en:{n:"Amnesia: The Dark Descent",d:"First-person terror.",y:2010,g:"Horror"},ar:{n:"أمنيشيا: النزول المظلم",d:"رعب من منظور أول.",y:2010,g:"رعب"},seriesParts:2, parts:[]},
-  {en:{n:"Outlast",d:"Asylum horror.",y:2013,g:"Horror"},ar:{n:"أوت لاست",d:"رعب المصح.",y:2013,g:"رعب"},seriesParts:2, parts:[{en:{n:"Whistleblower",y:2014},ar:{n:"المبلغ",y:2014}}]},
-  {en:{n:"Alien: Isolation",d:"Survival horror in space.",y:2014,g:"Horror"},ar:{n:"أليان: العزلة",d:"رعب بقاء في الفضاء.",y:2014,g:"رعب"},seriesParts:1, parts:[]},
-  {en:{n:"The Evil Within",d:"Psychological horror.",y:2014,g:"Horror"},ar:{n:"ذا إيفل ويذين",d:"رعب نفسي.",y:2014,g:"رعب"},seriesParts:2, parts:[{en:{n:"The Assignment",y:2015},ar:{n:"المهمة",y:2015}}]},
-  {en:{n:"The Evil Within 2",d:"Nightmare continues.",y:2017,g:"Horror"},ar:{n:"ذا إيفل ويذين 2",d:"الكابوس مستمر.",y:2017,g:"رعب"},seriesParts:2, parts:[]},
-  {en:{n:"Control",d:"Paranormal action.",y:2019,g:"Action"},ar:{n:"كونترول",d:"أكشن خارق للطبيعة.",y:2019,g:"أكشن"},seriesParts:1, parts:[{en:{n:"AWE",y:2020},ar:{n:"إيه دبليو إي",y:2020}}]},
-  {en:{n:"Alan Wake",d:"Psychological thriller.",y:2010,g:"Action"},ar:{n:"ألان ويك",d:"إثارة نفسية.",y:2010,g:"أكشن"},seriesParts:2, parts:[{en:{n:"American Nightmare",y:2012},ar:{n:"كابوس أمريكي",y:2012}}]},
-  {en:{n:"Alan Wake 2",d:"Horror returns.",y:2023,g:"Action"},ar:{n:"ألان ويك 2",d:"عودة الرعب.",y:2023,g:"أكشن"},seriesParts:2, parts:[]},
-  {en:{n:"Quantum Break",d:"Time-manipulation action.",y:2016,g:"Action"},ar:{n:"كوانتم بريك",d:"أكشن التلاعب بالزمن.",y:2016,g:"أكشن"},seriesParts:1, parts:[]},
-  {en:{n:"Hellblade: Senua's Sacrifice",d:"Psychological journey.",y:2017,g:"Action"},ar:{n:"هيلبليد: تضحية سينوا",d:"رحلة نفسية.",y:2017,g:"أكشن"},seriesParts:2, parts:[]},
-  {en:{n:"Senua's Saga: Hellblade II",d:"Nordic nightmare.",y:2024,g:"Action"},ar:{n:"ملحمة سينوا: هيلبليد 2",d:"كابوس نورسي.",y:2024,g:"أكشن"},seriesParts:2, parts:[]},
-  {en:{n:"A Plague Tale: Innocence",d:"Medieval plague survival.",y:2019,g:"Action/Adventure"},ar:{n:"حكاية الطاعون: البراءة",d:"البقاء في العصور الوسطى.",y:2019,g:"أكشن/مغامرة"},seriesParts:2, parts:[]},
-  {en:{n:"A Plague Tale: Requiem",d:"Escape the curse.",y:2022,g:"Action/Adventure"},ar:{n:"حكاية الطاعون: قداس",d:"الهروب من اللعنة.",y:2022,g:"أكشن/مغامرة"},seriesParts:2, parts:[]},
-  {en:{n:"Stray",d:"Cat adventure.",y:2022,g:"Adventure"},ar:{n:"ستري",d:"مغامرة القط.",y:2022,g:"مغامرة"},seriesParts:1, parts:[]},
-  {en:{n:"Kena: Bridge of Spirits",d:"Spirit guide adventure.",y:2021,g:"Action/Adventure"},ar:{n:"كينا: جسر الأرواح",d:"مغامرة دليل الأرواح.",y:2021,g:"أكشن/مغامرة"},seriesParts:1, parts:[]},
-  {en:{n:"Sifu",d:"Kung fu revenge.",y:2022,g:"Action"},ar:{n:"سيفو",d:"انتقام الكونغ فو.",y:2022,g:"أكشن"},seriesParts:1, parts:[]},
-  {en:{n:"Returnal",d:"Roguelike shooter.",y:2021,g:"Action"},ar:{n:"ريتورنال",d:"لعبة إطلاق نار روجلايك.",y:2021,g:"أكشن"},seriesParts:1, parts:[]},
-  {en:{n:"Ratchet & Clank",d:"Lombax adventure.",y:2016,g:"Adventure"},ar:{n:"راتشيت أند كلانك",d:"مغامرة لومباكس.",y:2016,g:"مغامرة"},seriesParts:10, parts:[]},
-  {en:{n:"Crash Bandicoot 4: It's About Time",d:"Bandicoot returns.",y:2020,g:"Platformer"},ar:{n:"كراش 4: حان الوقت",d:"عودة بانديكوت.",y:2020,g:"منصات"},seriesParts:4, parts:[]},
-  {en:{n:"Spyro Reignited Trilogy",d:"Dragon remaster.",y:2018,g:"Platformer"},ar:{n:"سبايرو الثلاثية",d:"إعادة إحياء التنين.",y:2018,g:"منصات"},seriesParts:3, parts:[]},
-  {en:{n:"Sackboy: A Big Adventure",d:"Craftworld adventure.",y:2020,g:"Platformer"},ar:{n:"ساكبوي: مغامرة كبيرة",d:"مغامرة عالم الحرف.",y:2020,g:"منصات"},seriesParts:1, parts:[]},
-  {en:{n:"LittleBigPlanet 3",d:"Creative platforming.",y:2014,g:"Platformer"},ar:{n:"ليتل بيغ بلانيت 3",d:"منصات إبداعية.",y:2014,g:"منصات"},seriesParts:3, parts:[]},
-  {en:{n:"Astro's Playroom",d:"PlayStation celebration.",y:2020,g:"Platformer"},ar:{n:"أستروز بلاي روم",d:"احتفال بلايستيشن.",y:2020,g:"منصات"},seriesParts:1, parts:[]},
-  {en:{n:"Demon Slayer: Hinokami Chronicles",d:"Anime action.",y:2021,g:"Action"},ar:{n:"قاتل الشياطين: كرونيكلز",d:"أكشن أنمي.",y:2021,g:"أكشن"},seriesParts:1, parts:[]},
-  {en:{n:"Dragon Ball Z: Kakarot",d:"DBZ RPG.",y:2020,g:"RPG"},ar:{n:"دراغون بول زد: كاروت",d:"آر بي جي دراغون بول.",y:2020,g:"تقمص أدوار"},seriesParts:1, parts:[{en:{n:"A New Power Awakens",y:2020},ar:{n:"قوة جديدة تنهض",y:2020}}]},
-  {en:{n:"One Piece: Pirate Warriors 4",d:"Musou action.",y:2020,g:"Action"},ar:{n:"ون بيس: بايرت ووريورز 4",d:"أكشن موسو.",y:2020,g:"أكشن"},seriesParts:4, parts:[]},
-  {en:{n:"Naruto Shippuden: Ultimate Ninja Storm 4",d:"Ninja arena fighter.",y:2016,g:"Fighting"},ar:{n:"ناروتو: العاصفة 4",d:"مقاتل نينجا.",y:2016,g:"قتال"},seriesParts:4, parts:[{en:{n:"Road to Boruto",y:2017},ar:{n:"الطريق إلى بوروتو",y:2017}}]},
-  {en:{n:"Jump Force",d:"Anime crossover.",y:2019,g:"Fighting"},ar:{n:"جامب فورس",d:"تقاطع أنمي.",y:2019,g:"قتال"},seriesParts:1, parts:[]},
-  {en:{n:"My Hero One's Justice 2",d:"Hero academia fighting.",y:2020,g:"Fighting"},ar:{n:"ماي هيرو ونز جاستس 2",d:"قتال أكاديمية الأبطال.",y:2020,g:"قتال"},seriesParts:2, parts:[]},
-  {en:{n:"Dragon Ball FighterZ",d:"2D fighting masterpiece.",y:2018,g:"Fighting"},ar:{n:"دراغون بول فايترز",d:"روعة القتال ثنائي الأبعاد.",y:2018,g:"قتال"},seriesParts:1, parts:[]},
-  {en:{n:"Guilty Gear Strive",d:"Anime fighter.",y:2021,g:"Fighting"},ar:{n:"جيلتي جير سترايف",d:"مقاتل أنمي.",y:2021,g:"قتال"},seriesParts:7, parts:[]},
-  {en:{n:"Street Fighter V",d:"Legendary fighting.",y:2016,g:"Fighting"},ar:{n:"ستريت فايتر 5",d:"قتال أسطوري.",y:2016,g:"قتال"},seriesParts:6, parts:[{en:{n:"Champion Edition",y:2020},ar:{n:"نسخة الأبطال",y:2020}}]},
-  {en:{n:"Street Fighter 6",d:"New generation fighting.",y:2023,g:"Fighting"},ar:{n:"ستريت فايتر 6",d:"قتال الجيل الجديد.",y:2023,g:"قتال"},seriesParts:6, parts:[]},
-  {en:{n:"Mortal Kombat 11",d:"Brutal fighting.",y:2019,g:"Fighting"},ar:{n:"مورتال كومبات 11",d:"قتال وحشي.",y:2019,g:"قتال"},seriesParts:12, parts:[{en:{n:"Aftermath",y:2020},ar:{n:" aftermath",y:2020}}]},
-  {en:{n:"Injustice 2",d:"DC superhero fighting.",y:2017,g:"Fighting"},ar:{n:"إن جاستس 2",d:"قتال أبطال DC.",y:2017,g:"قتال"},seriesParts:2, parts:[]},
-  {en:{n:"SoulCalibur VI",d:"Weapon-based fighting.",y:2018,g:"Fighting"},ar:{n:"سول كاليبر 6",d:"قتال بالأسلحة.",y:2018,g:"قتال"},seriesParts:6, parts:[]}
-];
-
-// ==== باقي السكريبت ====
-const archive = document.getElementById("archive");
-const search = document.getElementById("search");
-const filter = document.getElementById("filter");
-const langBtn = document.querySelector(".lang");
-
-function setupFilter(){
-  filter.innerHTML = '<option value="all">All</option>';
-  if(currentTab === "characters"){
-    let gamesSet = new Set(characters.map(c => c.w));
-    gamesSet.forEach(g => filter.innerHTML += `<option>${g}</option>`);
-  }else{
-    let genres = new Set(games.map(g => g[lang].g));
-    genres.forEach(g => filter.innerHTML += `<option>${g}</option>`);
+// Event delegation for modal stars
+document.getElementById('modal').addEventListener('click', e => {
+  const star = e.target.closest('.user-star[data-val]');
+  if (star) {
+    const container = star.closest('.user-stars');
+    const id = container.dataset.id;
+    const val = parseInt(star.dataset.val);
+    setRating(id, val);
+    refreshModalStars(container, val);
   }
-}
+});
 
-function render(){
-  archive.innerHTML = "";
-  const q = search.value.toLowerCase();
-  const f = filter.value;
-
-  if(currentTab === "characters"){
-    characters.forEach(c => {
-      if((f === "all" || c.w === f) && c[lang].n.toLowerCase().includes(q)){
-        archive.innerHTML += `
-        <div class="card">
-          <h2>${c[lang].n}</h2>
-          <span class="tag">${c.w}</span>
-          <div class="section">${lang==="en"?"Power Philosophy":"فلسفة القوة"}</div>
-          <p>${c[lang].p}</p>
-          <div class="section">${lang==="en"?"Mental Image":"الصورة الذهنية"}</div>
-          <p>${c[lang].m}</p>
-        </div>`;
-      }
-    });
-  }else{
-    games.forEach(g => {
-      if((f === "all" || g[lang].g === f) && g[lang].n.toLowerCase().includes(q)){
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <h2>${g[lang].n}</h2>
-          <span class="tag">${g[lang].g}</span>
-          <div class="section">${lang==="en"?"Description":"الوصف"}</div>
-          <p>${g[lang].d}</p>
-          <div class="section">${lang==="en"?"Release Year":"سنة الإصدار"}</div>
-          <p>${g[lang].y}</p>
-        `;
-
-        const partsDiv = document.createElement("div");
-        partsDiv.className = "parts-list";
-        partsDiv.style.display = "none";
-
-        if(g.seriesParts > 1){
-          const seriesText = lang === "en" 
-            ? `This series has ${g.seriesParts} main games.`
-            : `هذه السلسلة لها ${g.seriesParts} أجزاء رئيسية.`;
-          partsDiv.innerHTML += `<div class="series-count">${seriesText}</div>`;
-        }
-
-        const partsLength = g.parts ? g.parts.length : 0;
-        const countText = lang === "en" 
-          ? `This game has ${partsLength} ${partsLength === 1 ? "expansion" : "expansions"}.`
-          : `هذه اللعبة لها ${partsLength} ${partsLength === 1 ? "إضافة" : "إضافات"}.`;
-
-        partsDiv.innerHTML += `<div class="parts-count">${countText}</div>`;
-
-        if(partsLength > 0){
-          partsDiv.innerHTML += g.parts.map(p => `<p>${p[lang].n} (${p[lang].y})</p>`).join("");
-        } else {
-          partsDiv.innerHTML += `<p>${lang === "en" ? "No expansions available." : "لا إضافات متاحة."}</p>`;
-        }
-
-        card.appendChild(partsDiv);
-        card.addEventListener("click", () => {
-          partsDiv.style.display = partsDiv.style.display === "none" ? "block" : "none";
-        });
-
-        archive.appendChild(card);
-      }
-    });
+// Event delegation for top chart items
+document.getElementById('chartsSection').addEventListener('click', e => {
+  const item = e.target.closest('[data-game-index]');
+  if (item) {
+    const idx = parseInt(item.dataset.gameIndex);
+    if (!isNaN(idx) && games[idx]) openGameModal(games[idx]);
   }
-}
+});
 
-langBtn.onclick = () => {
-  lang = lang === "en" ? "ar" : "en";
-  document.body.dir = lang === "ar" ? "rtl" : "ltr";
-  langBtn.textContent = lang.toUpperCase();
-  document.getElementById("title").textContent = lang === "en" ? "Game Zone Archive" : "أرشيف منطقة الألعاب";
-  document.getElementById("subtitle").textContent = lang === "en" ? "Video Game Encyclopedia" : "موسوعة ألعاب الفيديو";
-  setupFilter();
-  render();
-};
-langBtn.textContent = lang.toUpperCase();
-
-search.oninput = filter.onchange = render;
-
-setupFilter();
+updateRatedCount();
+setupFilters();
 render();
+initAI();
+
+setTimeout(() => {
+  document.getElementById('loader').classList.add('hidden');
+}, 1400);
 </script>
 </body>
 </html>
