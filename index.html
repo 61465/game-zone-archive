@@ -204,6 +204,34 @@ footer { text-align: center; padding: 30px 20px; color: var(--muted); font-size:
 [dir="rtl"] .char-quote { border-left: none; border-right: 2px solid var(--gold); padding-left: 0; padding-right: 10px; }
 .random-btn { padding: 9px 18px; border-radius: 10px; background: linear-gradient(135deg, #2d1b69, #4a2b8a); color: #c084fc; border: 1px solid rgba(192,132,252,0.3); font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
 .random-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(192,132,252,0.3); }
+/* PROFILE */
+#profileSection { max-width:1400px; margin:0 auto; padding:20px 20px 60px; position:relative; z-index:1; }
+.profile-grid { display:grid; grid-template-columns:300px 1fr; gap:24px; align-items:start; }
+@media(max-width:768px){ .profile-grid { grid-template-columns:1fr; } }
+.profile-card { background:var(--card2); border:1px solid var(--border2); border-radius:20px; padding:28px 24px; text-align:center; position:sticky; top:80px; }
+.profile-avatar { font-size:3.5rem; margin-bottom:12px; line-height:1; }
+.profile-name { font-family:'Rajdhani',sans-serif; font-size:1.5rem; font-weight:700; color:var(--text); margin-bottom:4px; }
+.profile-level { font-size:0.7rem; font-weight:700; letter-spacing:2px; color:var(--gold); text-transform:uppercase; margin-bottom:20px; padding:4px 12px; background:rgba(212,175,55,0.1); border-radius:99px; display:inline-block; }
+.profile-stats { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+.pstat { background:var(--card); border:1px solid var(--border2); border-radius:12px; padding:14px 10px; }
+.pstat-num { font-family:'Rajdhani',sans-serif; font-size:1.6rem; font-weight:700; color:var(--gold); line-height:1; }
+.pstat-label { font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
+.profile-main { display:flex; flex-direction:column; gap:16px; }
+.profile-section { background:var(--card2); border:1px solid var(--border2); border-radius:16px; padding:20px; }
+.profile-section-title { font-size:0.7rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+.genre-bar-wrap { margin-bottom:10px; }
+.genre-bar-label { display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:5px; }
+.genre-bar-track { height:6px; background:var(--border2); border-radius:99px; overflow:hidden; }
+.genre-bar-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold2)); border-radius:99px; transition:width 0.6s ease; }
+.rated-game-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border); font-size:0.85rem; }
+.rated-game-row:last-child { border-bottom:none; }
+.rated-game-name { color:var(--text); }
+.rated-game-score { color:var(--gold); letter-spacing:1px; }
+.fav-list { display:flex; flex-wrap:wrap; gap:8px; }
+.fav-chip { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(255,59,92,0.1); border:1px solid rgba(255,59,92,0.25); border-radius:99px; font-size:0.78rem; color:var(--text); cursor:pointer; transition:all 0.2s; }
+.fav-chip:hover { background:rgba(255,59,92,0.2); }
+.fav-chip span { color:var(--muted); font-size:0.7rem; }
+
 /* DNA ANALYZER */
 .dna-panel { max-width: 1400px; margin: 0 auto 24px; padding: 0 20px; position: relative; z-index: 1; }
 .dna-box { background: var(--card2); border: 1px solid var(--border2); border-radius: 16px; padding: 24px; }
