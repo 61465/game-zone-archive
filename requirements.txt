@@ -1,8 +1,0 @@
-flask
-flask-caching
-flask-limiter
-feedparser
-requests
-beautifulsoup4
-bleach
-user-agents
