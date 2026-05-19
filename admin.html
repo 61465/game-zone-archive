@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Game Zone — Admin</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--gold:#d4af37;--purple:#a855f7;--bg:#0a0a0f;--glass:rgba(255,255,255,.06);--border:rgba(255,255,255,.12)}
+body{background:var(--bg);color:#e2e8f0;font-family:'Segoe UI',sans-serif;padding:2rem;min-height:100vh}
+h1{text-align:center;font-size:2rem;background:linear-gradient(135deg,var(--gold),var(--purple));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;margin-bottom:.5rem}
+.sub{text-align:center;color:#6b7280;margin-bottom:2rem;font-size:.9rem}
+.tabs{display:flex;gap:.75rem;justify-content:center;margin-bottom:2rem;flex-wrap:wrap}
+.tb{padding:.6rem 1.5rem;border-radius:12px;border:1px solid rgba(212,175,55,.3);background:var(--glass);color:#e2e8f0;cursor:pointer;font-size:.95rem;transition:.2s}
+.tb.active,.tb:hover{background:linear-gradient(135deg,var(--gold),var(--purple));color:#000;border-color:transparent;font-weight:700}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+label{display:block;color:var(--gold);font-size:.82rem;margin-bottom:.35rem;font-weight:600}
+input,select,textarea{width:100%;padding:.7rem 1rem;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:10px;color:#e2e8f0;font-size:.92rem;font-family:inherit;transition:.2s}
+input:focus,textarea:focus{outline:none;border-color:var(--gold);background:rgba(255,255,255,.1)}
+textarea{resize:vertical;min-height:75px}
+.row{display:flex;gap:.75rem;align-items:flex-end;margin-top:1rem}
+.btn{padding:.7rem 1.5rem;border-radius:12px;border:none;cursor:pointer;font-size:.92rem;font-weight:700;transition:.2s;white-space:nowrap}
+.btn:hover{transform:translateY(-2px)}
+.btn-ai{background:linear-gradient(135deg,#00e676,#00b0ff);color:#000}
+.btn-add{background:linear-gradient(135deg,var(--gold),var(--purple));color:#000}
+.btn-del{background:rgba(255,59,92,.15);color:#ff3b5c;border:1px solid rgba(255,59,92,.3)}
+.btn-sm{padding:.4rem 1rem;font-size:.8rem}
+.alert{border-radius:10px;padding:.75rem 1rem;margin-bottom:1rem;display:none;font-size:.9rem}
+.alert-ok{background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);color:#00e676}
+.alert-err{background:rgba(255,59,92,.1);border:1px solid rgba(255,59,92,.3);color:#ff3b5c}
+.alert-info{background:rgba(0,176,255,.1);border:1px solid rgba(0,176,255,.3);color:#00b0ff}
+.item{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.75rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.item-name{font-weight:600;color:var(--gold)}
+.item-sub{font-size:.78rem;color:#6b7280;margin-top:.2rem}
+.badge{background:rgba(168,85,247,.15);color:var(--purple);border:1px solid rgba(168,85,247,.3);border-radius:6px;padding:.15rem .5rem;font-size:.72rem}
+.empty{text-align:center;color:#4b5563;padding:2rem}
+.api-bar{background:rgba(0,176,255,.06);border:1px solid rgba(0,176,255,.2);border-radius:14px;padding:1.25rem;margin-bottom:1.5rem}
+.api-bar h3{color:#00b0ff;margin-bottom:1rem;font-size:.95rem}
+.api-row{display:flex;gap:.75rem;align-items:center;margin-bottom:.75rem}
+.api-row input{flex:1}
+.api-row label{color:#94a3b8;font-size:.8rem;min-width:90px;margin:0}
+.provider-tabs{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
+.ptab{padding:.35rem .9rem;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:#94a3b8;cursor:pointer;font-size:.8rem;transition:.2s}
+.ptab.active{background:linear-gradient(135deg,#00b0ff,#0077ff);color:#fff;border-color:transparent}
+.api-status{font-size:.78rem;margin-top:.4rem}
+.api-hint{font-size:.72rem;color:#4b5563;margin-top:.25rem}
+.spin{display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sec-title{color:var(--purple);font-size:1rem;margin-bottom:1rem;font-weight:700}
+a.back{display:inline-block;margin-bottom:1.5rem;color:var(--gold);text-decoration:none;font-size:.88rem}
+a.back:hover{text-decoration:underline}
+.loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:1rem}
+.loading-overlay.show{display:flex}
+.spinner{width:48px;height:48px;border:4px solid rgba(212,175,55,.2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← العودة للموقع</a>
+<h1>🎛️ لوحة التحكم</h1>
+<p class="sub">أضف ألعاباً وشخصيات — الذكاء الاصطناعي يملأ التفاصيل تلقائياً</p>
+
+<!-- AI API Settings -->
+<div class="api-bar">
+  <h3>🤖 إعدادات الذكاء الاصطناعي — اختر المزوّد</h3>
+  <div class="provider-tabs">
+    <button class="ptab active" onclick="selProvider('gemini',this)" title="Google Gemini">🌀 Gemini</button>
+    <button class="ptab" onclick="selProvider('mistral',this)" title="Mistral AI">💫 Mistral</button>
+    <button class="ptab" onclick="selProvider('groq',this)" title="Groq — Llama 3">⚡ Groq</button>
+    <button class="ptab" onclick="selProvider('cohere',this)" title="Cohere Command">🔷 Cohere</button>
+  </div>
+
+  <!-- Gemini -->
+  <div class="api-row" id="row-gemini">
+    <label>🌀 Gemini</label>
+    <input id="key-gemini" type="password" placeholder="AIzaSy...">
+    <button class="btn btn-ai btn-sm" onclick="saveKey('gemini')">حفظ</button>
+    <button class="btn btn-sm" style="background:rgba(255,255,255,.08)" onclick="testKey('gemini')">اختبار</button>
+  </div>
+  <div class="api-hint" id="hint-gemini">احصل على مفتاح مجاني: <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#00b0ff">aistudio.google.com/app/apikey</a></div>
+
+  <!-- Mistral -->
+  <div class="api-row" id="row-mistral" style="display:none">
+    <label>💫 Mistral</label>
+    <input id="key-mistral" type="password" placeholder="...مفتاح Mistral">
+    <button class="btn btn-ai btn-sm" onclick="saveKey('mistral')">حفظ</button>
+    <button class="btn btn-sm" style="background:rgba(255,255,255,.08)" onclick="testKey('mistral')">اختبار</button>
+  </div>
+  <div class="api-hint" id="hint-mistral" style="display:none">احصل على مفتاح مجاني: <a href="https://console.mistral.ai/" target="_blank" style="color:#00b0ff">console.mistral.ai</a></div>
+
+  <!-- Groq -->
+  <div class="api-row" id="row-groq" style="display:none">
+    <label>⚡ Groq</label>
+    <input id="key-groq" type="password" placeholder="gsk_...">
+    <button class="btn btn-ai btn-sm" onclick="saveKey('groq')">حفظ</button>
+    <button class="btn btn-sm" style="background:rgba(255,255,255,.08)" onclick="testKey('groq')">اختبار</button>
+  </div>
+  <div class="api-hint" id="hint-groq" style="display:none">احصل على مفتاح مجاني: <a href="https://console.groq.com/keys" target="_blank" style="color:#00b0ff">console.groq.com/keys</a></div>
+
+  <!-- Cohere -->
+  <div class="api-row" id="row-cohere" style="display:none">
+    <label>🔷 Cohere</label>
+    <input id="key-cohere" type="password" placeholder="...مفتاح Cohere">
+    <button class="btn btn-ai btn-sm" onclick="saveKey('cohere')">حفظ</button>
+    <button class="btn btn-sm" style="background:rgba(255,255,255,.08)" onclick="testKey('cohere')">اختبار</button>
+  </div>
+  <div class="api-hint" id="hint-cohere" style="display:none">احصل على مفتاح مجاني: <a href="https://dashboard.cohere.com/api-keys" target="_blank" style="color:#00b0ff">dashboard.cohere.com/api-keys</a></div>
+
+  <div class="api-status" id="keyStatus"></div>
+</div>
+
+<div class="tabs">
+  <button class="tb active" onclick="sw('games',this)">🕹️ إضافة لعبة</button>
+  <button class="tb" onclick="sw('chars',this)">🎭 إضافة شخصية</button>
+  <button class="tb" onclick="sw('upcoming',this)">⏳ إضافة قادمة</button>
+  <button class="tb" onclick="sw('gems',this)">💎 إضافة جوهرة</button>
+  <button class="tb" onclick="sw('list',this);renderList()">📋 المحتوى المضاف</button>
+</div>
+
+<!-- GAMES -->
+<div class="panel active" id="panel-games">
+  <div class="card">
+    <div class="sec-title">🕹️ إضافة لعبة جديدة</div>
+    <div id="gOk" class="alert alert-ok"></div>
+    <div id="gErr" class="alert alert-err"></div>
+
+    <div class="row" style="margin-top:0">
+      <div style="flex:1"><label>اسم اللعبة (بالإنجليزية) *</label><input id="g-name-en" placeholder="e.g. Black Myth: Wukong"></div>
+      <button class="btn btn-ai" onclick="fillGame()">🤖 أملأ بالذكاء الاصطناعي</button>
+    </div>
+
+    <div class="grid2" style="margin-top:1rem">
+      <div><label>الاسم بالعربية</label><input id="g-name-ar" placeholder="مثال: بلاك ميث ووكونج"></div>
+      <div><label>النوع (EN)</label><input id="g-genre-en" placeholder="Action/RPG"></div>
+      <div><label>النوع (AR)</label><input id="g-genre-ar" placeholder="أكشن/تقمص أدوار"></div>
+      <div><label>سنة الإصدار</label><input id="g-year" type="number" placeholder="2024"></div>
+      <div><label>Metacritic Score</label><input id="g-meta" type="number" placeholder="82" min="0" max="100"></div>
+      <div><label>أجزاء السلسلة</label><input id="g-parts" type="number" placeholder="1"></div>
+    </div>
+    <div style="margin-top:1rem"><label>الوصف (EN)</label><textarea id="g-desc-en" placeholder="Short description..."></textarea></div>
+    <div style="margin-top:1rem"><label>الوصف (AR)</label><textarea id="g-desc-ar" placeholder="وصف مختصر..."></textarea></div>
+
+    <div style="text-align:center;margin-top:1.5rem">
+      <button class="btn btn-add" onclick="addGame()">➕ إضافة والانتقال للموقع</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHARS -->
+<div class="panel" id="panel-chars">
+  <div class="card">
+    <div class="sec-title">🎭 إضافة شخصية جديدة</div>
+    <div id="cOk" class="alert alert-ok"></div>
+    <div id="cErr" class="alert alert-err"></div>
+
+    <div class="row" style="margin-top:0">
+      <div style="flex:1"><label>اسم الشخصية (بالإنجليزية) *</label><input id="c-name-en" placeholder="e.g. Cloud Strife"></div>
+      <button class="btn btn-ai" onclick="fillChar()">🤖 أملأ بالذكاء الاصطناعي</button>
+    </div>
+
+    <div class="grid2" style="margin-top:1rem">
+      <div><label>الاسم بالعربية</label><input id="c-name-ar" placeholder="كلاود سترايف"></div>
+      <div><label>اللعبة (Game)</label><input id="c-world" placeholder="Final Fantasy VII"></div>
+    </div>
+    <div style="margin-top:1rem"><label>اقتباس مميز</label><input id="c-quote" placeholder="Famous quote..."></div>
+    <div style="margin-top:1rem"><label>الوصف (EN)</label><textarea id="c-desc-en" placeholder="Character description..."></textarea></div>
+    <div style="margin-top:1rem"><label>الوصف (AR)</label><textarea id="c-desc-ar" placeholder="وصف الشخصية..."></textarea></div>
+
+    <div style="text-align:center;margin-top:1.5rem">
+      <button class="btn btn-add" onclick="addChar()">➕ إضافة والانتقال للموقع</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPCOMING -->
+<div class="panel" id="panel-upcoming">
+  <div class="card">
+    <div class="sec-title">⏳ إضافة لعبة قادمة</div>
+    <div id="upOk" class="alert alert-ok"></div>
+    <div id="upErr" class="alert alert-err"></div>
+    <div class="grid2">
+      <div><label>اسم اللعبة *</label><input id="up-name" placeholder="مثال: GTA VI"></div>
+      <div><label>موعد الإصدار</label><input id="up-tag" placeholder="2025 / TBA / Far"></div>
+    </div>
+    <div style="margin-top:1rem"><label>السبب بالإنجليزية</label><textarea id="up-why-en" placeholder="Why is this game anticipated?"></textarea></div>
+    <div style="margin-top:1rem"><label>السبب بالعربية</label><textarea id="up-why-ar" placeholder="لماذا هذه اللعبة منتظرة؟"></textarea></div>
+    <div style="text-align:center;margin-top:1.5rem">
+      <button class="btn btn-add" onclick="addUpcoming()">➕ إضافة لعبة قادمة</button>
+    </div>
+  </div>
+</div>
+
+<!-- GEMS -->
+<div class="panel" id="panel-gems">
+  <div class="card">
+    <div class="sec-title">💎 إضافة جوهرة خفية</div>
+    <div id="gmOk" class="alert alert-ok"></div>
+    <div id="gmErr" class="alert alert-err"></div>
+    <div><label>اسم اللعبة (يجب أن تكون في قاعدة البيانات) *</label><input id="gm-name" placeholder="مثال: Outer Wilds"></div>
+    <div style="margin-top:1rem"><label>سبب كونها جوهرة (EN)</label><textarea id="gm-why-en" placeholder="Why is this a hidden gem?"></textarea></div>
+    <div style="margin-top:1rem"><label>سبب كونها جوهرة (AR)</label><textarea id="gm-why-ar" placeholder="لماذا هي جوهرة خفية؟"></textarea></div>
+    <div style="text-align:center;margin-top:1.5rem">
+      <button class="btn btn-add" onclick="addGem()">➕ إضافة جوهرة خفية</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIST -->
+<div class="panel" id="panel-list">
+  <div class="card">
+    <div class="sec-title">🕹️ الألعاب المضافة</div>
+    <div id="gameList"><div class="empty">لا توجد ألعاب مضافة</div></div>
+  </div>
+  <div class="card">
+    <div class="sec-title">🎭 الشخصيات المضافة</div>
+    <div id="charList"><div class="empty">لا توجد شخصيات مضافة</div></div>
+  </div>
+</div>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loader">
+  <div class="spinner"></div>
+  <div style="color:var(--gold);font-size:1rem">🤖 الذكاء الاصطناعي يبحث ويملأ البيانات...</div>
+</div>
+
+<script>
+// ── Multi-Provider API ────────────────────────────────
+let activeProvider = localStorage.getItem('gzProvider') || 'gemini';
+
+const PROVIDERS = {
+  gemini:  { store:'gzKey_gemini',  label:'Gemini' },
+  mistral: { store:'gzKey_mistral', label:'Mistral' },
+  groq:    { store:'gzKey_groq',    label:'Groq' },
+  cohere:  { store:'gzKey_cohere',  label:'Cohere' }
+};
+
+function selProvider(p, btn){
+  activeProvider = p;
+  localStorage.setItem('gzProvider', p);
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['gemini','mistral','groq','cohere'].forEach(id=>{
+    document.getElementById('row-'+id).style.display = id===p?'flex':'none';
+    document.getElementById('hint-'+id).style.display = id===p?'block':'none';
+  });
+}
+
+function getKey(p){
+  p = p || activeProvider;
+  return localStorage.getItem(PROVIDERS[p].store) || '';
+}
+
+function saveKey(p){
+  const k = document.getElementById('key-'+p).value.trim();
+  if(!k){ alert('أدخل المفتاح أولاً'); return; }
+  localStorage.setItem(PROVIDERS[p].store, k);
+  showStatus(`✅ تم حفظ مفتاح ${PROVIDERS[p].label}`, '#00e676');
+}
+
+function showStatus(msg, color){
+  const el = document.getElementById('keyStatus');
+  el.textContent = msg; el.style.color = color;
+}
+
+async function testKey(p){
+  p = p || activeProvider;
+  const k = getKey(p);
+  if(!k){ showStatus('⚠️ أدخل المفتاح أولاً', '#ff3b5c'); return; }
+  showStatus('⏳ جارٍ الاختبار...', '#00b0ff');
+  try {
+    await callAI('Say OK', p);
+    showStatus(`✅ مفتاح ${PROVIDERS[p].label} يعمل!`, '#00e676');
+  } catch(e){ showStatus('❌ ' + e.message, '#ff3b5c'); }
+}
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  ['gemini','mistral','groq','cohere'].forEach(p=>{
+    const k = getKey(p);
+    if(k) document.getElementById('key-'+p).value = k;
+  });
+  // restore active provider tab
+  const btn = document.querySelector(`.ptab[onclick*="'${activeProvider}'"]`);
+  if(btn) selProvider(activeProvider, btn);
+});
+
+// ── Unified AI caller ────────────────────────────────
+async function callAI(prompt, provider){
+  provider = provider || activeProvider;
+  const key = getKey(provider);
+  if(!key) throw new Error(`لا يوجد مفتاح ${PROVIDERS[provider].label} — أدخله أولاً`);
+
+  if(provider === 'gemini'){
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+    const body = { contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.3,maxOutputTokens:1024} };
+    const res = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!res.ok){ const e=await res.json(); throw new Error(e.error?.message||res.status); }
+    const d = await res.json();
+    return d.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  }
+
+  if(provider === 'mistral'){
+    const res = await fetch('https://api.mistral.ai/v1/chat/completions',{
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body:JSON.stringify({model:'mistral-small-latest',messages:[{role:'user',content:prompt}],max_tokens:1024,temperature:0.3})
+    });
+    if(!res.ok){ const e=await res.json(); throw new Error(e.message||res.status); }
+    const d = await res.json();
+    return d.choices?.[0]?.message?.content || '';
+  }
+
+  if(provider === 'groq'){
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body:JSON.stringify({model:'llama3-8b-8192',messages:[{role:'user',content:prompt}],max_tokens:1024,temperature:0.3})
+    });
+    if(!res.ok){ const e=await res.json(); throw new Error(e.error?.message||res.status); }
+    const d = await res.json();
+    return d.choices?.[0]?.message?.content || '';
+  }
+
+  if(provider === 'cohere'){
+    const res = await fetch('https://api.cohere.com/v1/generate',{
+      method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body:JSON.stringify({model:'command',prompt:prompt,max_tokens:1024,temperature:0.3})
+    });
+    if(!res.ok){ const e=await res.json(); throw new Error(e.message||res.status); }
+    const d = await res.json();
+    return d.generations?.[0]?.text || '';
+  }
+
+  throw new Error('مزوّد غير معروف');
+}
+
+async function fillGame(){
+  const name = document.getElementById('g-name-en').value.trim();
+  if(!name){ alert('اكتب اسم اللعبة بالإنجليزية أولاً'); return; }
+  if(!getKey()){ alert(`أدخل مفتاح ${PROVIDERS[activeProvider].label} أولاً`); return; }
+  showLoader(true);
+  try {
+    const prompt = `You are a video game expert. For the game "${name}", respond ONLY with a valid JSON object (no markdown, no explanation):{"nameAr":"Arabic name","genreEn":"genre English e.g. Action/RPG","genreAr":"genre Arabic","year":2024,"metacritic":85,"seriesParts":1,"descEn":"One sentence description English","descAr":"One sentence description Arabic"}`;
+    const text = await callAI(prompt);
+    const json = JSON.parse(text.replace(/```json|```/g,'').trim());
+    document.getElementById('g-name-ar').value = json.nameAr||'';
+    document.getElementById('g-genre-en').value = json.genreEn||'';
+    document.getElementById('g-genre-ar').value = json.genreAr||'';
+    document.getElementById('g-year').value = json.year||'';
+    document.getElementById('g-meta').value = json.metacritic||'';
+    document.getElementById('g-parts').value = json.seriesParts||1;
+    document.getElementById('g-desc-en').value = json.descEn||'';
+    document.getElementById('g-desc-ar').value = json.descAr||'';
+  } catch(e){ alert('خطأ: ' + e.message); }
+  showLoader(false);
+}
+
+async function fillChar(){
+  const name = document.getElementById('c-name-en').value.trim();
+  if(!name){ alert('اكتب اسم الشخصية بالإنجليزية أولاً'); return; }
+  if(!getKey()){ alert(`أدخل مفتاح ${PROVIDERS[activeProvider].label} أولاً`); return; }
+  showLoader(true);
+  try {
+    const prompt = `You are a video game expert. For the character "${name}", respond ONLY with a valid JSON object (no markdown):{"nameAr":"Arabic name","game":"Game title English","quote":"Most famous quote English","descEn":"One sentence character description English","descAr":"One sentence character description Arabic"}`;
+    const text = await callAI(prompt);
+    const json = JSON.parse(text.replace(/```json|```/g,'').trim());
+    document.getElementById('c-name-ar').value = json.nameAr||'';
+    document.getElementById('c-world').value = json.game||'';
+    document.getElementById('c-quote').value = json.quote||'';
+    document.getElementById('c-desc-en').value = json.descEn||'';
+    document.getElementById('c-desc-ar').value = json.descAr||'';
+  } catch(e){ alert('خطأ: ' + e.message); }
+  showLoader(false);
+}
+
+// ── Data ──────────────────────────────────────────────
+function getCG(){ try{ return JSON.parse(localStorage.getItem('gzCustomGames')||'[]'); }catch(e){return[];} }
+function getCC(){ try{ return JSON.parse(localStorage.getItem('gzCustomChars')||'[]'); }catch(e){return[];} }
+
+function addGame(){
+  const nameEn = document.getElementById('g-name-en').value.trim();
+  const nameAr = document.getElementById('g-name-ar').value.trim();
+  if(!nameEn||!nameAr){ showAlert('gErr','يرجى كتابة اسم اللعبة بالعربية والإنجليزية'); return; }
+  const game = {
+    en:{ n:nameEn, d:document.getElementById('g-desc-en').value||nameEn,
+         y:parseInt(document.getElementById('g-year').value)||2024,
+         g:document.getElementById('g-genre-en').value||'Action' },
+    ar:{ n:nameAr, d:document.getElementById('g-desc-ar').value||nameAr,
+         y:parseInt(document.getElementById('g-year').value)||2024,
+         g:document.getElementById('g-genre-ar').value||'أكشن' },
+    seriesParts:parseInt(document.getElementById('g-parts').value)||1,
+    parts:[], _custom:true,
+    _meta:parseInt(document.getElementById('g-meta').value)||null
+  };
+  const list = getCG();
+  if(list.find(x=>x.en.n===nameEn)){ showAlert('gErr','هذه اللعبة موجودة مسبقاً'); return; }
+  list.push(game);
+  localStorage.setItem('gzCustomGames', JSON.stringify(list));
+  showAlert('gOk','✅ تمت الإضافة! جارٍ الانتقال للموقع...');
+  setTimeout(()=> window.open('index.html?tab=games','_blank'), 1200);
+}
+
+function addChar(){
+  const nameEn = document.getElementById('c-name-en').value.trim();
+  const nameAr = document.getElementById('c-name-ar').value.trim();
+  if(!nameEn||!nameAr){ showAlert('cErr','يرجى كتابة اسم الشخصية بالعربية والإنجليزية'); return; }
+  const char = {
+    w: document.getElementById('c-world').value||'Unknown',
+    en:{ n:nameEn, p:document.getElementById('c-quote').value||'...', m:document.getElementById('c-desc-en').value||nameEn },
+    ar:{ n:nameAr, p:document.getElementById('c-quote').value||'...', m:document.getElementById('c-desc-ar').value||nameAr },
+    _custom:true
+  };
+  const list = getCC();
+  if(list.find(x=>x.en.n===nameEn)){ showAlert('cErr','هذه الشخصية موجودة مسبقاً'); return; }
+  list.push(char);
+  localStorage.setItem('gzCustomChars', JSON.stringify(list));
+  showAlert('cOk','✅ تمت الإضافة! جارٍ الانتقال للموقع...');
+  setTimeout(()=> window.open('index.html?tab=characters','_blank'), 1200);
+}
+
+function renderList(){
+  const games=getCG(), chars=getCC(), upcoming=getCU(), gems=getGM();
+  document.getElementById('gameList').innerHTML = games.length
+    ? games.map((g,i)=>`<div class="item"><div><div class="item-name">🕹️ ${g.en.n} / ${g.ar.n}</div><div class="item-sub">${g.en.g} · ${g.en.y} <span class="badge">مخصص</span></div></div><button class="btn btn-del btn-sm" onclick="delGame(${i})">🗑️ حذف</button></div>`).join('')
+    : '<div class="empty">لا توجد ألعاب مضافة بعد</div>';
+  document.getElementById('charList').innerHTML = chars.length
+    ? chars.map((c,i)=>`<div class="item"><div><div class="item-name">🎭 ${c.en.n} / ${c.ar.n}</div><div class="item-sub">🎮 ${c.w} <span class="badge">مخصص</span></div></div><button class="btn btn-del btn-sm" onclick="delChar(${i})">🗑️ حذف</button></div>`).join('')
+    : '<div class="empty">لا توجد شخصيات مضافة بعد</div>';
+  // upcoming
+  let upHtml=upcoming.length
+    ? upcoming.map((u,i)=>`<div class="item"><div><div class="item-name">⏳ ${u.n}</div><div class="item-sub">${u.tag} <span class="badge">مخصص</span></div></div><button class="btn btn-del btn-sm" onclick="delUpcoming(${i})">🗑️ حذف</button></div>`).join('')
+    : '<div class="empty">لا توجد ألعاب قادمة مضافة</div>';
+  let gemHtml=gems.length
+    ? gems.map((g,i)=>`<div class="item"><div><div class="item-name">💎 ${g.n}</div><div class="item-sub"><span class="badge">جوهرة مخصصة</span></div></div><button class="btn btn-del btn-sm" onclick="delGem(${i})">🗑️ حذف</button></div>`).join('')
+    : '<div class="empty">لا توجد جواهر مضافة</div>';
+  // inject if panels exist
+  const upList=document.getElementById('upList'), gmList=document.getElementById('gmList');
+  if(upList) upList.innerHTML=upHtml;
+  if(gmList) gmList.innerHTML=gemHtml;
+  // add to card if not there
+  const listPanel=document.getElementById('panel-list');
+  if(listPanel&&!document.getElementById('upList')){
+    listPanel.innerHTML+=`<div class="card"><div class="sec-title">⏳ الألعاب القادمة المضافة</div><div id="upList">${upHtml}</div></div>`;
+    listPanel.innerHTML+=`<div class="card"><div class="sec-title">💎 الجواهر الخفية المضافة</div><div id="gmList">${gemHtml}</div></div>`;
+  }
+}
+function delUpcoming(i){ const l=getCU(); l.splice(i,1); localStorage.setItem('gzCustomUpcoming',JSON.stringify(l)); renderList(); }
+function delGem(i){ const l=getGM(); l.splice(i,1); localStorage.setItem('gzCustomGems',JSON.stringify(l)); renderList(); }
+
+function delGame(i){ const l=getCG(); l.splice(i,1); localStorage.setItem('gzCustomGames',JSON.stringify(l)); renderList(); }
+function delChar(i){ const l=getCC(); l.splice(i,1); localStorage.setItem('gzCustomChars',JSON.stringify(l)); renderList(); }
+
+function getCU(){ try{ return JSON.parse(localStorage.getItem('gzCustomUpcoming')||'[]'); }catch(e){return[];} }
+function getGM(){ try{ return JSON.parse(localStorage.getItem('gzCustomGems')||'[]'); }catch(e){return[];} }
+
+function addUpcoming(){
+  const name=document.getElementById('up-name').value.trim();
+  const tag=document.getElementById('up-tag').value.trim()||'TBA';
+  const whyEn=document.getElementById('up-why-en').value.trim();
+  const whyAr=document.getElementById('up-why-ar').value.trim();
+  if(!name||!whyEn||!whyAr){ showAlert('upErr','يرجى ملء جميع الحقول المطلوبة'); return; }
+  const list=getCU();
+  if(list.find(x=>x.n===name)){ showAlert('upErr','هذه اللعبة موجودة مسبقاً'); return; }
+  list.push({n:name,tag,en:{why:whyEn},ar:{why:whyAr},_custom:true});
+  localStorage.setItem('gzCustomUpcoming',JSON.stringify(list));
+  showAlert('upOk','✅ تمت الإضافة للألعاب القادمة!');
+  ['up-name','up-tag','up-why-en','up-why-ar'].forEach(id=>document.getElementById(id).value='');
+}
+
+function addGem(){
+  const name=document.getElementById('gm-name').value.trim();
+  const whyEn=document.getElementById('gm-why-en').value.trim();
+  const whyAr=document.getElementById('gm-why-ar').value.trim();
+  if(!name||!whyEn||!whyAr){ showAlert('gmErr','يرجى ملء جميع الحقول'); return; }
+  const list=getGM();
+  if(list.find(x=>x.n===name)){ showAlert('gmErr','هذه الجوهرة موجودة مسبقاً'); return; }
+  list.push({n:name,en:{why:whyEn},ar:{why:whyAr},_custom:true});
+  localStorage.setItem('gzCustomGems',JSON.stringify(list));
+  showAlert('gmOk','✅ تمت إضافة الجوهرة الخفية!');
+  ['gm-name','gm-why-en','gm-why-ar'].forEach(id=>document.getElementById(id).value='');
+}
+
+// ── Utils ─────────────────────────────────────────────
+function sw(id, btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+function showAlert(id, msg){
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = 'block';
+  setTimeout(()=> el.style.display='none', 4000);
+}
+function showLoader(v){ document.getElementById('loader').classList.toggle('show', v); }
+</script>
+</body>
+</html>

@@ -243,7 +243,30 @@ body{background:var(--bg);color:var(--text);font-family:'Exo 2','Noto Kufi Arabi
 .lb-close{margin:0 16px 16px;width:calc(100% - 32px);padding:11px;background:var(--card2);border:1px solid var(--border2);color:var(--muted);border-radius:10px;font-family:inherit;font-size:0.85rem;cursor:pointer;transition:all 0.2s}
 .lb-close:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
 .lb-empty{text-align:center;color:var(--muted);padding:24px;font-size:0.9rem}
+.lb-elo{font-size:0.7rem;color:var(--purple);margin-left:4px}
+/* LB Tabs */
+.lb-tabs{display:flex;gap:6px;padding:10px 16px 0;border-bottom:1px solid var(--border2);margin-bottom:4px}
+.lb-tab{flex:1;padding:6px 8px;background:var(--card);border:1px solid var(--border2);border-radius:8px 8px 0 0;color:var(--muted);font-family:inherit;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s}
+.lb-tab.active{background:rgba(168,85,247,0.12);border-color:rgba(168,85,247,0.4);color:var(--purple)}
+/* ELO Toast */
+.gz-elo-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);z-index:9999;background:var(--card2);border:1px solid rgba(168,85,247,0.4);border-radius:14px;padding:10px 22px;font-size:0.88rem;font-weight:700;opacity:0;transition:all 0.4s;pointer-events:none;text-align:center;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,0.5)}
+.gz-elo-toast.in{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+try {
+  firebase.initializeApp({
+    apiKey:"AIzaSyBJN1rN8xKy7xTDvWbZl80zWWIt-m5hDsA",
+    authDomain:"golden-77feb.firebaseapp.com",
+    projectId:"golden-77feb",
+    storageBucket:"golden-77feb.firebasestorage.app",
+    messagingSenderId:"801423754479",
+    appId:"1:801423754479:web:bfa542e24e34eaf8dbc71a"
+  });
+  window.qzDB = firebase.firestore();
+} catch(e) { window.qzDB = null; }
+</script>
 </head>
 <body>
 
@@ -299,6 +322,10 @@ body{background:var(--bg);color:var(--text);font-family:'Exo 2','Noto Kufi Arabi
   <div class="lb-card">
     <div class="lb-header">
       <div class="lb-title" id="lbTitle">🏆 LEADERBOARD</div>
+    </div>
+    <div class="lb-tabs">
+      <button class="lb-tab active" id="lbTabLocal" onclick="switchLBTab('local')">📱 Local</button>
+      <button class="lb-tab" id="lbTabGlobal" onclick="switchLBTab('global')">🌍 Global ELO</button>
     </div>
     <div class="lb-list" id="lbList"></div>
     <button class="lb-close" onclick="closeLB()" id="lbCloseBtn">Close</button>
@@ -613,22 +640,98 @@ function saveLB(name,s,diff){
   lb.splice(10);
   localStorage.setItem('gzQuizLB',JSON.stringify(lb));
 }
+// ─── ELO SYSTEM ───────────────────────────────
+const QZ_ELO_BASE = 1000;
+const QZ_ELO_K = 32;
+const QZ_DIFF_ELO = {easy:800, medium:1000, hard:1200};
+const QZ_PLAYERS_COL = 'gz_quiz_players';
+const QZ_LB_COL = 'gz_quiz_lb';
+
+function getPlayerId(){
+  let id = localStorage.getItem('gzQuizPlayerId');
+  if(!id){ id = 'qz_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36); localStorage.setItem('gzQuizPlayerId', id); }
+  return id;
+}
+function _qzEloCalc(playerElo, oppElo, won){
+  const exp = 1 / (1 + Math.pow(10, (oppElo - playerElo) / 400));
+  const delta = Math.round(QZ_ELO_K * ((won ? 1 : 0) - exp));
+  return delta;
+}
+async function gzQuizSaveResult(name, score, diff, accuracy, streak){
+  if(!window.qzDB) return null;
+  const pid = getPlayerId();
+  const oppElo = QZ_DIFF_ELO[diff] || 1000;
+  const won = score >= 600;
+  try {
+    const ref = window.qzDB.collection(QZ_PLAYERS_COL).doc(pid);
+    const snap = await ref.get();
+    const cur = snap.exists ? (snap.data().elo || QZ_ELO_BASE) : QZ_ELO_BASE;
+    const delta = _qzEloCalc(cur, oppElo, won);
+    const newElo = Math.max(100, cur + delta);
+    const batch = window.qzDB.batch();
+    batch.set(ref, { name, elo: newElo, lastScore: score, diff, updated: firebase.firestore.FieldValue.serverTimestamp() }, {merge:true});
+    const lbRef = window.qzDB.collection(QZ_LB_COL).doc();
+    batch.set(lbRef, { name, score, elo: newElo, diff, accuracy, streak, ts: firebase.firestore.FieldValue.serverTimestamp() });
+    await batch.commit();
+    return { delta, newElo };
+  } catch(e) { return null; }
+}
+async function gzQuizLoadGlobalLB(){
+  if(!window.qzDB) return [];
+  try {
+    const snap = await window.qzDB.collection(QZ_LB_COL).orderBy('score','desc').limit(25).get();
+    return snap.docs.map(d => d.data());
+  } catch(e) { return []; }
+}
+function showEloToastQuiz(delta, newElo){
+  let t = document.getElementById('gz-elo-toast-quiz');
+  if(!t){ t = document.createElement('div'); t.id='gz-elo-toast-quiz'; t.className='gz-elo-toast'; document.body.appendChild(t); }
+  const sign = delta >= 0 ? '+' : '';
+  t.innerHTML = `<span style="color:${delta>=0?'#64c864':'#ff6464'}">${sign}${delta} ELO</span> · New: <b>${newElo}</b>`;
+  t.classList.add('in');
+  setTimeout(() => t.classList.remove('in'), 3000);
+}
+
+// ─── LEADERBOARD ──────────────────────────────
+let _lbTab = 'local';
 function openLB(){
-  const lb=getLB();
-  const list=document.getElementById('lbList');
-  if(lb.length===0){
-    list.innerHTML=`<div class="lb-empty" id="lbEmpty">${lang==='en'?'No scores yet. Be the first!':'لا نتائج بعد. كن الأول!'}</div>`;
-  } else {
-    const medals=['🥇','🥈','🥉','4','5','6','7','8','9','10'];
-    list.innerHTML=lb.slice(0,10).map((e,i)=>`
+  _lbTab = 'local';
+  document.getElementById('lbTabLocal').classList.add('active');
+  document.getElementById('lbTabGlobal').classList.remove('active');
+  document.getElementById('lbTitle').textContent = lang==='en' ? '🏆 LEADERBOARD' : '🏆 المتصدرون';
+  document.getElementById('lbCloseBtn').textContent = lang==='en' ? 'Close' : 'إغلاق';
+  document.getElementById('lbOverlay').classList.add('show');
+  _renderLBContent();
+}
+function switchLBTab(tab){
+  _lbTab = tab;
+  document.getElementById('lbTabLocal').classList.toggle('active', tab==='local');
+  document.getElementById('lbTabGlobal').classList.toggle('active', tab==='global');
+  _renderLBContent();
+}
+async function _renderLBContent(){
+  const list = document.getElementById('lbList');
+  const medals = ['🥇','🥈','🥉','4','5','6','7','8','9','10'];
+  if(_lbTab === 'local'){
+    const lb = getLB();
+    if(!lb.length){ list.innerHTML=`<div class="lb-empty">${lang==='en'?'No scores yet. Be the first!':'لا نتائج بعد. كن الأول!'}</div>`; return; }
+    list.innerHTML = lb.slice(0,10).map((e,i)=>`
       <div class="lb-row">
         <div class="lb-rank">${medals[i]||i+1}</div>
         <div class="lb-name">${e.name||'Player'} <span style="font-size:0.7rem;color:var(--muted)">${e.diff||''}</span></div>
         <div class="lb-score">${e.score}</div>
       </div>`).join('');
+  } else {
+    list.innerHTML = `<div class="lb-empty">⏳ ${lang==='en'?'Loading...':'جاري التحميل...'}</div>`;
+    const rows = await gzQuizLoadGlobalLB();
+    if(!rows.length){ list.innerHTML=`<div class="lb-empty">${lang==='en'?'No global scores yet.':'لا نتائج عالمية بعد.'}</div>`; return; }
+    list.innerHTML = rows.slice(0,15).map((e,i)=>`
+      <div class="lb-row">
+        <div class="lb-rank">${medals[i]||i+1}</div>
+        <div class="lb-name">${e.name||'Player'} <span style="font-size:0.7rem;color:var(--muted)">${e.diff||''}</span></div>
+        <div class="lb-score">${e.score} <span class="lb-elo">ELO:${e.elo||'?'}</span></div>
+      </div>`).join('');
   }
-  document.getElementById('lbTitle').textContent=lang==='en'?'🏆 LEADERBOARD':'🏆 المتصدرون';
-  document.getElementById('lbOverlay').classList.add('show');
 }
 function closeLB(){ document.getElementById('lbOverlay').classList.remove('show'); }
 
@@ -1126,9 +1229,15 @@ function showFinalScore(){
     <div style="margin-top:10px;color:var(--muted);font-size:0.88rem;line-height:1.8">
       ${lang==='en'?`Best Streak: ${maxStreak} 🔥 · Accuracy: ${acc}% · Difficulty: ${difficulty}`:`أعلى متتالية: ${maxStreak} 🔥 · دقة: ${acc}% · صعوبة: ${difficulty}`}
     </div>
-    <div style="margin-top:8px;color:var(--purple);font-size:0.82rem">${lang==='en'?`Saved to leaderboard as <b>${playerName}</b>`:`تم الحفظ في المتصدرين: <b>${playerName}</b>`}</div>`;
+    <div id="eloResultLine" style="margin-top:8px;color:var(--purple);font-size:0.82rem">${lang==='en'?`Saved to leaderboard as <b>${playerName}</b>`:`تم الحفظ في المتصدرين: <b>${playerName}</b>`}</div>`;
   document.getElementById('startBtn').textContent=lang==='en'?'PLAY AGAIN':'العب مجدداً';
   if(score>=1200) spawnConfetti();
+  gzQuizSaveResult(playerName, score, difficulty, acc, maxStreak).then(res => {
+    if(!res) return;
+    const el = document.getElementById('eloResultLine');
+    if(el){ const sign=res.delta>=0?'+':''; el.innerHTML += ` · <span style="color:${res.delta>=0?'#64c864':'#ff6464'}">${sign}${res.delta} ELO</span> → <b>${res.newElo}</b>`; }
+    showEloToastQuiz(res.delta, res.newElo);
+  });
 }
 
 // ─────────────────────────────────────────────
