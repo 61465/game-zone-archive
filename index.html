@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#d4af37">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GZ Archive">
+<link rel="manifest" href="manifest.json">
 <title>Game Zone Archive</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;600;700&family=Noto+Kufi+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -360,6 +365,44 @@ footer { text-align: center; padding: 30px 20px; color: var(--muted); font-size:
 .coll-chip-want{background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);color:#c084fc}
 .coll-game-list{margin-top:10px;display:flex;flex-direction:column;gap:4px}
 .coll-game-row{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:8px;background:var(--card);font-size:0.82rem;font-weight:600}
+/* ─── MOBILE ─── */
+@media (max-width: 768px) {
+  nav { gap: 5px; padding: 8px 12px; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+  .tab-btn { font-size: 0.75rem; padding: 7px 12px; white-space: nowrap; flex-shrink: 0; }
+  .controls-wrap { gap: 8px; }
+  #search { font-size: 0.82rem; }
+  .archive { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; padding: 0 12px 40px; }
+  header { padding: 28px 16px 20px; }
+  h1 { font-size: clamp(2rem, 8vw, 3.5rem); }
+  .stats-bar { gap: 18px; }
+}
+@media (max-width: 480px) {
+  nav { padding: 6px 8px; }
+  .tab-btn { font-size: 0.67rem; padding: 5px 8px; }
+  .archive { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; padding: 0 8px 32px; }
+  .lang-btn, .random-btn { font-size: 0.75rem; padding: 6px 10px; }
+}
+/* Back to top */
+#backToTop { position: fixed; bottom: 24px; right: 24px; z-index: 200; width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), #a07c20); border: none; color: #000; font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: all 0.3s; box-shadow: 0 4px 16px rgba(212,175,55,0.3); display: flex; align-items: center; justify-content: center; }
+#backToTop.visible { opacity: 1; transform: translateY(0); }
+#backToTop:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(212,175,55,0.4); }
+/* Platform badges */
+.platform-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.platform-badge { font-size: 0.58rem; padding: 2px 7px; border-radius: 99px; font-weight: 700; letter-spacing: 0.5px; }
+.pb-ps { background: rgba(0,55,160,0.2); color: #4a90e2; border: 1px solid rgba(0,55,160,0.3); }
+.pb-xbox { background: rgba(16,124,16,0.15); color: #5cb85c; border: 1px solid rgba(16,124,16,0.25); }
+.pb-pc { background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); }
+.pb-switch { background: rgba(255,0,50,0.12); color: #ff6b6b; border: 1px solid rgba(255,0,50,0.25); }
+/* Sort control */
+.sort-select { padding: 11px 14px; background: var(--card2); color: var(--text); border: 1px solid var(--border2); border-radius: 12px; font-family: inherit; font-size: 0.82rem; cursor: pointer; outline: none; }
+/* Spotlight card */
+.spotlight-wrap { max-width: 1400px; margin: 0 auto 24px; padding: 0 20px; position: relative; z-index: 1; }
+.spotlight-card { background: linear-gradient(135deg, rgba(212,175,55,0.06), rgba(26,123,255,0.04)); border: 1px solid rgba(212,175,55,0.2); border-radius: 16px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: all 0.2s; }
+.spotlight-card:hover { border-color: rgba(212,175,55,0.4); transform: translateY(-2px); }
+.spotlight-emoji { font-size: 2.2rem; flex-shrink: 0; }
+.spotlight-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+.spotlight-title { font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.spotlight-quote { font-size: 0.78rem; color: var(--muted); margin-top: 3px; font-style: italic; }
 </style>
 </head>
 <body>
@@ -420,6 +463,14 @@ footer { text-align: center; padding: 30px 20px; color: var(--muted); font-size:
     <option value="90">90+</option>
     <option value="80">80+</option>
     <option value="70">70+</option>
+  </select>
+  <select id="sortFilter" class="sort-select">
+    <option value="default">Default</option>
+    <option value="az">A → Z</option>
+    <option value="za">Z → A</option>
+    <option value="newest">Newest First</option>
+    <option value="oldest">Oldest First</option>
+    <option value="score">Top Rated</option>
   </select>
   <select id="collectFilter">
     <option value="all">All Collection</option>
@@ -524,6 +575,7 @@ footer { text-align: center; padding: 30px 20px; color: var(--muted); font-size:
 </div>
 
 <div class="charts-section" id="chartsSection" style="display:none"></div>
+<div class="spotlight-wrap" id="spotlightWrap"></div>
 <section class="archive" id="archive"></section>
 
 <footer>© 2026 — Game Zone Archive &nbsp;·&nbsp; <span id="footerSub">Built with passion for gaming</span></footer>
@@ -623,6 +675,17 @@ const gameScores = {
   "Death Stranding":{ meta:82,user:7.7,opencritic:82},
   "Final Fantasy XVI":{ meta:87,user:8.0,opencritic:87},
   "Assassin's Creed Odyssey":{ meta:85,user:7.9,opencritic:84},
+  "Nier: Automata":{meta:88,user:8.9,opencritic:88},
+  "Dragon Age: Origins":{meta:91,user:9.0,opencritic:90},
+  "Tomb Raider (2013)":{meta:86,user:8.7,opencritic:85},
+  "Metal Gear Solid V: The Phantom Pain":{meta:95,user:8.8,opencritic:95},
+  "The Legend of Zelda: Breath of the Wild":{meta:97,user:8.7,opencritic:97},
+  "The Legend of Zelda: Tears of the Kingdom":{meta:96,user:8.8,opencritic:96},
+  "Stardew Valley":{meta:89,user:9.4,opencritic:89},
+  "Minecraft":{meta:93,user:8.0,opencritic:90},
+  "Astro Bot":{meta:94,user:9.2,opencritic:94},
+  "BioShock Infinite":{meta:94,user:8.6,opencritic:93},
+  "Call of Duty: Modern Warfare 2":{meta:94,user:7.8,opencritic:93},
 };
 
 const gameEmojis={
@@ -644,7 +707,10 @@ const charEmojis={
   "The Legend of Zelda":"🗡️","Super Mario":"🍄","Sonic the Hedgehog":"💨",
   "Final Fantasy":"✨","Baldur's Gate 3":"🐉","Sekiro":"🌸","Hollow Knight":"🦋",
   "Celeste":"🏔️","Disco Elysium":"🕵️","Control":"🔫","Horizon":"🌄",
-  "Detroit: Become Human":"🤖","Death Stranding":"🌧️","default":"🎮"
+  "Detroit: Become Human":"🤖","Death Stranding":"🌧️",
+  "Minecraft":"⛏️","Stardew Valley":"🌾","Nier: Automata":"🤖",
+  "Kingdom Hearts":"🔑","Fire Emblem":"🔥","Call of Duty":"🎖️",
+  "default":"🎮"
 };
 
 const characterQuotes={
@@ -694,6 +760,51 @@ const gamePrices={
   "Disco Elysium":{pc:"$39.99"},
 };
 
+const gamePlatforms = {
+  "The Witcher 3": ["ps","xbox","pc","switch"],
+  "Elden Ring": ["ps","xbox","pc"],
+  "Baldur's Gate 3": ["ps","pc"],
+  "Cyberpunk 2077": ["ps","xbox","pc"],
+  "God of War": ["ps","pc"],
+  "God of War Ragnarok": ["ps"],
+  "The Last of Us": ["ps","pc"],
+  "The Last of Us Part II": ["ps","pc"],
+  "Hades": ["ps","xbox","pc","switch"],
+  "Hades II": ["pc"],
+  "Hollow Knight": ["ps","xbox","pc","switch"],
+  "Celeste": ["ps","xbox","pc","switch"],
+  "Undertale": ["ps","pc","switch"],
+  "Disco Elysium": ["ps","xbox","pc"],
+  "Half-Life 2": ["pc"],
+  "Portal 2": ["ps","xbox","pc"],
+  "Bloodborne": ["ps"],
+  "Sekiro: Shadows Die Twice": ["ps","xbox","pc"],
+  "Dark Souls III": ["ps","xbox","pc"],
+  "Dark Souls": ["ps","xbox","pc","switch"],
+  "Mass Effect 2": ["ps","xbox","pc"],
+  "Persona 5 Royal": ["ps","xbox","pc","switch"],
+  "Red Dead Redemption 2": ["ps","xbox","pc"],
+  "Grand Theft Auto V": ["ps","xbox","pc"],
+  "Death Stranding": ["ps","pc"],
+  "Ghost of Tsushima": ["ps","pc"],
+  "Spider-Man": ["ps","pc"],
+  "Horizon Zero Dawn": ["ps","pc"],
+  "Detroit: Become Human": ["ps","pc"],
+  "Resident Evil 4": ["ps","xbox","pc","switch"],
+  "Doom Eternal": ["ps","xbox","pc","switch"],
+  "Final Fantasy VII Rebirth": ["ps"],
+  "Final Fantasy XVI": ["ps","pc"],
+  "Lies of P": ["ps","xbox","pc"],
+  "Outer Wilds": ["ps","xbox","pc","switch"],
+  "Nier: Automata": ["ps","xbox","pc","switch"],
+  "Dragon Age: Origins": ["ps","xbox","pc"],
+  "Stardew Valley": ["ps","xbox","pc","switch"],
+  "Minecraft": ["ps","xbox","pc","switch"],
+  "The Legend of Zelda: Breath of the Wild": ["switch"],
+  "The Legend of Zelda: Tears of the Kingdom": ["switch"],
+  "Astro Bot": ["ps"],
+};
+
 // Critic quotes per game
 const gameCriticQuotes={
   "The Witcher 3":{en:"\"A staggering achievement\" — IGN 9.3",ar:"\"إنجاز مذهل\" — IGN"},
@@ -716,6 +827,12 @@ const gameCriticQuotes={
   "Silent Hill 2":{en:"\"Psychological horror redefined\" — Edge",ar:"\"إعادة تعريف الرعب النفسي\" — Edge"},
   "Resident Evil 4":{en:"\"Changed action games forever\" — Famitsu 40/40",ar:"\"غيّر ألعاب الأكشن للأبد\" — فاميتسو"},
   "Outer Wilds":{en:"\"The most original game in years\" — Eurogamer Essential",ar:"\"أكثر لعبة أصالة منذ سنوات\" — Eurogamer"},
+  "Nier: Automata":{en:"\"One of the most philosophically ambitious games ever made\" — Eurogamer Essential",ar:"\"من أكثر الألعاب طموحاً فلسفياً على الإطلاق\" — Eurogamer"},
+  "The Legend of Zelda: Breath of the Wild":{en:"\"Redefines what open-world games can be\" — IGN 10/10",ar:"\"يعيد تعريف ما يمكن أن تكونه ألعاب العالم المفتوح\" — IGN"},
+  "Metal Gear Solid V: The Phantom Pain":{en:"\"The greatest stealth game ever made\" — Kotaku",ar:"\"أعظم لعبة تخفٍّ صُنعت على الإطلاق\" — كوتاكو"},
+  "Stardew Valley":{en:"\"Remarkably full-featured farm life RPG\" — Metacritic 89",ar:"\"لعبة حياة المزرعة الأكثر اكتمالاً\" — ميتاكريتيك"},
+  "Astro Bot":{en:"\"The best platformer in a decade\" — The Guardian 5/5",ar:"\"أفضل لعبة منصات في عقد\" — The Guardian"},
+  "Dragon Age: Origins":{en:"\"BioWare at their absolute peak\" — GameSpot 9.5",ar:"\"Bioware في قمة مستواها المطلق\" — GameSpot"},
 };
 
 // Fun facts per game
@@ -739,6 +856,14 @@ const gameFunFacts={
   "Outer Wilds":{en:"The entire game takes place on a 22-minute loop ending in a supernova. The solution to every mystery is already visible from the very start.",ar:"اللعبة بأكملها تجري في حلقة 22 دقيقة تنتهي بانفجار شمسي. حل كل لغز مرئي من البداية."},
   "Hades":{en:"Each of the 10,000+ dialogue lines was recorded multiple times for different relationship states. The game was built to be played after winning.",ar:"كل الحوارات سُجّلت مرات متعددة لحالات علاقات مختلفة. اللعبة بُنيت للعب بعد الفوز."},
   "Mass Effect 2":{en:"The 'suicide mission' final level mathematically ensures all companions survive with specific choices. It took 3 years to design the companion loyalty system.",ar:"مهمة الانتحار النهائية تضمن رياضياً نجاة كل المرافقين بخيارات محددة. استغرق تصميم نظام الولاء 3 سنوات."},
+  "Nier: Automata":{en:"The game must be completed 3+ times to see the true ending. Route B replays Route A but from a different character's perspective — and completely recontextualizes everything.",ar:"يجب إكمال اللعبة 3+ مرات لرؤية النهاية الحقيقية. المسار B يعيد تشغيل المسار A من منظور شخصية مختلفة ويعيد تأطير كل شيء."},
+  "The Legend of Zelda: Breath of the Wild":{en:"Players found a way to defeat the final boss Calamity Ganon in 38 minutes without visiting any of the 4 Divine Beasts. The entire game can be completed immediately after the tutorial.",ar:"وجد اللاعبون طريقة لهزيمة الرئيسي غانون في 38 دقيقة دون زيارة أي من الوحوش الإلهية الأربعة. يمكن إكمال اللعبة كاملة بعد الـ tutorial مباشرة."},
+  "Metal Gear Solid V: The Phantom Pain":{en:"The true ending was locked behind a requirement for ALL players worldwide to complete a specific mission simultaneously — Konami had to patch the unlock condition after the community hit the wall.",ar:"النهاية الحقيقية كانت مقفلة خلف متطلب لجميع اللاعبين حول العالم لإكمال مهمة محددة في نفس الوقت."},
+  "Stardew Valley":{en:"ConcernedApe (Eric Barone) worked on Stardew Valley alone for 4.5 years, averaging 10 hours/day. He taught himself music, art, writing, and programming. It sold 30 million copies.",ar:"ConcernedApe عمل على اللعبة وحده لـ 4.5 سنة، بمتوسط 10 ساعات يومياً. علّم نفسه الموسيقى والرسم والكتابة والبرمجة. باعت 30 مليون نسخة."},
+  "Minecraft":{en:"Markus 'Notch' Persson sold Minecraft to Microsoft for $2.5 billion in 2014. The game has over 238 million copies sold across all platforms, making it the best-selling video game of all time.",ar:"باع نوتش ماينكرافت لمايكروسوفت بـ 2.5 مليار دولار في 2014. اللعبة بيعت أكثر من 238 مليون نسخة، مما يجعلها أكثر لعبة فيديو مبيعاً على الإطلاق."},
+  "Astro Bot":{en:"Astro Bot contains over 150 PlayStation character cameos hidden throughout its levels — from Kratos to Aloy to Joel Miller. Team Asobi spent months getting all the licensing approved.",ar:"تحتوي أسترو بوت على أكثر من 150 ظهور لشخصيات PlayStation مخفية في مستوياتها. أمضى Team Asobi أشهراً في الحصول على التراخيص."},
+  "Dragon Age: Origins":{en:"BioWare wrote 6 different opening origin stories depending on your chosen race and class — each with unique NPCs, dialogue, and lore. It took 2 years to write alone.",ar:"كتبت Bioware 6 قصص أصل افتتاحية مختلفة بناءً على عرقك وفئتك. كل منها بـ NPCs وحوار وخلفية قصصية فريدة. استغرق الكتابة وحدها سنتين."},
+  "BioShock Infinite":{en:"Ken Levine scrapped the entire second half of the game 8 months before release and rebuilt it. The original Elizabeth had no powers. The Comstock/DeWitt twist was written last.",ar:"ألغى كين ليفين النصف الثاني من اللعبة بالكامل قبل 8 أشهر من الإصدار وأعاد بناءه. إليزابيث الأصلية لم تكن لديها قوى. انعكاس كومستوك/ديويت كُتب أخيراً."},
 };
 
 // Psychological analysis per character
@@ -786,6 +911,14 @@ const gameLegacyTags={
   "Outer Wilds":["The entire solar system runs on a 22-min loop","Most original mystery in games","Ash Twin black hole"],
   "Celeste":["Trans protagonist confirmed","Hardest platformer on record","Mental health narrative"],
   "Sekiro: Shadows Die Twice":["Hesitation is defeat","Posture system","Most punishing parry timing in Souls history"],
+  "Nier: Automata":["Three playthrough structure","2B's reveal","Philosophy disguised as combat","E ending deletes your save"],
+  "The Legend of Zelda: Breath of the Wild":["Physics system that changes everything","Rush final boss without preparation","No handholding philosophy"],
+  "Metal Gear Solid V: The Phantom Pain":["Nuclear disarmament challenge","D-Dog and D-Horse","Quiet's controversy","Cassette tape storytelling"],
+  "Stardew Valley":["Made by 1 person in 4.5 years","30 million sold","Marriage system","Skull Cavern infinity dungeon"],
+  "Minecraft":["238 million sold","Herobrine myth","The Nether","Everyone's first gaming memory"],
+  "Astro Bot":["GOTY 2024","150+ PlayStation cameos","DualSense haptics showcase"],
+  "Dragon Age: Origins":["6 unique origin stories","Party approval system","The Fade","Reaver specialization"],
+  "BioShock Infinite":["Columbia vs Rapture","Lutece twins","Songbird","Ending branches"],
 };
 
 const characters = [
@@ -1012,6 +1145,18 @@ const characters = [
   {w:"Sekiro",en:{n:"Genichiro Ashina",p:"I fight for Ashina.",m:"The necessary villain — his love of his homeland drove him to atrocity. Every fight with him is the story in miniature."},ar:{n:"غينيشيرو أشينا",p:"أقاتل من أجل أشينا.",m:"الشرير الضروري. حبه لوطنه دفعه للفظائع. كل معركة معه هي القصة مصغّرة."}},
   // OUTER WILDS EXTRA
   {w:"Outer Wilds",en:{n:"Riebeck",p:"I know you've been to the core. I could never... I've been trying for a long time.",m:"Banjo-playing archaeologist terrified of space who embodies the game's theme: curiosity is worth more than safety."},ar:{n:"ريبيك",p:"أعرف أنك ذهبت إلى اللب. لم أستطع أبداً... حاولت لفترة طويلة.",m:"عالم آثار يعزف البانجو يخاف الفضاء ويجسّد موضوع اللعبة: الفضول يستحق أكثر من الأمان."}},
+  // Zelda
+  {w:"The Legend of Zelda",en:{n:"Zelda",p:"The blood of the Goddess runs in my veins.",m:"Princess who carries wisdom as burden — perpetually sacrificing herself for a world that forgets her name."},ar:{n:"زيلدا",p:"دم الإلهة يجري في عروقي.",m:"أميرة تحمل الحكمة عبئاً. تضحي بنفسها بلا توقف لعالم ينسى اسمها."}},
+  // Minecraft
+  {w:"Minecraft",en:{n:"Steve",p:"[Builds in silence.]",m:"The ultimate blank canvas — he has no story because he IS the story the player writes in blocks."},ar:{n:"ستيف",p:"[يبني في صمت.]",m:"اللوح الفارغ الأمثل. ليس لديه قصة لأنه هو القصة التي يكتبها اللاعب بالمكعبات."}},
+  // Stardew Valley
+  {w:"Stardew Valley",en:{n:"The Farmer",p:"[Arrived on a bus with nothing — left with everything that matters.]",m:"City escapee who discovers that meaning was in the soil all along. The quietest redemption arc in games."},ar:{n:"المزارع",p:"[وصل بالحافلة بلا شيء — غادر بكل ما يهم.]",m:"هارب من المدينة يكتشف أن المعنى كان في التربة طوال الوقت. أهدأ قوس خلاص في الألعاب."}},
+  // NieR: Automata
+  {w:"Nier: Automata",en:{n:"Adam",p:"I want to understand humans. I want to know... what it means to die.",m:"AI born from machine lifeforms who races toward death to understand existence — nihilism as curiosity."},ar:{n:"آدم",p:"أريد فهم البشر. أريد معرفة... ما معنى الموت.",m:"ذكاء اصطناعي وُلد من أشكال الحياة الآلية يتسابق نحو الموت لفهم الوجود — العدمية كفضول."}},
+  // Metal Gear
+  {w:"Metal Gear",en:{n:"Raiden",p:"A name means nothing on the battlefield.",m:"Child soldier turned cyborg — the most misunderstood protagonist in gaming, whose weakness became his defining trait."},ar:{n:"رايدن",p:"الاسم لا يعني شيئاً في ساحة المعركة.",m:"طفل جندي تحوّل إلى سايبورغ. أكثر بطل سوء فهم في الألعاب. ضعفه أصبح سمته المميزة."}},
+  // Zelda: BotW
+  {w:"The Legend of Zelda",en:{n:"Mipha",p:"It is my nature to heal those I care for.",m:"Zora princess who loved Link across timelines — her divine beast is a monument to grief and interrupted devotion."},ar:{n:"ميفا",p:"طبيعتي أن أشفي من أهتم بهم.",m:"أميرة زورا أحبت لينك عبر الجداول الزمنية. وحشها الإلهي نصب تذكاري للحزن والإخلاص المنقطع."}},
 ];
 
 const games = [
@@ -1158,6 +1303,21 @@ const games = [
   {en:{n:"Powerwash Simulator",d:"Most meditative game of the decade — washing dirt is the therapy.",y:2022,g:"Simulation"},ar:{n:"باور واش سيميولاتور",d:"أكثر لعبة تأملية في العقد.",y:2022,g:"محاكاة"},seriesParts:1,parts:[]},
   {en:{n:"Planet of Lana",d:"Hand-painted sci-fi platformer with a companion creature named Mui.",y:2023,g:"Platformer"},ar:{n:"بلانيت أوف لانا",d:"منصات خيال علمي مرسومة باليد.",y:2023,g:"منصات"},seriesParts:1,parts:[]},
   {en:{n:"Bomb Rush Cyberfunk",d:"Jet Set Radio spiritual successor — movement is pure euphoria.",y:2023,g:"Action"},ar:{n:"بومب راش سايبرفانك",d:"خليفة Jet Set Radio الروحي.",y:2023,g:"أكشن"},seriesParts:1,parts:[]},
+  // NieR: Automata (standalone entry if not already present via Xenoblade section)
+  {en:{n:"Dragon Age: Origins",d:"Bioware's dark fantasy RPG masterpiece — complex companions, brutal choices.",y:2009,g:"RPG"},ar:{n:"دراغون إيج: أوريجينز",d:"تحفة Bioware في الفانتازي المظلم — رفاق معقدون واختيارات قاسية.",y:2009,g:"تقمص أدوار"},seriesParts:4,parts:[]},
+  // Tomb Raider
+  {en:{n:"Tomb Raider (2013)",d:"Gritty origin story reboot — Lara's transformation from survivor to warrior.",y:2013,g:"Action/Adventure"},ar:{n:"تومب رايدر (2013)",d:"إعادة تشغيل قصة الأصل — تحول لارا من ناجية إلى محارب.",y:2013,g:"أكشن/مغامرة"},seriesParts:3,parts:[]},
+  // Metal Gear Solid V
+  {en:{n:"Metal Gear Solid V: The Phantom Pain",d:"Open-world stealth epic — the most ambitious MGS, with the saddest ending.",y:2015,g:"Stealth"},ar:{n:"ميتال جير سوليد V: ذا فانتوم بين",d:"ملحمة تخفٍّ عالم مفتوح. أكثر MGS طموحاً وأحزنها نهاية.",y:2015,g:"تخفٍّ"},seriesParts:5,parts:[]},
+  // Zelda
+  {en:{n:"The Legend of Zelda: Breath of the Wild",d:"Open-world revolution — every mechanic can interact with everything.",y:2017,g:"Action/Adventure"},ar:{n:"زيلدا: نَفَس البرية",d:"ثورة العالم المفتوح — كل ميكانيكية تتفاعل مع كل شيء.",y:2017,g:"أكشن/مغامرة"},seriesParts:19,parts:[]},
+  {en:{n:"The Legend of Zelda: Tears of the Kingdom",d:"Sequel that adds building + sky islands to BotW's world — somehow better.",y:2023,g:"Action/Adventure"},ar:{n:"زيلدا: دموع المملكة",d:"تكملة تضيف البناء وجزر السماء لعالم BotW. بطريقة ما أفضل.",y:2023,g:"أكشن/مغامرة"},seriesParts:19,parts:[]},
+  // Minecraft
+  {en:{n:"Minecraft",d:"The best-selling game of all time — limitless creativity in a block world.",y:2011,g:"Simulation"},ar:{n:"ماينكرافت",d:"أكثر لعبة مبيعاً على الإطلاق. إبداع لا محدود في عالم من المكعبات.",y:2011,g:"محاكاة"},seriesParts:1,parts:[]},
+  // BioShock Infinite
+  {en:{n:"BioShock Infinite",d:"Sky-city dystopia exploring American exceptionalism. Ending rewrites the trilogy.",y:2013,g:"FPS"},ar:{n:"بايوشوك إنفينيت",d:"ديستوبيا مدينة سماء تستكشف الاستثنائية الأمريكية. النهاية تعيد كتابة الثلاثية.",y:2013,g:"إطلاق نار"},seriesParts:3,parts:[]},
+  // Call of Duty
+  {en:{n:"Call of Duty: Modern Warfare 2",d:"The campaign that defined a generation — 'No Russian' still controversial.",y:2009,g:"FPS"},ar:{n:"كول أوف ديوتي: موديرن وارفير 2",d:"الحملة التي عرّفت جيلاً. 'لا روسي' لا تزال مثيرة للجدل.",y:2009,g:"إطلاق نار"},seriesParts:20,parts:[]},
 ];
 // ============================================================
 // MERGE CUSTOM DATA FROM ADMIN PANEL
@@ -1296,6 +1456,17 @@ function render() {
       const cStatus=collection['game_'+g.en.n]||null;
       return (gf==='all'||g[lang].g===gf)&&(yf==='all'||g[lang].y==yf)&&(rf==='all'||(score&&score>=parseInt(rf)))&&(cf==='all'||cStatus===cf)&&g[lang].n.toLowerCase().includes(q);
     });
+    // Sort
+    const sort = document.getElementById('sortFilter')?.value || 'default';
+    if (sort === 'az') filtered.sort((a,b) => (a[lang].n||'').localeCompare(b[lang].n||''));
+    else if (sort === 'za') filtered.sort((a,b) => (b[lang].n||'').localeCompare(a[lang].n||''));
+    else if (sort === 'newest') filtered.sort((a,b) => (b[lang].y||0) - (a[lang].y||0));
+    else if (sort === 'oldest') filtered.sort((a,b) => (a[lang].y||0) - (b[lang].y||0));
+    else if (sort === 'score') filtered.sort((a,b) => {
+      const sa = gameScores[a.en.n]?.meta || 0;
+      const sb = gameScores[b.en.n]?.meta || 0;
+      return sb - sa;
+    });
     count=filtered.length;
     filtered.forEach((g,idx)=>{
       const score=getMetaScore(g.en.n);
@@ -1319,6 +1490,8 @@ function render() {
         if(prices.pc) priceHtml+=`<span class="price-tag price-pc">${prices.pc==='Free'?'🆓 PC Free':'💻 PC '+prices.pc}</span>`;
         priceHtml+='</div>';
       }
+      const plArr = gamePlatforms[g.en.n] || [];
+      const plHtml = plArr.length ? `<div class="platform-badges">${plArr.map(p => `<span class="platform-badge pb-${p}">${p==='ps'?'PS':p==='xbox'?'Xbox':p==='pc'?'PC':'Switch'}</span>`).join('')}</div>` : '';
       const partsLen=g.parts?g.parts.length:0;
       const cs=getCollect(favId);
       div.innerHTML=`
@@ -1334,6 +1507,7 @@ function render() {
           <span class="card-tag">🎮 ${g[lang].g}</span>
           <div class="card-desc">${g[lang].d}</div>
           <div class="card-meta"><div class="meta-item"><span class="mi">📅</span>${g[lang].y}</div></div>
+          ${plHtml}
           ${scoreHtml}
           ${priceHtml}
           <div style="margin-top:10px">${renderStars(userR,true,'game_'+g.en.n)}</div>
@@ -2000,6 +2174,7 @@ document.getElementById('genreFilter').addEventListener('change',render);
 document.getElementById('yearFilter').addEventListener('change',render);
 document.getElementById('ratingFilter').addEventListener('change',render);
 document.getElementById('collectFilter').addEventListener('change',render);
+document.getElementById('sortFilter').addEventListener('change',render);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal({target:document.getElementById('modalOverlay')});});
 
 document.getElementById('archive').addEventListener('click',e=>{
@@ -2027,10 +2202,38 @@ document.getElementById('chartsSection').addEventListener('click',e=>{
   if(item){const idx=parseInt(item.dataset.gameIndex);if(!isNaN(idx)&&games[idx])openGameModal(games[idx]);}
 });
 
+// Back to top
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('backToTop');
+  if (btn) btn.classList.toggle('visible', window.scrollY > 400);
+});
+
+// Spotlight / Character of the Day
+function renderSpotlight() {
+  const wrap = document.getElementById('spotlightWrap');
+  if (!wrap) return;
+  const seed = new Date().toDateString();
+  let hash = 0; for (let i=0; i<seed.length; i++) hash = (hash*31+seed.charCodeAt(i))|0;
+  const idx = Math.abs(hash) % characters.length;
+  const c = characters[idx];
+  const name = c[lang]?.n || c.en.n;
+  const quote = (characterQuotes[c.en.n]||{})[lang] || (characterQuotes[c.en.n]||{}).en || c[lang]?.p || c.en.p;
+  const emoji = charEmojis[c.w] || '🎮';
+  wrap.innerHTML = `<div class="spotlight-card" onclick="openCharModal(characters[${idx}])">
+    <span class="spotlight-emoji">${emoji}</span>
+    <div>
+      <div class="spotlight-label">✨ ${lang==='en'?'Character of the Day':'شخصية اليوم'}</div>
+      <div class="spotlight-title">${name} <span style="font-size:0.7rem;color:var(--muted)">— ${c.w}</span></div>
+      <div class="spotlight-quote">"${quote}"</div>
+    </div>
+  </div>`;
+}
+
 // INIT
 updateRatedCount();
 setupFilters();
 render();
+renderSpotlight();
 setTimeout(()=>document.getElementById('loader').classList.add('hidden'),1400);
 
 // ── Handle redirect from Admin Panel ──
@@ -2052,6 +2255,14 @@ setTimeout(()=>document.getElementById('loader').classList.add('hidden'),1400);
     }, 600);
   }
 })();
+</script>
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/game-zone-archive/sw.js').catch(()=>{});
+  });
+}
 </script>
 </body>
 </html>
